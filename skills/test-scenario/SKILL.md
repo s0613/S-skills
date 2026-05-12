@@ -207,7 +207,7 @@ Cycle N — 테스트 대상 기능 목록
 
 ## 결과 기록 양식
 
-> Chrome 확장 실행 후 아래를 채워서 `/test-scenario`에 붙여넣으세요.
+> Chrome 확장 실행 후 아래를 채워서 Claude Code 터미널에 `/test-scenario` 입력 후 붙여넣으세요.
 
 \`\`\`
 [결과]
@@ -268,7 +268,7 @@ Cycle N 시나리오 생성 완료.
 다음 단계:
 1. scenarios/*.md 파일을 열어 프롬프트 확인
 2. Claude Chrome 확장에 각 프롬프트 붙여넣기
-3. 결과 받으면 /test-scenario 에 [결과]...[/결과] 붙여넣기
+3. 결과 받으면 Claude Code 터미널에 `/test-scenario` 입력 후 [결과]...[/결과] 붙여넣기
 ```
 
 ---

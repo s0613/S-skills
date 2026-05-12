@@ -8,14 +8,15 @@
   "plugins": [
     {
       "name": "s-skills",
-      "description": "Harness + docs-organize + test-scenario skills for project documentation and testing",
+      "description": "Harness + docs-organize + test-scenario skills",
       "author": {
         "name": "songseungju"
       },
       "category": "productivity",
       "source": {
-        "source": "github",
-        "repo": "s0613/S-skills",
+        "source": "git-subdir",
+        "url": "https://github.com/s0613/S-skills.git",
+        "path": ".",
         "ref": "main"
       }
     }
