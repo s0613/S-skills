@@ -1,6 +1,6 @@
 ---
 name: s-skills
-version: 2.1.0
+version: 2.2.0
 description: |
   S-skills 하네스. 프로젝트 상태를 감지하고 docs-organize, test-scenario 스킬을
   오케스트레이션한다. /s-skills 하나로 지금 무엇이 필요한지 판단해 적절한 스킬을 호출.
@@ -93,6 +93,22 @@ echo "TS_CYCLE: $_TS_CYCLE"
 echo "TS_PASS_RATE: $_TS_PASS_RATE%"
 echo "TS_STATUS: $_TS_STATUS"
 echo "SCENARIO_COUNT: ${_SCENARIO_COUNT:-0}"
+
+# ── 버전 확인 (best-effort, 3초 제한) ──
+_SS_LOCAL_VER=$(find ~/.claude/plugins/cache/s-skills -name "VERSION" -maxdepth 6 2>/dev/null \
+  | head -1 | xargs cat 2>/dev/null | tr -d '[:space:]')
+_SS_LOCAL_VER="${_SS_LOCAL_VER:-unknown}"
+
+_SS_REMOTE_VER=$(timeout 3 git ls-remote --tags \
+  https://github.com/s0613/S-skills.git 2>/dev/null \
+  | grep -oE 'refs/tags/[0-9]+\.[0-9]+\.[0-9]+$' \
+  | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' \
+  | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 || true)
+
+echo "S_SKILLS_VERSION: ${_SS_LOCAL_VER}"
+if [ -n "$_SS_REMOTE_VER" ] && [ "$_SS_REMOTE_VER" != "$_SS_LOCAL_VER" ]; then
+  echo "UPGRADE_AVAILABLE: ${_SS_LOCAL_VER} → ${_SS_REMOTE_VER}"
+fi
 ```
 
 ---
@@ -100,6 +116,30 @@ echo "SCENARIO_COUNT: ${_SCENARIO_COUNT:-0}"
 ## 상태 판단 및 액션 결정
 
 Preamble 결과를 바탕으로 아래 순서로 판단한다.
+
+### Case 0: 업그레이드 가능 (`UPGRADE_AVAILABLE` 감지 시)
+
+다른 케이스보다 **먼저** 처리. AskUserQuestion:
+
+```
+s-skills {old} → {new} 업데이트가 있습니다.
+```
+
+옵션:
+- A) 지금 업그레이드 (권장) → Bash로 아래 명령 실행 후 사용자에게 재호출 안내
+- B) 이 세션은 스킵 → 현재 버전으로 계속 진행
+
+A 선택 시:
+
+```bash
+claude plugin update s-skills@s-skills
+```
+
+실행 완료 후: "업그레이드 완료. `/s-skills`를 다시 호출하면 새 버전으로 시작됩니다."
+
+B 선택 시: 바로 Case 1 판단으로 이동.
+
+---
 
 ### Case 1: 문서 없음 (`HAS_DOCS=no`)
 
