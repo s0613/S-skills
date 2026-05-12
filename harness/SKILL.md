@@ -1,6 +1,6 @@
 ---
 name: s-skills
-version: 1.0.0
+version: 2.0.0
 description: |
   S-skills 하네스. 프로젝트 상태를 감지하고 docs-organize, test-scenario 스킬을
   오케스트레이션한다. /s-skills 하나로 지금 무엇이 필요한지 판단해 적절한 스킬을 호출.
@@ -44,8 +44,14 @@ if [ -d "docs/test-scenarios" ]; then
   _HAS_SCENARIOS="yes"
   _TS_CYCLE=$(cat "docs/test-scenarios/.state/cycle.txt" 2>/dev/null || echo "0")
   _TS_THRESHOLD=$(cat "docs/test-scenarios/.state/threshold.txt" 2>/dev/null || echo "80")
-  _TOTAL=$(ls "docs/test-scenarios/reports/"*.md 2>/dev/null | wc -l | tr -d ' ')
-  _PASS=$(grep -rl "판정: PASS" "docs/test-scenarios/reports/" 2>/dev/null | wc -l | tr -d ' ')
+  # 현재 사이클 보고서만 카운트 — 누적 아님 (카파시: 측정 대상을 명확히)
+  if [ "$_TS_CYCLE" -gt 0 ]; then
+    _TOTAL=$(ls "docs/test-scenarios/reports/"*"-c${_TS_CYCLE}-"*.md 2>/dev/null | wc -l | tr -d ' ')
+    _PASS=$(grep -rl "판정: PASS" "docs/test-scenarios/reports/" 2>/dev/null | grep -- "-c${_TS_CYCLE}-" | wc -l | tr -d ' ')
+  else
+    _TOTAL=0
+    _PASS=0
+  fi
   if [ "$_TOTAL" -gt 0 ]; then
     _TS_PASS_RATE=$(( (_PASS * 100) / _TOTAL ))
   fi
@@ -105,14 +111,32 @@ docs/가 있습니다. (점수: {DOC_SCORE}/100)
 AskUserQuestion:
 
 ```
-테스트 사이클 {TS_CYCLE}진행 중. 현재 통과율: {TS_PASS_RATE}% / 목표: {TS_THRESHOLD}%
+테스트 사이클 {TS_CYCLE} 진행 중. 현재 통과율: {TS_PASS_RATE}% / 목표: {TS_THRESHOLD}%
 ```
 
 옵션:
-- A) 결과 보고 (결과 블록 붙여넣기) → Skill 도구로 test-scenario 호출 (report 모드)
-- B) 다음 사이클 시나리오 재생성 → Skill 도구로 test-scenario 호출 (generate 모드)
-- C) 문서 업데이트 (docs-organize 재실행) → Skill 도구로 docs-organize 호출
-- D) 대시보드 보기 → Skill 도구로 test-scenario 호출 (dashboard 모드)
+- A) 결과 보고 (결과 블록 붙여넣기) → pending-mode 기록 후 Skill("test-scenario") 호출
+- B) 다음 사이클 시나리오 재생성 → pending-mode 기록 후 Skill("test-scenario") 호출
+- C) 문서 업데이트 (docs-organize 재실행) → Skill("docs-organize") 호출
+- D) 대시보드 보기 → pending-mode 기록 후 Skill("test-scenario") 호출
+- E) 목표 통과율 변경 → pending-mode 기록 후 Skill("test-scenario") 호출
+
+선택 후 Skill 호출 전 pending-mode 기록 (카파시: 모드는 명시적 상태로):
+
+```bash
+# A 선택 시
+mkdir -p docs/test-scenarios/.state
+echo "report" > docs/test-scenarios/.state/pending-mode.txt
+# B 선택 시
+mkdir -p docs/test-scenarios/.state
+echo "generate" > docs/test-scenarios/.state/pending-mode.txt
+# D 선택 시
+mkdir -p docs/test-scenarios/.state
+echo "dashboard" > docs/test-scenarios/.state/pending-mode.txt
+# E 선택 시
+mkdir -p docs/test-scenarios/.state
+echo "threshold" > docs/test-scenarios/.state/pending-mode.txt
+```
 
 ### Case 4: 완료 (`TS_STATUS=COMPLETE`)
 
@@ -125,9 +149,16 @@ AskUserQuestion:
 AskUserQuestion:
 
 옵션:
-- A) docs-organize 재실행 (최신 상태 반영) → Skill 도구로 docs-organize 호출
-- B) test-scenario 새 사이클 시작 → Skill 도구로 test-scenario 호출
+- A) docs-organize 재실행 (최신 상태 반영) → Skill("docs-organize") 호출
+- B) test-scenario 새 사이클 시작 → pending-mode 기록 후 Skill("test-scenario") 호출
 - C) 종료
+
+B 선택 시 Skill 호출 전:
+
+```bash
+mkdir -p docs/test-scenarios/.state
+echo "generate" > docs/test-scenarios/.state/pending-mode.txt
+```
 
 ---
 
@@ -139,6 +170,20 @@ AskUserQuestion:
 ```
 Skill("docs-organize")
 Skill("test-scenario")
+```
+
+### 서브스킬 완료 후 귀환 절차 (카파시: 상태 기계는 명시적 전이를)
+
+Skill 호출이 완료되면:
+
+1. Preamble bash를 재실행해 최신 상태 읽기
+2. 최종 상태 요약 출력 (아래 형식)
+3. 종료
+
+pending-mode.txt가 남아 있으면 삭제:
+
+```bash
+rm -f docs/test-scenarios/.state/pending-mode.txt 2>/dev/null || true
 ```
 
 ---
