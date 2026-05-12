@@ -6,7 +6,8 @@ Claude Code 커스텀 하네스 + 스킬 모음.
 각 **스킬**(`docs-organize`, `test-scenario`)은 독립 호출도 가능하다.
 
 ```
-harness/          ← 오케스트레이터. /s-skills 하나로 전체 흐름 제어
+skills/
+├── harness/        ← 오케스트레이터. /s-skills 하나로 전체 흐름 제어
 ├── docs-organize/  ← 스킬. 문서 생성 + 건강 점수
 └── test-scenario/  ← 스킬. 사이클 기반 테스트 하네스
 ```
@@ -15,17 +16,25 @@ harness/          ← 오케스트레이터. /s-skills 하나로 전체 흐름 �
 
 ## 설치
 
+### 방법 1 — 플러그인 (권장)
+
+```bash
+claude plugin install s0613/S-skills
+```
+
+### 방법 2 — 수동 심링크 (개발/로컬)
+
 ```bash
 # 1. 레포 클론
 git clone https://github.com/s0613/S-skills.git ~/S-skills
 
-# 2. 심링크 연결 (하네스 + 스킬 모두)
-ln -sf ~/S-skills/harness ~/.claude/skills/s-skills
-ln -sf ~/S-skills/docs-organize ~/.claude/skills/docs-organize
-ln -sf ~/S-skills/test-scenario ~/.claude/skills/test-scenario
+# 2. 심링크 연결 (skills/ 하위 경로 기준)
+ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
+ln -sf ~/S-skills/skills/docs-organize ~/.claude/skills/docs-organize
+ln -sf ~/S-skills/skills/test-scenario ~/.claude/skills/test-scenario
 ```
 
-새 맥이나 다른 환경에서도 위 세 줄이면 세팅 완료. 이후 업데이트는 `cd ~/S-skills && git pull`만으로 반영.
+수동 설치 후 업데이트는 `cd ~/S-skills && git pull`만으로 반영.
 
 ---
 
@@ -365,9 +374,9 @@ docs/test-scenarios/
 ## 새 스킬 추가하기
 
 ```bash
-mkdir ~/S-skills/my-skill
+mkdir ~/S-skills/skills/my-skill
 # SKILL.md 작성
-ln -sf ~/S-skills/my-skill ~/.claude/skills/my-skill
+ln -sf ~/S-skills/skills/my-skill ~/.claude/skills/my-skill
 ```
 
 `SKILL.md` 최소 구조:
