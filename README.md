@@ -23,6 +23,7 @@ ln -sf ~/S-skills/docs-organize ~/.claude/skills/docs-organize
 | Skill | Trigger | 한 줄 설명 |
 |-------|---------|-----------|
 | [docs-organize](#docs-organize) | `/docs-organize` | 프로젝트 분석 → 문서 생성 → 건강 점수 산출 |
+| [test-scenario](#test-scenario) | `/test-scenario` | 기능별 테스트 프롬프트 생성 → 결과 비교 → 개선 방향 도출 |
 
 ---
 
@@ -146,6 +147,76 @@ Score: 72 / 100  (prev: 61 → +11)
 /docs-organize
 → 새로 추가된 기능, 변경된 구조, 테스트 결과가 반영되고 점수가 갱신됨
 ```
+
+---
+
+## test-scenario
+
+### 목적
+
+Claude Chrome 확장으로 기능을 테스트할 때 사용. 실행 자체는 Chrome 확장에서 하고, 이 스킬은 **프롬프트 작성**과 **결과 분석**을 담당한다.
+
+### 사용법
+
+```
+# 시나리오 프롬프트 생성
+/test-scenario
+
+# 결과 붙여넣기 (Chrome 확장 실행 후)
+/test-scenario
+[결과]
+기능: 로그인
+판정: FAIL
+...
+[/결과]
+```
+
+### 동작 흐름
+
+```
+1. 시나리오 생성
+   PRD/코드 분석 → 기능 목록 확인 → 기능별 프롬프트 파일 생성
+
+2. Chrome 확장 실행 (유저 직접)
+   scenarios/*.md 열기 → 프롬프트 복사 → Chrome 확장에 붙여넣기 → 결과 수령
+
+3. 결과 보고서 저장
+   결과 양식 붙여넣기 → 기대 vs 실제 비교 → 보고서 저장 → 개선 방향 도출
+
+4. 반복
+   실패 항목 수정 → 해당 시나리오 재실행 → 점진적으로 PASS 늘려가기
+```
+
+### 생성 파일 구조
+
+```
+docs/test-scenarios/
+├── README.md                              ← 전체 PASS/FAIL 현황 인덱스
+├── scenarios/
+│   └── YYYY-MM-DD-{feature}.md           ← Chrome 확장에 넣을 테스트 프롬프트
+├── reports/
+│   └── YYYY-MM-DD-{feature}-report.md    ← 기대 vs 실제 비교 보고서
+└── improvement/
+    └── YYYY-MM-DD-improvement.md         ← 누적 개선 방향 (미결/해결 추적)
+```
+
+### 테스트 프롬프트 포맷
+
+각 `scenarios/*.md` 파일은 Chrome 확장에 바로 붙여넣을 수 있는 구조:
+
+```
+목적 → 사전 조건 → 테스트 단계(기대 결과 포함) → 엣지 케이스 → 판정 기준 → 결과 기록 양식
+```
+
+### 시나리오 업데이트
+
+기능 변경 후 시나리오를 최신화하려면:
+
+```
+/test-scenario update {기능명}
+```
+
+버전이 올라가고 변경 이력이 파일에 기록됨.
 
 ---
 
