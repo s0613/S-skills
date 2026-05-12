@@ -44,7 +44,10 @@ _SESSION_ID="$$-$(date +%s)"
 _DATE=$(date +%Y-%m-%d)
 
 # 시나리오 수
-_SCENARIO_COUNT=$(ls "$_TS_DIR/scenarios/"*.md 2>/dev/null | wc -l | tr -d ' ')
+# 시나리오 파일 (단일 파일) — 최신 파일의 섹션 수로 카운트
+_SCENARIO_FILE=$(ls "$_TS_DIR/scenarios/"*.md 2>/dev/null | sort | tail -1)
+_SCENARIO_COUNT=0
+[ -n "$_SCENARIO_FILE" ] && _SCENARIO_COUNT=$(grep -c "^# 테스트 시나리오:" "$_SCENARIO_FILE" 2>/dev/null || echo 0)
 
 # 하네스 모드 전달 (pending-mode.txt → 명시적 라우팅)
 _PENDING_MODE=$(cat "$_STATE_DIR/pending-mode.txt" 2>/dev/null | tr -d ' ')
@@ -148,23 +151,31 @@ Cycle N — 테스트 대상 기능 목록
 
 확인 후 `docs/test-scenarios/.state/features.txt`에 확정 목록 저장.
 
-### Step 3: 기능별 시나리오 프롬프트 생성
+### Step 3: 시나리오 프롬프트 생성 (단일 파일)
 
 신규 + 재테스트 대상만 생성 또는 업데이트. 안정 기능은 스킵.
 
-파일: `docs/test-scenarios/scenarios/YYYY-MM-DD-{feature-slug}.md`
+**모든 시나리오를 하나의 파일에 담는다:**  
+파일: `docs/test-scenarios/scenarios/YYYY-MM-DD-c{N}-scenarios.md`
 
-**프롬프트 포맷:**
+기존 파일이 있으면 해당 파일에서 재테스트 대상 기능 섹션만 교체하고, 신규 기능은 뒤에 추가한다.
+
+**파일 전체 포맷:**
 
 ```markdown
-# 테스트 시나리오: {기능명}
+# 테스트 시나리오 묶음
 
 **생성일:** YYYY-MM-DD  
-**버전:** 1.0  
 **Cycle:** N  
-**상태:** 미실행
+**기능 수:** N개  
+**대상:** {기능1}, {기능2}, ...
 
 ---
+
+# 테스트 시나리오: {기능명1}
+
+**Cycle:** N  
+**상태:** 미실행
 
 ## 목적
 {이 테스트가 검증하는 것 — 1-2문장}
@@ -211,7 +222,7 @@ Cycle N — 테스트 대상 기능 목록
 
 \`\`\`
 [결과]
-기능: {기능명}
+기능: {기능명1}
 실행일: YYYY-MM-DD
 cycle: N
 판정: PASS / FAIL / PARTIAL
@@ -224,6 +235,12 @@ cycle: N
 메모: {추가 관찰사항}
 [/결과]
 \`\`\`
+
+---
+
+# 테스트 시나리오: {기능명2}
+
+{동일한 구조로 반복...}
 ```
 
 ### Step 4: 인덱스 업데이트
@@ -263,12 +280,13 @@ Cycle N 시나리오 생성 완료.
    재테스트: {기능 목록}
    스킵 (안정): {기능 목록}
 
-📁 docs/test-scenarios/scenarios/
+📁 docs/test-scenarios/scenarios/YYYY-MM-DD-cN-scenarios.md (단일 파일)
 
 다음 단계:
-1. scenarios/*.md 파일을 열어 프롬프트 확인
-2. Claude Chrome 확장에 각 프롬프트 붙여넣기
+1. 위 파일을 열어 모든 시나리오 확인
+2. Claude Chrome 확장에 각 시나리오 프롬프트를 순서대로 붙여넣기
 3. 결과 받으면 Claude Code 터미널에 `/test-scenario` 입력 후 [결과]...[/결과] 붙여넣기
+   (여러 기능 결과를 한 번에 붙여넣어도 됩니다)
 ```
 
 ---
@@ -292,7 +310,8 @@ Cycle N 시나리오 생성 완료.
 ```
 기능 {기능명}의 테스트 결과를 평가한다.
 
-시나리오 파일: docs/test-scenarios/scenarios/{feature-slug}.md
+시나리오 파일: docs/test-scenarios/scenarios/{latest-scenarios-file}.md
+해당 파일에서 "# 테스트 시나리오: {기능명}" 섹션을 찾아 참조한다.
 실제 결과:
 {결과 블록 내용}
 
@@ -529,7 +548,7 @@ docs/test-scenarios/
 │   └── history.jsonl      ← 사이클별 통과율 이력
 ├── README.md              ← 전체 현황 인덱스 + 추이 테이블
 ├── scenarios/
-│   └── YYYY-MM-DD-{feature}.md
+│   └── YYYY-MM-DD-c{N}-scenarios.md  ← 모든 시나리오가 하나의 파일에
 ├── reports/
 │   └── YYYY-MM-DD-{feature}-c{N}-report.md
 └── improvement/
