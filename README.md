@@ -24,7 +24,7 @@ ln -sf ~/S-skills/test-scenario ~/.claude/skills/test-scenario
 | 스킬 | 트리거 | 설명 |
 |------|--------|------|
 | [docs-organize](#docs-organize) | `/docs-organize` | 프로젝트 분석 → 표준 문서 생성 → 건강 점수 0–100 |
-| [test-scenario](#test-scenario) | `/test-scenario` | 기능별 테스트 프롬프트 생성 → 결과 비교 → 개선 방향 누적 |
+| [test-scenario](#test-scenario) | `/test-scenario` | 사이클 기반 테스트 하네스 — 프롬프트 생성 → 결과 평가 → 목표 통과율 달성까지 반복 |
 
 ---
 
@@ -154,32 +154,56 @@ PRD 기능 대비 구현된 코드 비율로 채점. `STATUS.md`에 `Runner: non
 
 ### 한 줄 설명
 
-기능별 테스트 시나리오 프롬프트를 만들고, Claude Chrome 확장으로 실행한 결과를 받아 기대 결과와 비교해 보고서를 쌓는다. 실패 항목을 추적해 점진적으로 개선하는 것이 목표.
+사이클 기반 테스트 하네스 — 시나리오 생성 → Chrome 확장 실행(유저) → 결과 보고 → 목표 통과율(기본 80%) 달성까지 반복.
 
 ### 언제 쓰나
 
-- 기능 구현 후 동작 검증을 체계적으로 하고 싶을 때
-- 테스트 코드 없이 Chrome 확장으로 E2E 테스트를 하는 프로젝트
-- 어떤 기능이 잘 동작하고 어떤 기능이 안 되는지 추이를 보고 싶을 때
-- 개선 후 전에 실패했던 항목이 해결됐는지 확인하고 싶을 때
+- 기능 구현 후 E2E 동작 검증을 사이클 단위로 관리하고 싶을 때
+- 테스트 코드 없이 Claude Chrome 확장으로 E2E 테스트를 하는 프로젝트
+- 개선 → 재검증 사이클을 추적하고 통과율 목표를 달성하고 싶을 때
+- 어떤 기능이 안정적이고 어떤 기능이 반복 실패하는지 추이를 보고 싶을 때
+
+### 하네스 루프 개요
+
+```
+┌─────────────────────────────────────────────────────┐
+│                   /test-scenario                    │
+│                                                     │
+│  [generate]  PRD+코드 분석 → 시나리오 파일 생성       │
+│      ↓                                              │
+│  [유저]  Chrome 확장으로 시나리오 실행 → 결과 수령     │
+│      ↓                                              │
+│  [report]  결과 블록 붙여넣기 → 비교 보고서 저장      │
+│      ↓                                              │
+│  통과율 ≥ 목표?  ──Yes──→  [complete] 완료 리포트     │
+│      │No                                            │
+│      └── 다음 사이클 generate (실패 기능만 재생성)    │
+└─────────────────────────────────────────────────────┘
+```
 
 ### 사용법
 
-**1단계 — 시나리오 생성:**
+#### 1단계 — 시나리오 생성
+
 ```
 /test-scenario
 ```
-처음 실행하면 generate 모드. PRD와 코드를 분석해 기능 목록을 보여주고 확인 후 시나리오 프롬프트 파일들을 생성한다.
 
-**2단계 — Chrome 확장으로 실행 (유저 직접):**
+처음 실행하면 generate 모드. PRD와 코드를 분석해 기능 목록을 보여주고 확인 후 `scenarios/` 파일들을 생성한다. 이전 사이클에서 연속 PASS한 안정적인 기능은 재생성 생략.
+
+#### 2단계 — Chrome 확장으로 실행 (유저 직접)
+
 ```
-docs/test-scenarios/scenarios/YYYY-MM-DD-{feature}.md 파일 열기
-→ 프롬프트 내용 복사
+docs/test-scenarios/scenarios/YYYY-MM-DD-{feature}.md 열기
+→ 프롬프트 복사
 → Claude Chrome 확장에 붙여넣기
 → 결과 수령
 ```
 
-**3단계 — 결과 저장:**
+각 시나리오 파일 하단의 **결과 기록 양식**을 채워서 다음 단계에 사용한다.
+
+#### 3단계 — 결과 보고
+
 ```
 /test-scenario
 [결과]
@@ -196,48 +220,70 @@ docs/test-scenarios/scenarios/YYYY-MM-DD-{feature}.md 파일 열기
 [/결과]
 ```
 
-결과를 붙여넣으면 report 모드로 자동 전환. 기대 결과와 비교해 보고서를 저장하고 개선 방향을 도출한다.
+결과 블록을 포함해 실행하면 report 모드로 자동 전환. 기대 결과와 비교해 보고서를 저장하고 통과율을 계산한다. 여러 기능 결과를 한 번에 붙여넣으면 병렬로 평가한다.
 
-**현황 보기:**
-```
-/test-scenario
-→ 모드 선택에서 C 선택
-```
+#### 현황 보기
 
-**시나리오 업데이트 (기능 변경 후):**
 ```
-/test-scenario update 로그인
+/test-scenario dashboard
 ```
 
-### 동작 흐름
+전체 기능 PASS/FAIL 현황, 사이클별 추이, 현재 통과율을 표시한다.
+
+#### 목표 통과율 변경
+
+```
+/test-scenario threshold 90
+```
+
+기본값은 80%. 목표 통과율에 도달하면 하네스가 complete 모드로 전환된다.
+
+### 동작 흐름 (모드별)
 
 ```
 generate 모드
+  .state/cycle.txt 읽기 → 사이클 번호 결정
   PRD + 코드 분석
-    → 기능 목록 유저 확인
-    → 기능별 scenarios/*.md 생성
-    → README.md 인덱스 생성
+    → 기능 목록 유저 확인 (AskUserQuestion)
+    → 안정적 기능 제외 (연속 PASS)
+    → 기능별 scenarios/YYYY-MM-DD-{feature}.md 생성
+    → README.md 인덱스 업데이트
 
 report 모드
-  결과 블록 파싱
-    → scenarios/*.md에서 기대 결과 읽기
+  [결과]...[/결과] 블록 파싱
+    → 2개 이상 시 Agent로 병렬 평가
+    → 각 기능: scenarios/*.md에서 기대 결과 읽기
     → 단계별 기대 vs 실제 비교
-    → reports/*.md 저장
-    → improvement.md 미결 항목 추가/업데이트
-    → README.md 인덱스 갱신
+    → reports/YYYY-MM-DD-{feature}-c{N}-report.md 저장
+    → .state/history.jsonl 누적
+    → 통과율 계산 → 목표 달성 시 complete 모드 전환
+
+complete 모드
+  최종 리포트 출력
+    → 총 사이클 수, 기능별 PASS/FAIL 요약
+    → 해결된 항목 vs 잔여 이슈
+    → 다음 액션 제안
+
+dashboard 모드
+  현재 통과율, 사이클 번호, 기능별 최근 판정 표시
 ```
 
 ### 생성 파일 구조
 
 ```
 docs/test-scenarios/
-├── README.md                               ← 전체 기능 PASS/FAIL 현황 인덱스
+├── README.md                                    ← 전체 기능 PASS/FAIL 현황 인덱스
+├── .state/
+│   ├── cycle.txt                               ← 현재 사이클 번호
+│   ├── threshold.txt                           ← 목표 통과율 (기본 80)
+│   ├── features.txt                            ← 기능 목록 (줄바꿈 구분)
+│   └── history.jsonl                           ← 사이클별 결과 누적 로그
 ├── scenarios/
-│   └── YYYY-MM-DD-{feature}.md            ← Chrome 확장에 넣을 테스트 프롬프트
+│   └── YYYY-MM-DD-{feature}.md                ← Chrome 확장에 넣을 테스트 프롬프트
 ├── reports/
-│   └── YYYY-MM-DD-{feature}-report.md     ← 기대 vs 실제 비교 보고서
+│   └── YYYY-MM-DD-{feature}-c{N}-report.md    ← 기대 vs 실제 비교 보고서 (사이클 태그)
 └── improvement/
-    └── YYYY-MM-DD-improvement.md          ← 미결/해결 개선 항목 누적
+    └── YYYY-MM-DD-improvement.md              ← 미결/해결 개선 항목 누적
 ```
 
 ### 시나리오 프롬프트 구조
@@ -256,25 +302,16 @@ docs/test-scenarios/
 
 ### 개선 추적 방식
 
-`improvement.md`는 실패 항목을 누적한다:
+`history.jsonl`로 사이클별 결과가 누적되고 `README.md` 인덱스에 추이가 쌓인다:
 
 ```
-## 미결 항목
-| 기능 | 실패 단계 | 추정 원인 | 우선순위 | 첫 발견 |
-|----|----|----|----|----|
-
-## 해결된 항목
-| 기능 | 해결일 | 내용 |
+기능       | 사이클 | PASS | FAIL | PARTIAL | 추이
+----------|--------|------|------|---------|------
+로그인     |   3    |  2   |  1   |    0    | ↑ 개선중
+회원가입   |   2    |  2   |  0   |    0    | ✅ 안정
 ```
 
-같은 기능을 여러 번 돌리면 `README.md` 인덱스에 추이가 쌓인다:
-
-```
-기능       | 총 실행 | PASS | FAIL | PARTIAL | 추이
-----------|---------|------|------|---------|------
-로그인     |    3    |  2   |  1   |    0    | ↑ 개선중
-회원가입   |    2    |  2   |  0   |    0    | ✅ 안정
-```
+연속 PASS 기능은 다음 사이클 generate에서 자동 제외(안정 처리).
 
 ---
 
