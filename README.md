@@ -1,6 +1,15 @@
 # S-skills
 
-Claude Code 커스텀 스킬 모음. 각 스킬은 `SKILL.md` 하나로 구성되며, 클로드가 호출 시 해당 파일의 지시사항을 따른다.
+Claude Code 커스텀 하네스 + 스킬 모음.
+
+**하네스**(`harness`)가 프로젝트 상태를 감지해 어떤 스킬을 실행할지 오케스트레이션한다.
+각 **스킬**(`docs-organize`, `test-scenario`)은 독립 호출도 가능하다.
+
+```
+harness/          ← 오케스트레이터. /s-skills 하나로 전체 흐름 제어
+├── docs-organize/  ← 스킬. 문서 생성 + 건강 점수
+└── test-scenario/  ← 스킬. 사이클 기반 테스트 하네스
+```
 
 ---
 
@@ -10,21 +19,59 @@ Claude Code 커스텀 스킬 모음. 각 스킬은 `SKILL.md` 하나로 구성�
 # 1. 레포 클론
 git clone https://github.com/s0613/S-skills.git ~/S-skills
 
-# 2. 스킬 심링크 연결
+# 2. 심링크 연결 (하네스 + 스킬 모두)
+ln -sf ~/S-skills/harness ~/.claude/skills/s-skills
 ln -sf ~/S-skills/docs-organize ~/.claude/skills/docs-organize
 ln -sf ~/S-skills/test-scenario ~/.claude/skills/test-scenario
 ```
 
-새 맥이나 다른 환경에서도 위 두 줄이면 세팅 완료. 이후 업데이트는 `cd ~/S-skills && git pull`만으로 반영.
+새 맥이나 다른 환경에서도 위 세 줄이면 세팅 완료. 이후 업데이트는 `cd ~/S-skills && git pull`만으로 반영.
 
 ---
 
-## 스킬 목록
+## 구성 요소
 
-| 스킬 | 트리거 | 설명 |
+| 종류 | 트리거 | 설명 |
 |------|--------|------|
-| [docs-organize](#docs-organize) | `/docs-organize` | 프로젝트 분석 → 표준 문서 생성 → 건강 점수 0–100 |
-| [test-scenario](#test-scenario) | `/test-scenario` | 사이클 기반 테스트 하네스 — 프롬프트 생성 → 결과 평가 → 목표 통과율 달성까지 반복 |
+| **하네스** | `/s-skills` | 프로젝트 상태 감지 → docs-organize / test-scenario 오케스트레이션 |
+| 스킬 | `/docs-organize` | 프로젝트 분석 → 표준 문서 생성 → 건강 점수 0–100 |
+| 스킬 | `/test-scenario` | 사이클 기반 테스트 — 프롬프트 생성 → 결과 평가 → 목표 통과율 달성까지 반복 |
+
+---
+
+## harness
+
+### 역할
+
+`/s-skills` 하나만 호출하면 현재 프로젝트 상태를 읽고 무엇을 해야 할지 판단한다.
+
+```
+┌─────────────────────────────────────────────┐
+│                 /s-skills                   │
+│                                             │
+│  프로젝트 상태 감지 (preamble bash)          │
+│    - docs/ 존재 여부 + STATUS.md 점수        │
+│    - test-scenarios/ 사이클 + 통과율         │
+│         ↓                                   │
+│  상태에 따라 스킬 선택                        │
+│    문서 없음    → docs-organize 추천          │
+│    문서만 있음  → test-scenario 추천          │
+│    테스트 진행  → 결과 보고 / 재생성 선택      │
+│    모두 완료    → 완료 리포트                 │
+│         ↓                                   │
+│  선택된 스킬 호출 (Skill 도구)                │
+└─────────────────────────────────────────────┘
+```
+
+### 상태 요약 출력 형식
+
+```
+S-skills 상태 요약
+──────────────────
+문서      : yes  (점수: 72/100)
+시나리오  : IN_PROGRESS (사이클: 2, 통과율: 60%)
+다음 추천 : 결과 블록 붙여넣기 → report 모드
+```
 
 ---
 
