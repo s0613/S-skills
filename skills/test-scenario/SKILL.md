@@ -43,11 +43,18 @@ _THRESHOLD=$(cat "$_STATE_DIR/threshold.txt" 2>/dev/null || echo "80")
 _SESSION_ID="$$-$(date +%s)"
 _DATE=$(date +%Y-%m-%d)
 
-# 시나리오 수
-# 시나리오 파일 (단일 파일) — 최신 파일의 섹션 수로 카운트
-_SCENARIO_FILE=$(ls "$_TS_DIR/scenarios/"*.md 2>/dev/null | sort | tail -1)
+# 시나리오 파일 — 항상 단일 고정 파일
+_SCENARIO_FILE="$_TS_DIR/scenarios/scenarios.md"
+
+# 단일 파일 강제: scenarios/ 디렉터리에 다른 .md 파일이 있으면 즉시 오류
+_EXTRA_FILES=$(ls "$_TS_DIR/scenarios/"*.md 2>/dev/null | grep -v "^$_SCENARIO_FILE$" | tr '\n' ' ')
+if [ -n "$_EXTRA_FILES" ]; then
+  echo "ERROR: scenarios/ 디렉터리에 허용되지 않은 파일이 있습니다: $_EXTRA_FILES"
+  echo "ACTION_REQUIRED: 위 파일들을 삭제하고 내용을 scenarios.md 로 통합하세요."
+fi
+
 _SCENARIO_COUNT=0
-[ -n "$_SCENARIO_FILE" ] && _SCENARIO_COUNT=$(grep -c "^# 테스트 시나리오:" "$_SCENARIO_FILE" 2>/dev/null || echo 0)
+[ -f "$_SCENARIO_FILE" ] && _SCENARIO_COUNT=$(grep -c "^# 테스트 시나리오:" "$_SCENARIO_FILE" 2>/dev/null || echo 0)
 
 # 하네스 모드 전달 (pending-mode.txt → 명시적 라우팅)
 _PENDING_MODE=$(cat "$_STATE_DIR/pending-mode.txt" 2>/dev/null | tr -d ' ')
@@ -151,22 +158,24 @@ Cycle N — 테스트 대상 기능 목록
 
 확인 후 `docs/test-scenarios/.state/features.txt`에 확정 목록 저장.
 
-### Step 3: 시나리오 프롬프트 생성 (단일 파일)
+### Step 3: 시나리오 프롬프트 생성 (단일 파일 강제)
 
 신규 + 재테스트 대상만 생성 또는 업데이트. 안정 기능은 스킵.
 
-**모든 시나리오를 하나의 파일에 담는다:**  
-파일: `docs/test-scenarios/scenarios/YYYY-MM-DD-c{N}-scenarios.md`
+**절대 규칙 — 반드시 지킬 것:**
+- 파일은 **오직 하나**: `docs/test-scenarios/scenarios/scenarios.md`
+- 이 파일 외의 `.md` 파일을 `scenarios/` 디렉터리에 **절대 생성하지 않는다**
+- 새 사이클이어도 새 파일 생성 금지 — 반드시 기존 `scenarios.md` 를 수정한다
 
-기존 파일이 있으면 해당 파일에서 재테스트 대상 기능 섹션만 교체하고, 신규 기능은 뒤에 추가한다.
+파일이 없으면 새로 생성하고, 있으면 재테스트 섹션만 교체 + 신규 섹션 추가.
 
-**파일 전체 포맷:**
+**파일 포맷 (`docs/test-scenarios/scenarios/scenarios.md`):**
 
 ```markdown
 # 테스트 시나리오 묶음
 
-**생성일:** YYYY-MM-DD  
-**Cycle:** N  
+**최종 업데이트:** YYYY-MM-DD  
+**현재 Cycle:** N  
 **기능 수:** N개  
 **대상:** {기능1}, {기능2}, ...
 
@@ -280,7 +289,7 @@ Cycle N 시나리오 생성 완료.
    재테스트: {기능 목록}
    스킵 (안정): {기능 목록}
 
-📁 docs/test-scenarios/scenarios/YYYY-MM-DD-cN-scenarios.md (단일 파일)
+📁 docs/test-scenarios/scenarios/scenarios.md (단일 고정 파일)
 
 다음 단계:
 1. 위 파일을 열어 모든 시나리오 확인
@@ -310,7 +319,7 @@ Cycle N 시나리오 생성 완료.
 ```
 기능 {기능명}의 테스트 결과를 평가한다.
 
-시나리오 파일: docs/test-scenarios/scenarios/{latest-scenarios-file}.md
+시나리오 파일: docs/test-scenarios/scenarios/scenarios.md
 해당 파일에서 "# 테스트 시나리오: {기능명}" 섹션을 찾아 참조한다.
 실제 결과:
 {결과 블록 내용}
@@ -548,7 +557,7 @@ docs/test-scenarios/
 │   └── history.jsonl      ← 사이클별 통과율 이력
 ├── README.md              ← 전체 현황 인덱스 + 추이 테이블
 ├── scenarios/
-│   └── YYYY-MM-DD-c{N}-scenarios.md  ← 모든 시나리오가 하나의 파일에
+│   └── scenarios.md                  ← 유일한 파일, 모든 사이클·기능 누적
 ├── reports/
 │   └── YYYY-MM-DD-{feature}-c{N}-report.md
 └── improvement/
