@@ -13,12 +13,7 @@
         "name": "songseungju"
       },
       "category": "productivity",
-      "source": {
-        "source": "git-subdir",
-        "url": "https://github.com/s0613/S-skills.git",
-        "path": ".",
-        "ref": "main"
-      }
+      "source": "./"
     }
   ]
 }
