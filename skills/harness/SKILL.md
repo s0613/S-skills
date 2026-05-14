@@ -132,7 +132,7 @@ s-skills {old} → {new} 업데이트가 있습니다.
 A 선택 시:
 
 ```bash
-claude plugin update s-skills@s-skills
+git -C /Users/songseungju/S-skills pull origin main
 ```
 
 실행 완료 후: "업그레이드 완료. `/s-skills`를 다시 호출하면 새 버전으로 시작됩니다."
