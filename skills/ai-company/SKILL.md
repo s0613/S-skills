@@ -17,12 +17,12 @@ AI SI 회사 TUI를 실행한다.
 
 ## 실행
 
-1. ANTHROPIC_API_KEY 환경변수 확인:
+1. claude CLI 설치 확인:
 
 ```bash
-if [ -z "$ANTHROPIC_API_KEY" ]; then
-  echo "오류: ANTHROPIC_API_KEY 환경변수가 설정되지 않았습니다."
-  echo "export ANTHROPIC_API_KEY=your-key-here"
+if ! command -v claude &> /dev/null; then
+  echo "오류: claude CLI를 찾을 수 없습니다."
+  echo "Claude Code를 설치하고 로그인하세요: https://claude.ai/code"
   exit 1
 fi
 ```

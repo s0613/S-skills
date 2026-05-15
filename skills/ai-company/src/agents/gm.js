@@ -1,26 +1,54 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { spawn } from 'child_process';
 import { DEPT_PROMPTS } from './prompts.js';
 
-const client = new Anthropic();
+function callAgent(dept, task, context = '') {
+  return new Promise((resolve, reject) => {
+    const systemPrompt = DEPT_PROMPTS[dept];
+    const userMessage = context ? `컨텍스트:\n${context}\n\n지시:\n${task}` : task;
 
-async function callAgent(dept, task, budgetTokens, context = '') {
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: Math.min(budgetTokens, 8192),
-    system: DEPT_PROMPTS[dept],
-    messages: [
-      { role: 'user', content: context ? `컨텍스트:\n${context}\n\n지시:\n${task}` : task }
-    ],
+    const args = [
+      '-p', userMessage,
+      '--system-prompt', systemPrompt,
+      '--tools', '',
+      '--model', 'sonnet',
+      '--output-format', 'json',
+      '--bare',
+      '--no-session-persistence',
+    ];
+
+    const proc = spawn('claude', args);
+    let stdout = '';
+    let stderr = '';
+
+    proc.stdout.on('data', chunk => { stdout += chunk.toString(); });
+    proc.stderr.on('data', chunk => { stderr += chunk.toString(); });
+
+    proc.on('close', code => {
+      if (code !== 0) {
+        reject(new Error(`claude CLI 오류 (exit ${code}): ${stderr.slice(0, 200)}`));
+        return;
+      }
+
+      let text = stdout.trim();
+      try {
+        const cliOutput = JSON.parse(stdout);
+        text = cliOutput.result ?? stdout.trim();
+      } catch {
+        // output-format이 text인 경우 그대로 사용
+      }
+
+      // token 사용량 추정 (4자 ≈ 1 토큰)
+      const used = Math.round(text.length / 4);
+
+      try {
+        resolve({ result: JSON.parse(text), raw: text, used });
+      } catch {
+        resolve({ result: { raw: text }, raw: text, used });
+      }
+    });
+
+    proc.on('error', reject);
   });
-
-  const text = response.content[0].type === 'text' ? response.content[0].text : '';
-  const used = response.usage.input_tokens + response.usage.output_tokens;
-
-  try {
-    return { result: JSON.parse(text), used, raw: text };
-  } catch {
-    return { result: { raw: text }, used, raw: text };
-  }
 }
 
 export async function orchestrate({ userMessage, projectContext, onUpdate, onRequestApproval, currentBudget }) {
@@ -28,7 +56,7 @@ export async function orchestrate({ userMessage, projectContext, onUpdate, onReq
   onUpdate({ dept: 'GM', status: 'in_progress', message: '요청 분석 중...' });
 
   const contextStr = projectContext ? JSON.stringify(projectContext, null, 2) : '';
-  const gmResult = await callAgent('GM', userMessage, 4000, contextStr);
+  const gmResult = await callAgent('GM', userMessage, contextStr);
   const plan = gmResult.result;
 
   onUpdate({
@@ -87,7 +115,7 @@ export async function orchestrate({ userMessage, projectContext, onUpdate, onReq
               }
             }
           }
-          const deptResult = await callAgent(dept, task, stepBudget || 8000, sharedContext);
+          const deptResult = await callAgent(dept, task, sharedContext);
           results[dept] = deptResult.result;
           onUpdate({
             dept,
@@ -121,7 +149,7 @@ export async function orchestrate({ userMessage, projectContext, onUpdate, onReq
       }
 
       onUpdate({ dept, status: 'in_progress', message: `${dept} 작업 시작...` });
-      const deptResult = await callAgent(dept, task, stepBudget || 8000, sharedContext);
+      const deptResult = await callAgent(dept, task, sharedContext);
       results[dept] = deptResult.result;
       sharedContext = deptResult.raw;
       onUpdate({
