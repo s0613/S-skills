@@ -14,7 +14,7 @@ const ROLE_STYLE = {
 export function ChatPanel({ messages, scrollOffset = 0, visibleHeight = 20 }) {
   // Calculate visible messages based on scroll offset
   const total = messages.length;
-  const end = total - scrollOffset;
+  const end = Math.max(0, total - scrollOffset);
   const start = Math.max(0, end - visibleHeight);
   const visible = messages.slice(start, end);
 

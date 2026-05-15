@@ -1,0 +1,70 @@
+<h2>단축키 체계 — 어느 방향이 좋으세요?</h2>
+<p class="subtitle">3-컬럼 레이아웃 기준. 현재: Ctrl+C(종료), Ctrl+L(로그토글), q/ESC(종료) 뿐입니다.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="A" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="font-family:monospace;font-size:11px;background:#1a1a2e;color:#e0e0e0;padding:10px;border-radius:4px;line-height:1.9">
+        <div style="color:#4fc3f7;margin-bottom:4px;font-weight:bold">── 이동 ──</div>
+        <div>↑ / ↓     채팅 스크롤</div>
+        <div>PgUp/Dn   채팅 페이지 이동</div>
+        <div style="color:#4fc3f7;margin-top:6px;margin-bottom:4px;font-weight:bold">── 입력 ──</div>
+        <div>↑ / ↓     명령 히스토리 (빈 입력창)</div>
+        <div>Ctrl+K    입력 초기화</div>
+        <div>Ctrl+C    실행 중 태스크 취소</div>
+        <div style="color:#4fc3f7;margin-top:6px;margin-bottom:4px;font-weight:bold">── 앱 ──</div>
+        <div>Tab       채팅↔로그 스크롤 포커스</div>
+        <div>?         단축키 도움말 오버레이</div>
+        <div>q / :q    종료</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. 스크롤 중심</h3>
+      <p>↑/↓가 채팅 스크롤에 집중. 명령 히스토리는 입력창이 비어있을 때만 ↑/↓로 접근. Tab으로 채팅/로그 패널 포커스 전환.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="B" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="font-family:monospace;font-size:11px;background:#1a1a2e;color:#e0e0e0;padding:10px;border-radius:4px;line-height:1.9">
+        <div style="color:#4fc3f7;margin-bottom:4px;font-weight:bold">── 입력 ──</div>
+        <div>↑ / ↓     명령 히스토리 (항상)</div>
+        <div>Ctrl+K    입력 초기화</div>
+        <div>Ctrl+C    태스크 취소 (2번→종료)</div>
+        <div style="color:#4fc3f7;margin-top:6px;margin-bottom:4px;font-weight:bold">── 뷰 ──</div>
+        <div>Ctrl+↑/↓  채팅 스크롤</div>
+        <div>Ctrl+L    로그 패널 확대/축소</div>
+        <div style="color:#4fc3f7;margin-top:6px;margin-bottom:4px;font-weight:bold">── 앱 ──</div>
+        <div>?         단축키 도움말</div>
+        <div>q / :q    종료</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. 히스토리 중심</h3>
+      <p>↑/↓는 항상 명령 히스토리 전용. 채팅 스크롤은 Ctrl+↑/↓. Ctrl+C 첫 번째는 태스크 취소, 두 번째는 앱 종료.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="C" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="font-family:monospace;font-size:11px;background:#1a1a2e;color:#e0e0e0;padding:10px;border-radius:4px;line-height:1.9">
+        <div style="color:#4fc3f7;margin-bottom:4px;font-weight:bold">── 입력 ──</div>
+        <div>↑ / ↓     명령 히스토리 (빈 입력창)</div>
+        <div>Ctrl+K    입력 초기화</div>
+        <div style="color:#4fc3f7;margin-top:6px;margin-bottom:4px;font-weight:bold">── 패널 스크롤 ──</div>
+        <div>[ / ]     채팅 스크롤 ↑ / ↓</div>
+        <div>{ / }     로그 스크롤 ↑ / ↓</div>
+        <div style="color:#4fc3f7;margin-top:6px;margin-bottom:4px;font-weight:bold">── 앱 ──</div>
+        <div>Ctrl+C    태스크 취소</div>
+        <div>?         도움말</div>
+        <div>q / :q    종료</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. 브래킷 스크롤</h3>
+      <p>채팅은 [ ], 로그는 { }로 스크롤. ↑/↓는 명령 히스토리 전용. vim 스타일에 익숙하다면 충돌 없이 직관적.</p>
+    </div>
+  </div>
+
+</div>

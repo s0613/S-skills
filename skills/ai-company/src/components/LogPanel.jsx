@@ -9,6 +9,11 @@ const DEPT_COLOR = {
   QA:     'blue',
 };
 
+function formatResult(result) {
+  const s = JSON.stringify(result, null, 2);
+  return s.length > 300 ? s.slice(0, 300) + '...' : s;
+}
+
 export function LogPanel({ logs, scrollOffset = 0, visibleCount = 5, focused = false }) {
   if (!logs || logs.length === 0) {
     return (
@@ -20,7 +25,7 @@ export function LogPanel({ logs, scrollOffset = 0, visibleCount = 5, focused = f
   }
 
   const total = logs.length;
-  const end = total - scrollOffset;
+  const end = Math.max(0, total - scrollOffset);
   const start = Math.max(0, end - visibleCount);
   const visible = logs.slice(start, end);
 
@@ -35,9 +40,7 @@ export function LogPanel({ logs, scrollOffset = 0, visibleCount = 5, focused = f
           <Text color={DEPT_COLOR[entry.dept] ?? 'white'} bold>
             [{entry.dept}] {entry.timestamp}
           </Text>
-          <Text color="gray" wrap="wrap">
-            {(() => { const s = JSON.stringify(entry.result, null, 2); return s.length > 300 ? s.slice(0, 300) + '...' : s; })()}
-          </Text>
+          <Text color="gray" wrap="wrap">{formatResult(entry.result)}</Text>
         </Box>
       ))}
     </Box>

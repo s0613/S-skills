@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Text, useInput } from 'ink';
 
-export function CmdBar({ onSubmit, disabled, focused = false, commandHistory = [] }) {
+export function CmdBar({ onSubmit, disabled, focused = false, commandHistory = [], onInputChange }) {
   const [input, setInput] = useState('');
   const [histIdx, setHistIdx] = useState(-1);
+
+  useEffect(() => {
+    onInputChange?.(input);
+  }, [input, onInputChange]);
 
   useInput((char, key) => {
     if (disabled) return;

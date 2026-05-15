@@ -39,6 +39,9 @@ export function App({ project: initialProject }) {
   // 도움말 오버레이
   const [showHelp, setShowHelp] = useState(false);
 
+  // CmdBar input 추적 (? 단축키 가드)
+  const cmdInputRef = useRef('');
+
   const addMessage = useCallback((role, content) => {
     setMessages(prev => [...prev, { role, content }]);
     setChatScrollOffset(0); // 새 메시지 → 자동 최하단
@@ -51,8 +54,8 @@ export function App({ project: initialProject }) {
       return;
     }
 
-    // ? — 도움말 토글
-    if (char === '?') {
+    // ? — 도움말 토글 (입력창이 비어있을 때만)
+    if (char === '?' && cmdInputRef.current === '') {
       setShowHelp(prev => !prev);
       return;
     }
@@ -252,6 +255,7 @@ export function App({ project: initialProject }) {
         disabled={busy}
         focused={focusPanel === 'chat'}
         commandHistory={commandHistory}
+        onInputChange={val => { cmdInputRef.current = val; }}
       />
     </Box>
   );

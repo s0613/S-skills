@@ -15,11 +15,10 @@ function callAgent(dept, task, context = '') {
       '--tools', '',
       '--model', 'sonnet',
       '--output-format', 'json',
-      '--bare',
       '--no-session-persistence',
     ];
 
-    const proc = spawn('claude', args);
+    const proc = spawn('claude', args, { stdio: ['ignore', 'pipe', 'pipe'] });
     let stdout = '';
     let stderr = '';
 

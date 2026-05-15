@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "start": "node src/index.jsx",
+    "start": "node --import tsx/esm src/index.jsx",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "dependencies": {
@@ -12,7 +12,8 @@
     "react": "^18.3.1"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "tsx": "^4.22.0"
   },
   "jest": {
     "testEnvironment": "node",
