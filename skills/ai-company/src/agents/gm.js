@@ -1,5 +1,21 @@
 import { spawn } from 'child_process';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
 import { DEPT_PROMPTS } from './prompts.js';
+
+const DESIGN_MD_BASE = '/Users/songseungju/awesome-design-md/design-md';
+
+function loadDesignRef(brand) {
+  if (!brand) return '';
+  const path = join(DESIGN_MD_BASE, brand, 'DESIGN.md');
+  if (!existsSync(path)) return '';
+  try {
+    const content = readFileSync(path, 'utf8');
+    return `\n\n=== DESIGN REFERENCE: ${brand} ===\n${content.slice(0, 8000)}\n=== END DESIGN REFERENCE ===`;
+  } catch {
+    return '';
+  }
+}
 
 const VALID_DEPTS = new Set(['PM', 'Dev', 'Design', 'QA']);
 const MAX_CONTEXT_CHARS = 20000;
@@ -135,7 +151,8 @@ export async function orchestrate({ userMessage, projectContext, onUpdate, onReq
               }
             }
           }
-          const deptResult = await callAgent(dept, task, sharedContext);
+          const designContext = sharedContext + (dept === 'Design' ? loadDesignRef(step.design_ref) : '');
+          const deptResult = await callAgent(dept, task, designContext);
           results[dept] = deptResult.result;
           await onUpdate({
             dept,
@@ -150,7 +167,7 @@ export async function orchestrate({ userMessage, projectContext, onUpdate, onReq
       sharedContext = groupResults.join('\n---\n');
     } else {
       // 순차 실행
-      const { dept, task, budget: stepBudget } = group[0];
+      const { dept, task, budget: stepBudget, design_ref } = group[0];
 
       if (currentBudget && onRequestApproval) {
         const deptBudget = currentBudget[dept];
@@ -168,7 +185,8 @@ export async function orchestrate({ userMessage, projectContext, onUpdate, onReq
       }
 
       await onUpdate({ dept, status: 'in_progress', message: `${dept} 작업 시작...` });
-      const deptResult = await callAgent(dept, task, sharedContext);
+      const designContext = sharedContext + (dept === 'Design' ? loadDesignRef(design_ref) : '');
+      const deptResult = await callAgent(dept, task, designContext);
       results[dept] = deptResult.result;
       sharedContext = deptResult.raw;
       await onUpdate({
