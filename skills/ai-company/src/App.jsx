@@ -6,6 +6,7 @@ import { DeptTable } from './components/DeptTable.jsx';
 import { BudgetBar } from './components/BudgetBar.jsx';
 import { CmdBar } from './components/CmdBar.jsx';
 import { LogPanel } from './components/LogPanel.jsx';
+import { ProjectSelect } from './components/ProjectSelect.jsx';
 import { orchestrate } from './agents/gm.js';
 import { StateManager } from './state/manager.js';
 
@@ -14,6 +15,7 @@ const stateManager = new StateManager();
 export function App({ project: initialProject }) {
   const { exit } = useApp();
   const [project, setProject] = useState(initialProject || '');
+  const [screen, setScreen] = useState(initialProject ? 'main' : 'select');
   const [messages, setMessages] = useState([
     { role: 'GM', content: `안녕하세요. 프로젝트명을 입력하거나 바로 작업을 요청해주세요.` }
   ]);
@@ -32,33 +34,35 @@ export function App({ project: initialProject }) {
     if (key.ctrl && char === 'l') setShowLog(prev => !prev);
   });
 
+  const handleProjectSelect = useCallback(async (name) => {
+    setProject(name);
+    const state = await stateManager.loadState(name);
+    const bgt = await stateManager.loadBudget(name);
+    setDepts(state.departments);
+    setBudget(bgt);
+    if (state.phase !== 'idle' && state.active_task) {
+      setMessages(prev => [...prev, {
+        role: 'GM',
+        content: `'${name}' 프로젝트의 진행 중인 작업을 발견했습니다: ${state.active_task}. 이어서 진행할까요? (y/n)`
+      }]);
+    } else {
+      setMessages(prev => [...prev, {
+        role: 'GM',
+        content: `'${name}' 프로젝트를 시작합니다. 무엇을 도와드릴까요?`
+      }]);
+    }
+    setScreen('main');
+  }, []);
+
   const handleCommand = useCallback(async (cmd) => {
     if (cmd === 'q' || cmd === ':q') { exit(); return; }
-
-    // 프로젝트 미설정 시 첫 입력을 프로젝트명으로
-    let currentProject = project;
-    if (!currentProject) {
-      currentProject = cmd;
-      setProject(cmd);
-      const state = await stateManager.loadState(cmd);
-      const bgt = await stateManager.loadBudget(cmd);
-      setDepts(state.departments);
-      setBudget(bgt);
-
-      if (state.phase !== 'idle' && state.active_task) {
-        addMessage('GM', `'${cmd}' 프로젝트의 진행 중인 작업을 발견했습니다: ${state.active_task}. 이어서 진행할까요? (y/n)`);
-      } else {
-        addMessage('GM', `'${cmd}' 프로젝트를 시작합니다. 무엇을 도와드릴까요?`);
-      }
-      return;
-    }
 
     addMessage('user', cmd);
     setBusy(true);
 
     try {
-      const state = await stateManager.loadState(currentProject);
-      await stateManager.saveState(currentProject, { active_task: cmd, phase: 'planning' });
+      const state = await stateManager.loadState(project);
+      await stateManager.saveState(project, { active_task: cmd, phase: 'planning' });
 
       await orchestrate({
         userMessage: cmd,
@@ -82,16 +86,16 @@ export function App({ project: initialProject }) {
           }
 
           if (tokensUsed && dept) {
-            const newBudget = await stateManager.consumeBudget(currentProject, dept, tokensUsed);
+            const newBudget = await stateManager.consumeBudget(project, dept, tokensUsed);
             setBudget(newBudget);
           }
 
           if (plan) {
             const total = plan.reduce((s, p) => s + (p.budget || 0), 0);
-            await stateManager.setBudget(currentProject, Object.fromEntries(
+            await stateManager.setBudget(project, Object.fromEntries(
               plan.map(p => [p.dept, p.budget || 8000])
             ));
-            const newBudget = await stateManager.loadBudget(currentProject);
+            const newBudget = await stateManager.loadBudget(project);
             setBudget(newBudget);
 
             const initDepts = {};
@@ -103,13 +107,17 @@ export function App({ project: initialProject }) {
         },
       });
 
-      await stateManager.saveState(currentProject, { phase: 'idle', active_task: null });
+      await stateManager.saveState(project, { phase: 'idle', active_task: null });
     } catch (err) {
       addMessage('system', `오류 발생: ${err.message}`);
     }
 
     setBusy(false);
   }, [project, exit]);
+
+  if (screen === 'select') {
+    return <ProjectSelect stateManager={stateManager} onSelect={handleProjectSelect} />;
+  }
 
   return (
     <Box flexDirection="column" height="100%">
