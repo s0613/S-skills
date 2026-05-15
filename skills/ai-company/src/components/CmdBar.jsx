@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 
-export function CmdBar({ onSubmit, disabled }) {
+export function CmdBar({ onSubmit, disabled, focused = false }) {
   const [input, setInput] = useState('');
 
   useInput((char, key) => {
@@ -18,11 +18,11 @@ export function CmdBar({ onSubmit, disabled }) {
 
   return (
     <Box borderStyle="single" paddingX={1}>
-      <Text color="cyan">{'> '}</Text>
+      <Text color="cyan" bold={focused}>{'> '}</Text>
       <Text>{input}</Text>
       <Text color="gray">_</Text>
       <Box flexGrow={1} />
-      <Text color="gray">[Tab] 패널전환  [Q] 종료</Text>
+      <Text color="gray">↑↓스크롤  Tab포커스  Ctrl+K초기화  ?도움말  q종료</Text>
     </Box>
   );
 }
