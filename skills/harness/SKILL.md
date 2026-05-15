@@ -86,6 +86,11 @@ if [ -d "docs/test-scenarios" ]; then
   fi
 fi
 
+# ── sj-company 상태 ──
+_SJ_STAGE=$(cat "docs/sj-company/.state/stage.txt" 2>/dev/null | tr -d '[:space:]')
+_SJ_STAGE="${_SJ_STAGE:-none}"
+_SJ_TASK=$(cat "docs/sj-company/.state/task.txt" 2>/dev/null)
+
 echo "HAS_DOCS: $_HAS_DOCS"
 echo "DOC_SCORE: $_DOC_SCORE"
 echo "HAS_SCENARIOS: $_HAS_SCENARIOS"
@@ -93,6 +98,8 @@ echo "TS_CYCLE: $_TS_CYCLE"
 echo "TS_PASS_RATE: $_TS_PASS_RATE%"
 echo "TS_STATUS: $_TS_STATUS"
 echo "SCENARIO_COUNT: ${_SCENARIO_COUNT:-0}"
+echo "SJ_STAGE: $_SJ_STAGE"
+echo "SJ_TASK: ${_SJ_TASK:-없음}"
 
 # ── 버전 확인 (best-effort, 3초 제한) ──
 _SS_LOCAL_VER=$(find ~/.claude/plugins/cache/s-skills -name "VERSION" -maxdepth 6 2>/dev/null \
@@ -117,6 +124,8 @@ fi
 
 Preamble 결과를 바탕으로 아래 순서로 판단한다.
 
+> **판단 우선순위:** Case 0 → Case 5 → Case 1 → Case 2 → Case 3 → Case 4
+
 ### Case 0: 업그레이드 가능 (`UPGRADE_AVAILABLE` 감지 시)
 
 다른 케이스보다 **먼저** 처리. AskUserQuestion:
@@ -138,6 +147,32 @@ git -C /Users/songseungju/S-skills pull origin main
 실행 완료 후: "업그레이드 완료. `/s-skills`를 다시 호출하면 새 버전으로 시작됩니다."
 
 B 선택 시: 바로 Case 1 판단으로 이동.
+
+---
+
+### Case 5: sj-company 진행 중 (`SJ_STAGE` = `pm` | `design` | `dev`)
+
+Case 0 다음으로 **먼저** 확인. sj-company 파이프라인이 중단된 상태이면 이 케이스를 처리한다.
+
+AskUserQuestion:
+
+```
+SJ Company 파이프라인이 진행 중입니다.
+현재 스테이지: {SJ_STAGE}
+태스크: {SJ_TASK}
+```
+
+옵션:
+- A) 이어서 진행 (추천) → `Skill("s-skills:sj-company")` 호출
+- B) 새 태스크 시작 → stage.txt / task.txt 초기화 후 `Skill("s-skills:sj-company")` 호출
+- C) 무시하고 다른 작업 → Case 1 판단으로 이동
+
+B 선택 시:
+
+```bash
+echo "none" > docs/sj-company/.state/stage.txt
+echo "" > docs/sj-company/.state/task.txt
+```
 
 ---
 
@@ -166,8 +201,9 @@ docs/가 있습니다. (점수: {DOC_SCORE}/100)
 
 옵션:
 - A) test-scenario generate 시작 (추천) → Skill 도구로 `s-skills:test-scenario` 호출
-- B) docs-organize 재실행 (문서 업데이트) → Skill 도구로 `s-skills:docs-organize` 호출
-- C) 현황만 보기 → 현재 상태 요약 출력 후 종료
+- B) sj-company 투입 (개발 작업) → Skill 도구로 `s-skills:sj-company` 호출
+- C) docs-organize 재실행 (문서 업데이트) → Skill 도구로 `s-skills:docs-organize` 호출
+- D) 현황만 보기 → 현재 상태 요약 출력 후 종료
 
 ### Case 3: 시나리오 진행 중 (`TS_STATUS=GENERATED` 또는 `IN_PROGRESS`)
 
@@ -217,9 +253,10 @@ echo "threshold" > docs/test-scenarios/.state/pending-mode.txt
 AskUserQuestion:
 
 옵션:
-- A) docs-organize 재실행 (최신 상태 반영) → Skill 도구로 `s-skills:docs-organize` 호출
+- A) sj-company 투입 (개발 작업) → Skill 도구로 `s-skills:sj-company` 호출
 - B) test-scenario 새 사이클 시작 → pending-mode 기록 후 Skill 도구로 `s-skills:test-scenario` 호출
-- C) 종료
+- C) docs-organize 재실행 (최신 상태 반영) → Skill 도구로 `s-skills:docs-organize` 호출
+- D) 종료
 
 B 선택 시 Skill 호출 전:
 
@@ -269,5 +306,6 @@ S-skills 상태 요약
 ──────────────────
 문서      : {HAS_DOCS}  (점수: {DOC_SCORE}/100)
 시나리오  : {TS_STATUS} (사이클: {TS_CYCLE}, 통과율: {TS_PASS_RATE}%)
+SJ Company: {SJ_STAGE}  (태스크: {SJ_TASK})
 다음 추천 : {다음 액션 한 줄}
 ```
