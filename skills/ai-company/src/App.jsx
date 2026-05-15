@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Box, useApp, useInput } from 'ink';
 import { Header } from './components/Header.jsx';
 import { ChatPanel } from './components/ChatPanel.jsx';
@@ -22,6 +22,8 @@ export function App({ project: initialProject }) {
   const [departments, setDepts] = useState(null);
   const [budget, setBudget] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [awaitingApproval, setAwaitingApproval] = useState(false);
+  const approvalResolver = useRef(null);
   const [showLog, setShowLog] = useState(false);
   const [logs, setLogs] = useState([]);
   const [startTime] = useState(Date.now());
@@ -54,7 +56,27 @@ export function App({ project: initialProject }) {
     setScreen('main');
   }, []);
 
+  const requestApproval = useCallback((dept, needed, remaining) => {
+    const fmt = n => n >= 1000 ? `${Math.round(n / 1000)}k` : String(n);
+    addMessage('system',
+      `⚠️ ${dept} 예산 초과: ${fmt(needed)} 토큰 필요, ${fmt(remaining)} 남음. 계속할까요? (y / n)`
+    );
+    setAwaitingApproval(true);
+    return new Promise(resolve => {
+      approvalResolver.current = resolve;
+    });
+  }, []);
+
   const handleCommand = useCallback(async (cmd) => {
+    if (awaitingApproval) {
+      setAwaitingApproval(false);
+      const approved = cmd.toLowerCase() === 'y' || cmd.toLowerCase() === 'yes';
+      approvalResolver.current?.(approved);
+      approvalResolver.current = null;
+      addMessage('system', approved ? '승인됨. 계속 진행합니다.' : '거부됨. 해당 부서 작업을 건너뜁니다.');
+      return;
+    }
+
     if (cmd === 'q' || cmd === ':q') { exit(); return; }
 
     addMessage('user', cmd);
@@ -67,6 +89,8 @@ export function App({ project: initialProject }) {
       await orchestrate({
         userMessage: cmd,
         projectContext: state,
+        currentBudget: budget,
+        onRequestApproval: requestApproval,
         onUpdate: async ({ dept, status, message, tokensUsed, plan, result }) => {
           addMessage(dept || 'GM', message);
 
@@ -113,7 +137,7 @@ export function App({ project: initialProject }) {
     }
 
     setBusy(false);
-  }, [project, exit]);
+  }, [project, exit, awaitingApproval, requestApproval, budget]);
 
   if (screen === 'select') {
     return <ProjectSelect stateManager={stateManager} onSelect={handleProjectSelect} />;

@@ -23,7 +23,7 @@ async function callAgent(dept, task, budgetTokens, context = '') {
   }
 }
 
-export async function orchestrate({ userMessage, projectContext, onUpdate }) {
+export async function orchestrate({ userMessage, projectContext, onUpdate, onRequestApproval, currentBudget }) {
   // 1. GM이 작업 분석 + 계획 수립
   onUpdate({ dept: 'GM', status: 'in_progress', message: '요청 분석 중...' });
 
@@ -72,6 +72,21 @@ export async function orchestrate({ userMessage, projectContext, onUpdate }) {
       }
       const groupResults = await Promise.all(
         group.map(async ({ dept, task, budget: stepBudget }) => {
+          // 예산 초과 체크 (병렬)
+          if (currentBudget && onRequestApproval) {
+            const deptBudget = currentBudget[dept];
+            if (deptBudget) {
+              const needed = stepBudget || 8000;
+              const remaining = deptBudget.allocated - deptBudget.used;
+              if (needed > remaining) {
+                const approved = await onRequestApproval(dept, needed, remaining);
+                if (!approved) {
+                  onUpdate({ dept, status: 'failed', message: `${dept} 작업 취소됨 (예산 초과 거부)` });
+                  return '';
+                }
+              }
+            }
+          }
           const deptResult = await callAgent(dept, task, stepBudget || 8000, sharedContext);
           results[dept] = deptResult.result;
           onUpdate({
@@ -88,6 +103,23 @@ export async function orchestrate({ userMessage, projectContext, onUpdate }) {
     } else {
       // 순차 실행
       const { dept, task, budget: stepBudget } = group[0];
+
+      // 예산 초과 체크
+      if (currentBudget && onRequestApproval) {
+        const deptBudget = currentBudget[dept];
+        if (deptBudget) {
+          const needed = stepBudget || 8000;
+          const remaining = deptBudget.allocated - deptBudget.used;
+          if (needed > remaining) {
+            const approved = await onRequestApproval(dept, needed, remaining);
+            if (!approved) {
+              onUpdate({ dept, status: 'failed', message: `${dept} 작업 취소됨 (예산 초과 거부)` });
+              continue;
+            }
+          }
+        }
+      }
+
       onUpdate({ dept, status: 'in_progress', message: `${dept} 작업 시작...` });
       const deptResult = await callAgent(dept, task, stepBudget || 8000, sharedContext);
       results[dept] = deptResult.result;
