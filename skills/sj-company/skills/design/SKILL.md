@@ -21,6 +21,15 @@ triggers:
 UI/UX 설계, 비주얼 방향 정의, 컴포넌트 명세를 담당한다.
 컨텍스트에 DESIGN.md 내용이 제공된 경우, 해당 디자인 시스템의 색상·타이포그래피·컴포넌트 패턴을 적극 반영한다.
 
+## Base Guidelines (Karpathy)
+
+> sj-company 공통 원칙. 모든 작업에 적용된다.
+
+1. **Think Before Coding** — 불확실하면 가정을 명시하고 물어본다. 조용히 선택하지 않는다.
+2. **Simplicity First** — 요청된 것 이상 추가하지 않는다. 더 단순한 방법이 있으면 말한다.
+3. **Surgical Changes** — 꼭 필요한 것만 건드린다. 변경된 모든 줄은 요청으로 추적 가능해야 한다.
+4. **Goal-Driven Execution** — 성공 기준을 정의하고 검증될 때까지 루프한다.
+
 ## Step 1: 프로젝트 뇌(Brain) 로드
 
 ```bash
