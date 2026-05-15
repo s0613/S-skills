@@ -104,6 +104,7 @@ if [ -d "docs/pw-loop" ]; then
   if [ "$_PW_CYCLE" -gt 0 ]; then
     _PW_RATE_RAW=$(python3 -c "import json; d=json.load(open('docs/pw-loop/reports/cycle-${_PW_CYCLE}-summary.json')); print(d.get('rate',0))" 2>/dev/null || echo 0)
     _PW_RATE="${_PW_RATE_RAW:-0}"
+    case "$_PW_RATE" in ''|*[!0-9]*) _PW_RATE=0 ;; esac
 
     if [ "$_PW_RATE" -ge "$_PW_THRESHOLD" ]; then
       _PW_STATUS="COMPLETE"
@@ -237,7 +238,7 @@ AskUserQuestion으로 확인:
 - B) test-scenario 바로 시작 → ⚠️ 경고: docs/ 없이 시작하면 일부 기능이 제한됩니다. 계속 진행합니다. Case 3으로 이동
 - C) 현황만 보기 → 현재 상태 요약 출력 후 종료
 
-### Case 2: 문서 있음, 시나리오 미시작 (`HAS_DOCS=yes`, `TS_STATUS=NOT_STARTED`, `PW_STATUS=NOT_STARTED`)
+### Case 2: 문서 있음, 테스트 미시작 (`HAS_DOCS=yes` AND `TS_STATUS=NOT_STARTED` AND `PW_STATUS=NOT_STARTED`)
 
 AskUserQuestion:
 

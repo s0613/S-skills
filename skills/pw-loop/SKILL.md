@@ -1,6 +1,6 @@
 ---
 name: pw-loop
-version: 1.0.0
+version: 1.1.0
 description: |
   Playwright 테스트를 자동 생성·실행·수정하는 반복 루프 스킬.
   spec 파일 생성 → npx playwright test 실행 → 실패 분석 → sj-dev 수정 →
@@ -41,7 +41,9 @@ mkdir -p "$_STATE_DIR" "$_PW_DIR/reports"
 
 # 상태 읽기
 _CYCLE=$(cat "$_STATE_DIR/cycle.txt" 2>/dev/null || echo "0")
+case "$_CYCLE" in ''|*[!0-9]*) _CYCLE=0 ;; esac
 _THRESHOLD=$(cat "$_STATE_DIR/threshold.txt" 2>/dev/null || echo "80")
+case "$_THRESHOLD" in ''|*[!0-9]*) _THRESHOLD=80 ;; esac
 _DATE=$(date +%Y-%m-%d)
 
 # Playwright 설치 여부
@@ -52,21 +54,22 @@ fi
 
 # playwright.config 탐색 → testDir 확인
 _PW_CONFIG=$(ls playwright.config.ts playwright.config.js playwright.config.mts 2>/dev/null | head -1)
-_TEST_DIR="tests/e2e"
+_TEST_DIR=$(cat "$_STATE_DIR/test-dir.txt" 2>/dev/null || echo "tests/e2e")
 if [ -n "$_PW_CONFIG" ]; then
   _TEST_DIR_RAW=$(grep -oE "testDir:\s*['\"]([^'\"]+)['\"]" "$_PW_CONFIG" 2>/dev/null | grep -oE "['\"][^'\"]+['\"]" | tr -d "'\"" | head -1)
   [ -n "$_TEST_DIR_RAW" ] && _TEST_DIR="$_TEST_DIR_RAW"
 fi
 
-# 현재 사이클 통계 (JSON report가 있으면 파싱)
+# 현재 사이클 통계 (summary.json이 있으면 파싱)
 _LAST_REPORT="$_PW_DIR/reports/cycle-${_CYCLE}-summary.json"
 _C_PASS=0; _C_FAIL=0; _C_TOTAL=0; _C_RATE=0
 if [ -f "$_LAST_REPORT" ] && [ "$_CYCLE" -gt 0 ]; then
-  _C_PASS=$(python3 -c "import json,sys; d=json.load(open('$_LAST_REPORT')); print(d.get('passed',0))" 2>/dev/null || echo 0)
-  _C_FAIL=$(python3 -c "import json,sys; d=json.load(open('$_LAST_REPORT')); print(d.get('failed',0))" 2>/dev/null || echo 0)
+  _C_PASS=$(python3 -c "import json; d=json.load(open('$_LAST_REPORT')); print(d.get('passed',0))" 2>/dev/null || echo 0)
+  _C_FAIL=$(python3 -c "import json; d=json.load(open('$_LAST_REPORT')); print(d.get('failed',0))" 2>/dev/null || echo 0)
   _C_TOTAL=$(( _C_PASS + _C_FAIL ))
   [ "$_C_TOTAL" -gt 0 ] && _C_RATE=$(( (_C_PASS * 100) / _C_TOTAL )) || _C_RATE=0
 fi
+case "$_C_RATE" in ''|*[!0-9]*) _C_RATE=0 ;; esac
 
 # pending-mode (harness 라우팅용)
 _PENDING_MODE=$(cat "$_STATE_DIR/pending-mode.txt" 2>/dev/null | tr -d ' ')
@@ -115,7 +118,6 @@ E) 목표 통과율 변경 (현재: {THRESHOLD}%)
 `PW_INSTALLED: no`이면:
 
 ```bash
-# Playwright 설치 여부 확인
 cat package.json 2>/dev/null | grep -E '"playwright|@playwright'
 ```
 
@@ -135,9 +137,21 @@ Playwright가 설치되어 있지 않습니다.
 ### Step 1: 사이클 번호 증가
 
 ```bash
+_CYCLE=$(cat docs/pw-loop/.state/cycle.txt 2>/dev/null || echo "0")
+case "$_CYCLE" in ''|*[!0-9]*) _CYCLE=0 ;; esac
 _NEXT_CYCLE=$(( _CYCLE + 1 ))
 echo "$_NEXT_CYCLE" > docs/pw-loop/.state/cycle.txt
+
+# testDir 확정 후 파일에 저장 (Fix 모드에서 재사용)
+_TEST_DIR=$(cat docs/pw-loop/.state/test-dir.txt 2>/dev/null || echo "tests/e2e")
+_PW_CONFIG=$(ls playwright.config.ts playwright.config.js playwright.config.mts 2>/dev/null | head -1)
+if [ -n "$_PW_CONFIG" ]; then
+  _TEST_DIR_RAW=$(grep -oE "testDir:\s*['\"]([^'\"]+)['\"]" "$_PW_CONFIG" 2>/dev/null | grep -oE "['\"][^'\"]+['\"]" | tr -d "'\"" | head -1)
+  [ -n "$_TEST_DIR_RAW" ] && _TEST_DIR="$_TEST_DIR_RAW"
+fi
+echo "$_TEST_DIR" > docs/pw-loop/.state/test-dir.txt
 mkdir -p "$_TEST_DIR"
+echo "NEXT_CYCLE: $_NEXT_CYCLE | TEST_DIR: $_TEST_DIR"
 ```
 
 ### Step 2: 기능 목록 수집
@@ -149,7 +163,6 @@ mkdir -p "$_TEST_DIR"
 4. 라우트/컴포넌트 직접 탐색
 
 ```bash
-# 라우트 탐색 (Next.js / React Router / Express)
 find . -maxdepth 5 \
   \( -path "*/pages/*.tsx" -o -path "*/pages/*.jsx" \
      -o -path "*/app/*/page.tsx" -o -path "*/routes/*.ts" \) \
@@ -172,7 +185,7 @@ Cycle N — 테스트 대상 기능 목록
   3. 비밀번호 찾기  [FAIL — Cycle N-1]
 
 안정 (연속 PASS, 스킵 가능):
-  4. 메인 페이지  [PASS × 2]
+  4. 메인 페이지  [PASS x 2]
 
 제외할 항목이 있으면 말씀해주세요.
 ```
@@ -182,19 +195,17 @@ Cycle N — 테스트 대상 기능 목록
 ### Step 3: Base URL 확인
 
 ```bash
-# 개발 서버 포트 추정
 grep -r "port\|PORT\|localhost" next.config* vite.config* package.json 2>/dev/null | grep -oE '[0-9]{4}' | head -5
 cat playwright.config.ts 2>/dev/null | grep "baseURL"
+cat docs/pw-loop/.state/base-url.txt 2>/dev/null
 ```
 
-`docs/pw-loop/.state/base-url.txt`가 없으면 AskUserQuestion:
-```
-테스트할 앱의 base URL을 입력하세요.
-```
-기본값: `http://localhost:3000`
+`docs/pw-loop/.state/base-url.txt`가 없으면 AskUserQuestion으로 URL을 입력받아 저장:
 
 ```bash
-echo "{base_url}" > docs/pw-loop/.state/base-url.txt
+# AskUserQuestion에서 받은 URL을 _INPUT_URL 변수에 담아 저장
+# 기본값: http://localhost:3000
+echo "${_INPUT_URL:-http://localhost:3000}" > docs/pw-loop/.state/base-url.txt
 ```
 
 ### Step 4: spec 파일 생성
@@ -207,41 +218,34 @@ echo "{base_url}" > docs/pw-loop/.state/base-url.txt
 - 각 기능당 happy path + 최소 1개 edge case
 - `test.describe` 블록으로 묶기
 
+코드 참조가 필요하면 실제 소스 파일을 읽어 정확한 텍스트/역할 확인:
+
+```bash
+grep -r "placeholder\|aria-label\|htmlFor\|<label\|<button\|<Link" \
+  src/ app/ pages/ components/ 2>/dev/null \
+  --include="*.tsx" --include="*.jsx" | head -30
+```
+
 **파일 포맷:**
 
 ```typescript
 import { test, expect } from '@playwright/test';
 
 test.describe('{기능명}', () => {
-  // Happy path
   test('{기능}: {성공 시나리오}', async ({ page }) => {
     await page.goto('{URL}');
-
-    // 단계별 액션
     await page.getByLabel('{레이블}').fill('{값}');
     await page.getByRole('button', { name: '{버튼명}' }).click();
-
-    // 검증
     await expect(page).toHaveURL('{예상 URL}');
     await expect(page.getByText('{기대 텍스트}')).toBeVisible();
   });
 
-  // Edge case
   test('{기능}: {실패 시나리오}', async ({ page }) => {
     await page.goto('{URL}');
     // ...
     await expect(page.getByRole('alert')).toContainText('{에러 메시지}');
   });
 });
-```
-
-코드 참조가 필요하면 실제 소스 파일을 읽어 정확한 텍스트/역할 확인:
-
-```bash
-# 컴포넌트에서 실제 레이블/버튼 텍스트 확인
-grep -r "placeholder\|aria-label\|htmlFor\|<label\|<button\|<Link" \
-  src/ app/ pages/ components/ 2>/dev/null \
-  --include="*.tsx" --include="*.jsx" | head -30
 ```
 
 ### Step 5: playwright.config 확인 및 보정
@@ -264,12 +268,12 @@ use: {
 ```
 Cycle N spec 생성 완료.
 
-📋 생성/업데이트:
+생성/업데이트:
    신규: {기능 목록}
    재테스트: {기능 목록}
    스킵: {기능 목록}
 
-📁 {TEST_DIR}/
+{TEST_DIR}/
    {feature1}.spec.ts
    {feature2}.spec.ts
 
@@ -286,10 +290,11 @@ Generate 완료 후 자동으로 **Run 모드** 진입.
 
 ```bash
 _BASE_URL=$(cat docs/pw-loop/.state/base-url.txt 2>/dev/null || echo "http://localhost:3000")
-curl -s --connect-timeout 3 "$_BASE_URL" -o /dev/null -w "%{http_code}" || echo "UNREACHABLE"
+_HTTP_CODE=$(curl -s --connect-timeout 3 "$_BASE_URL" -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
+echo "SERVER_STATUS: $_HTTP_CODE (${_BASE_URL})"
 ```
 
-서버 응답 없으면 AskUserQuestion:
+`_HTTP_CODE`가 `000`이면 AskUserQuestion:
 ```
 개발 서버({BASE_URL})에 접근할 수 없습니다.
 서버를 먼저 실행해주세요. (예: npm run dev)
@@ -301,67 +306,60 @@ curl -s --connect-timeout 3 "$_BASE_URL" -o /dev/null -w "%{http_code}" || echo 
 
 ```bash
 _CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
-_REPORT_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-raw.json"
+_RAW_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-raw.json"
+_ARTIFACT_DIR="docs/pw-loop/reports/cycle-${_CYCLE}-artifacts"
 
+# stderr 분리하여 JSON stdout만 캡처
 npx playwright test \
   --reporter=json \
-  --output="docs/pw-loop/reports/cycle-${_CYCLE}-artifacts" \
-  2>&1 | tee "$_REPORT_FILE.tmp"
+  --output="$_ARTIFACT_DIR" \
+  2>/tmp/pw-loop-stderr.log > "$_RAW_FILE" || true
 
-# JSON 부분만 추출
-python3 -c "
-import sys, json
-content = open('$_REPORT_FILE.tmp').read()
-# playwright JSON reporter는 전체 출력이 JSON
-try:
-    data = json.loads(content)
-    json.dump(data, open('$_REPORT_FILE', 'w'), indent=2, ensure_ascii=False)
-    print('JSON_SAVED')
-except:
-    # 마지막 JSON 블록 찾기
-    lines = content.split('\n')
-    for i, line in enumerate(lines):
-        try:
-            data = json.loads('\n'.join(lines[i:]))
-            json.dump(data, open('$_REPORT_FILE', 'w'), indent=2, ensure_ascii=False)
-            print('JSON_SAVED')
-            break
-        except:
-            continue
-" 2>/dev/null || echo "JSON_PARSE_FAILED"
+echo "EXIT_CODE: $?"
+echo "STDERR_LINES: $(wc -l < /tmp/pw-loop-stderr.log 2>/dev/null || echo 0)"
 ```
 
 ### Step 3: 결과 파싱
 
 ```bash
-python3 - <<'EOF'
+_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
+_RAW_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-raw.json"
+_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+_DATE=$(date +%Y-%m-%d)
+
+python3 - <<EOF
 import json, sys
 
 try:
-    data = json.load(open('$_REPORT_FILE'))
-except:
-    print("PARSE_ERROR: raw output을 확인하세요")
+    data = json.load(open('${_RAW_FILE}'))
+except Exception as e:
+    print(f"PARSE_ERROR: {e}")
+    print("STDERR:", open('/tmp/pw-loop-stderr.log').read()[:500])
     sys.exit(1)
 
-suites = data.get('suites', [])
 passed = []
 failed = []
 
 def collect(suite, path=""):
-    title = path + "/" + suite.get('title', '') if path else suite.get('title', '')
+    title = (path + "/" + suite.get('title', '')) if path else suite.get('title', '')
     for spec in suite.get('specs', []):
         for test in spec.get('tests', []):
-            status = test.get('results', [{}])[-1].get('status', 'unknown')
+            result = (test.get('results') or [{}])[-1]
+            status = result.get('status', 'unknown')
             name = title + " > " + spec.get('title', '')
             if status == 'passed':
                 passed.append(name)
             else:
-                error = test.get('results', [{}])[-1].get('error', {})
-                failed.append({'name': name, 'error': error.get('message', ''), 'snippet': error.get('snippet', '')})
+                err = result.get('error') or {}
+                failed.append({
+                    'name': name,
+                    'error': err.get('message', ''),
+                    'snippet': err.get('snippet', '')
+                })
     for child in suite.get('suites', []):
         collect(child, title)
 
-for s in suites:
+for s in data.get('suites', []):
     collect(s)
 
 total = len(passed) + len(failed)
@@ -373,22 +371,22 @@ print(f"FAIL: {len(failed)}")
 print(f"RATE: {rate}%")
 
 if failed:
-    print("\n--- FAILED TESTS ---")
+    print("")
     for f in failed:
         print(f"[FAIL] {f['name']}")
-        print(f"  Error: {f['error'][:200]}")
+        if f['error']:
+            print(f"  Error: {f['error'][:200]}")
 
-# summary.json 저장
 summary = {
     'cycle': int(open('docs/pw-loop/.state/cycle.txt').read().strip()),
-    'date': '$_DATE',
+    'date': '${_DATE}',
     'passed': len(passed),
     'failed': len(failed),
     'total': total,
     'rate': rate,
     'failed_tests': failed
 }
-json.dump(summary, open('docs/pw-loop/reports/cycle-${_CYCLE}-summary.json', 'w'), indent=2, ensure_ascii=False)
+json.dump(summary, open('${_SUMMARY_FILE}', 'w'), indent=2, ensure_ascii=False)
 print("SUMMARY_SAVED")
 EOF
 ```
@@ -396,7 +394,11 @@ EOF
 ### Step 4: 게이트 체크
 
 ```bash
-_RATE=$(python3 -c "import json; d=json.load(open('docs/pw-loop/reports/cycle-${_CYCLE}-summary.json')); print(d['rate'])" 2>/dev/null || echo 0)
+_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
+_THRESHOLD=$(cat docs/pw-loop/.state/threshold.txt 2>/dev/null || echo "80")
+_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+_RATE=$(python3 -c "import json; d=json.load(open('${_SUMMARY_FILE}')); print(d['rate'])" 2>/dev/null || echo 0)
+case "$_RATE" in ''|*[!0-9]*) _RATE=0 ;; esac
 
 if [ "$_RATE" -ge "$_THRESHOLD" ]; then
   echo "GATE: PASS — ${_RATE}% >= ${_THRESHOLD}%"
@@ -419,60 +421,61 @@ fi
 
 ```bash
 _CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
+_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+
 python3 -c "
 import json
-d = json.load(open('docs/pw-loop/reports/cycle-${_CYCLE}-summary.json'))
+d = json.load(open('${_SUMMARY_FILE}'))
 for f in d.get('failed_tests', []):
     print('=== FAILED:', f['name'])
-    print('Error:', f['error'])
-    print('Snippet:', f.get('snippet', '')[:500])
+    print('Error:', f['error'][:400])
+    if f.get('snippet'):
+        print('Snippet:', f['snippet'][:400])
     print()
 "
 ```
 
-실패한 spec 파일도 읽기:
+실패한 spec 파일 읽기:
 
 ```bash
 _TEST_DIR=$(cat docs/pw-loop/.state/test-dir.txt 2>/dev/null || echo "tests/e2e")
-# 실패 테스트명에서 파일명 추정하여 읽기
 for _SPEC in "$_TEST_DIR"/*.spec.ts; do
-  _BASENAME=$(basename "$_SPEC" .spec.ts)
-  echo "=== SPEC: $_SPEC ===" && cat "$_SPEC"
+  [ -f "$_SPEC" ] && echo "=== SPEC: $_SPEC ===" && cat "$_SPEC"
 done
 ```
 
 ### Step 2: sj-dev 호출
 
-실패 컨텍스트를 `docs/sj-company/.state/task.txt`에 저장 후 sj-dev 호출:
-
 ```bash
-# 실패 정보를 태스크로 변환
-python3 - <<'EOF'
+_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
+_THRESHOLD=$(cat docs/pw-loop/.state/threshold.txt 2>/dev/null || echo "80")
+_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+mkdir -p docs/sj-company/.state
+
+python3 - <<EOF
 import json
 
-d = json.load(open(f"docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"))
+d = json.load(open('${_SUMMARY_FILE}'))
 failed = d.get('failed_tests', [])
+threshold = '${_THRESHOLD}'
 
 task = f"Playwright 테스트 실패 수정 (Cycle {d['cycle']})\n\n"
-task += f"통과율: {d['rate']}% → 목표: {open('docs/pw-loop/.state/threshold.txt').read().strip()}%\n\n"
+task += f"통과율: {d['rate']}% -> 목표: {threshold}%\n\n"
 task += "## 실패한 테스트\n"
 for i, f in enumerate(failed, 1):
     task += f"\n### {i}. {f['name']}\n"
     task += f"**오류:** {f['error'][:300]}\n"
     if f.get('snippet'):
-        task += f"**코드 위치:**\n```\n{f['snippet'][:300]}\n```\n"
+        task += f"**코드 위치:**\n\`\`\`\n{f['snippet'][:300]}\n\`\`\`\n"
 
 task += "\n## 요청\n"
 task += "위 테스트가 통과하도록 소스 코드를 수정해주세요.\n"
 task += "spec 파일 자체는 수정하지 말고, 앱 소스 코드만 수정하세요."
 
-with open('docs/sj-company/.state/task.txt', 'w') as f:
-    f.write(task)
+open('docs/sj-company/.state/task.txt', 'w').write(task)
 print("TASK_SAVED")
 EOF
-```
 
-```bash
 echo "dev" > docs/sj-company/.state/stage.txt
 ```
 
@@ -480,32 +483,95 @@ echo "dev" > docs/sj-company/.state/stage.txt
 
 ### Step 3: sj-dev 완료 후 재실행
 
-sj-dev 완료 후 자동으로 Run 모드 재진입.
-
-실패 테스트만 타겟:
+sj-dev 완료 후 실패 테스트만 재실행:
 
 ```bash
 _CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
-# 실패한 테스트 파일만 재실행
-python3 -c "
+_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+_ARTIFACT_DIR="docs/pw-loop/reports/cycle-${_CYCLE}-artifacts-rerun"
+
+# 실패 테스트의 describe 이름 추출 → grep 패턴으로 재실행
+_GREP_PATTERN=$(python3 -c "
 import json
-d = json.load(open('docs/pw-loop/reports/cycle-${_CYCLE}-summary.json'))
-features = set()
+d = json.load(open('${_SUMMARY_FILE}'))
+names = []
 for f in d.get('failed_tests', []):
-    # 'describe > test' 형식에서 describe 이름 추출
-    name = f['name'].split(' > ')[0].strip('/')
-    features.add(name)
-print(' '.join(features))
-" | xargs -I{} npx playwright test {} --reporter=json 2>&1
+    part = f['name'].split(' > ')[0].strip('/')
+    if part:
+        names.append(part)
+print('|'.join(set(names)))
+" 2>/dev/null || echo "")
+
+if [ -n "$_GREP_PATTERN" ]; then
+  npx playwright test \
+    --reporter=json \
+    --grep="$_GREP_PATTERN" \
+    --output="$_ARTIFACT_DIR" \
+    2>/tmp/pw-loop-rerun-stderr.log > "${_SUMMARY_FILE}.rerun.json" || true
+
+  # rerun 결과로 summary.json 갱신
+  _DATE=$(date +%Y-%m-%d)
+  python3 - <<EOF
+import json
+
+try:
+    new_data = json.load(open('${_SUMMARY_FILE}.rerun.json'))
+except:
+    print("RERUN_PARSE_FAILED — summary 유지")
+    exit(0)
+
+old = json.load(open('${_SUMMARY_FILE}'))
+new_passed = []
+new_failed = []
+
+def collect(suite, path=""):
+    title = (path + "/" + suite.get('title', '')) if path else suite.get('title', '')
+    for spec in suite.get('specs', []):
+        for test in spec.get('tests', []):
+            result = (test.get('results') or [{}])[-1]
+            status = result.get('status', 'unknown')
+            name = title + " > " + spec.get('title', '')
+            if status == 'passed':
+                new_passed.append(name)
+            else:
+                err = result.get('error') or {}
+                new_failed.append({'name': name, 'error': err.get('message', ''), 'snippet': err.get('snippet', '')})
+    for child in suite.get('suites', []):
+        collect(child, title)
+
+for s in new_data.get('suites', []):
+    collect(s)
+
+# 재실행 대상이 아닌 기존 PASS는 유지
+rerun_names = {f['name'] for f in new_failed} | set(new_passed)
+kept_passed = [n for n in old.get('passed_names', []) if n not in rerun_names]
+
+total_pass = len(new_passed) + len(kept_passed)
+total_fail = len(new_failed)
+total = total_pass + total_fail
+rate = int(total_pass * 100 / total) if total > 0 else 0
+
+summary = {
+    'cycle': old['cycle'],
+    'date': '${_DATE}',
+    'passed': total_pass,
+    'failed': total_fail,
+    'total': total,
+    'rate': rate,
+    'failed_tests': new_failed,
+    'passed_names': new_passed + kept_passed
+}
+json.dump(summary, open('${_SUMMARY_FILE}', 'w'), indent=2, ensure_ascii=False)
+print(f"RERUN_UPDATED: {total_pass}/{total} = {rate}%")
+EOF
+fi
 ```
 
-재실행 결과로 summary.json 업데이트 → 게이트 재체크.
+재실행 후 게이트 재체크 (Run 모드 Step 4 반복).
 
-**여전히 GATE: FAIL이면:**
-
-3회 이상 반복 실패 시 AskUserQuestion:
+**3회 이상 반복 실패 시** AskUserQuestion:
 ```
-{N}번 수정 시도 후에도 {FAIL_COUNT}개 테스트가 실패합니다.
+N번 수정 시도 후에도 {FAIL_COUNT}개 테스트가 실패합니다.
 ```
 - A) sj-dev 재시도 (다른 접근법으로)
 - B) 해당 테스트를 임시 skip 처리하고 다음 사이클로
@@ -515,16 +581,16 @@ print(' '.join(features))
 
 ## Report 저장
 
-Run 또는 Fix 완료 후 사이클 보고서 작성:
+Run 또는 Fix 완료 후 사이클 보고서 작성.
 
 `docs/pw-loop/reports/cycle-{N}-report.md`:
 
 ```markdown
 # Playwright 테스트 보고서 — Cycle N
 
-**날짜:** YYYY-MM-DD  
-**통과율:** N% (목표: THRESHOLD%)  
-**결과:** PASS / FAIL / IN_PROGRESS
+**날짜:** YYYY-MM-DD
+**통과율:** N% (목표: THRESHOLD%)
+**결과:** PASS / FAIL
 
 ---
 
@@ -544,12 +610,12 @@ Run 또는 Fix 완료 후 사이클 보고서 작성:
 
 ## sj-dev 수정 내역
 
-dev-output.md 참조: docs/sj-company/dev-output.md
+docs/sj-company/dev-output.md 참조
 
 ## 다음 단계
 
-{GATE PASS이면}: 목표 달성. 완료.
-{GATE FAIL이면}: Cycle N+1에서 재테스트 필요한 기능 — {목록}
+{GATE PASS}: 목표 달성. 완료.
+{GATE FAIL}: Cycle N+1 재테스트 대상 — {목록}
 ```
 
 `docs/pw-loop/.state/history.jsonl`에 이력 추가:
@@ -569,7 +635,7 @@ cat docs/pw-loop/.state/history.jsonl 2>/dev/null
 
 출력:
 ```
-✅ pw-loop 완료
+pw-loop 완료
 
 목표 통과율 {THRESHOLD}% 달성.
 
@@ -579,15 +645,14 @@ cat docs/pw-loop/.state/history.jsonl 2>/dev/null
 사이클 이력:
   Cycle 1: N%
   Cycle 2: N%
-  ...
-  Cycle N: N% ← 달성
+  Cycle N: N% <- 달성
 
 보고서: docs/pw-loop/reports/
 ```
 
 새 목표로 계속하려면:
 ```
-/pw-loop → E) 목표 통과율 변경
+/pw-loop -> E) 목표 통과율 변경
 ```
 
 ---
@@ -607,7 +672,7 @@ pw-loop 현황 (YYYY-MM-DD)
 Cycle | PASS | FAIL | 통과율
 ------|------|------|------
   1   |  3   |  4   | 43%
-  2   |  6   |  1   | 86%  ← 달성
+  2   |  6   |  1   | 86%  <- 달성
 ```
 
 ---
@@ -617,19 +682,19 @@ Cycle | PASS | FAIL | 통과율
 ```
 docs/pw-loop/
 ├── .state/
-│   ├── cycle.txt          ← 현재 사이클 번호
-│   ├── threshold.txt      ← 목표 통과율 (기본 80)
-│   ├── features.txt       ← 확정된 테스트 기능 목록
-│   ├── base-url.txt       ← 앱 base URL
-│   ├── test-dir.txt       ← spec 파일 디렉토리
-│   └── history.jsonl      ← 사이클별 이력
+│   ├── cycle.txt          <- 현재 사이클 번호
+│   ├── threshold.txt      <- 목표 통과율 (기본 80)
+│   ├── features.txt       <- 확정된 테스트 기능 목록
+│   ├── base-url.txt       <- 앱 base URL
+│   ├── test-dir.txt       <- spec 파일 디렉토리 (Generate Step 1에서 확정)
+│   └── history.jsonl      <- 사이클별 이력
 ├── reports/
-│   ├── cycle-N-raw.json          ← playwright --reporter=json 원본
-│   ├── cycle-N-summary.json      ← 파싱된 요약
-│   └── cycle-N-report.md         ← 사람이 읽는 보고서
-└── improvement.md         ← 미결 P1 항목 누적
+│   ├── cycle-N-raw.json          <- playwright --reporter=json 원본
+│   ├── cycle-N-summary.json      <- 파싱된 요약
+│   └── cycle-N-report.md         <- 사람이 읽는 보고서
+└── improvement.md
 
-{TEST_DIR}/                ← playwright.config의 testDir
+{TEST_DIR}/                <- playwright.config의 testDir
 ├── {feature1}.spec.ts
 ├── {feature2}.spec.ts
 └── ...
