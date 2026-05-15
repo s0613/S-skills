@@ -59,11 +59,23 @@ export function App({ project: initialProject }) {
   const requestApproval = useCallback((dept, needed, remaining) => {
     const fmt = n => n >= 1000 ? `${Math.round(n / 1000)}k` : String(n);
     addMessage('system',
-      `⚠️ ${dept} 예산 초과: ${fmt(needed)} 토큰 필요, ${fmt(remaining)} 남음. 계속할까요? (y / n)`
+      `⚠️ ${dept} 예산 초과: ${fmt(needed)} 토큰 필요, ${fmt(remaining)} 남음. 계속할까요? (y / n) [60초 후 자동 거부]`
     );
     setAwaitingApproval(true);
     return new Promise(resolve => {
-      approvalResolver.current = resolve;
+      let timer;
+      approvalResolver.current = (val) => {
+        clearTimeout(timer);
+        resolve(val);
+      };
+      timer = setTimeout(() => {
+        if (approvalResolver.current) {
+          approvalResolver.current = null;
+          setAwaitingApproval(false);
+          addMessage('system', '시간 초과로 자동 거부되었습니다.');
+          resolve(false);
+        }
+      }, 60000);
     });
   }, []);
 
@@ -115,10 +127,14 @@ export function App({ project: initialProject }) {
           }
 
           if (plan) {
-            const total = plan.reduce((s, p) => s + (p.budget || 0), 0);
-            await stateManager.setBudget(project, Object.fromEntries(
-              plan.map(p => [p.dept, p.budget || 8000])
-            ));
+            // used > 0이면 이미 실행 중인 라운드 — 예산 재설정 금지 (자기 승인 방지)
+            const currentBudget = await stateManager.loadBudget(project);
+            const hasUsage = Object.values(currentBudget).some(b => b?.used > 0);
+            if (!hasUsage) {
+              await stateManager.setBudget(project, Object.fromEntries(
+                plan.map(p => [p.dept, p.budget || 8000])
+              ));
+            }
             const newBudget = await stateManager.loadBudget(project);
             setBudget(newBudget);
 
@@ -134,6 +150,12 @@ export function App({ project: initialProject }) {
       await stateManager.saveState(project, { phase: 'idle', active_task: null });
     } catch (err) {
       addMessage('system', `오류 발생: ${err.message}`);
+      // 오케스트레이션 중단 시 대기 중인 승인 해제
+      if (approvalResolver.current) {
+        approvalResolver.current(false);
+        approvalResolver.current = null;
+        setAwaitingApproval(false);
+      }
     }
 
     setBusy(false);

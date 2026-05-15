@@ -30,8 +30,7 @@ export function LogPanel({ logs }) {
             [{entry.dept}] {entry.timestamp}
           </Text>
           <Text color="gray" wrap="wrap">
-            {JSON.stringify(entry.result, null, 2).slice(0, 300)}
-            {JSON.stringify(entry.result, null, 2).length > 300 ? '...' : ''}
+            {(() => { const s = JSON.stringify(entry.result, null, 2); return s.length > 300 ? s.slice(0, 300) + '...' : s; })()}
           </Text>
         </Box>
       ))}
