@@ -39,10 +39,10 @@ export function App({ project: initialProject }) {
   // 도움말 오버레이
   const [showHelp, setShowHelp] = useState(false);
 
-  const addMessage = (role, content) => {
+  const addMessage = useCallback((role, content) => {
     setMessages(prev => [...prev, { role, content }]);
     setChatScrollOffset(0); // 새 메시지 → 자동 최하단
-  };
+  }, []);
 
   useInput((char, key) => {
     // Tab — 패널 포커스 전환
@@ -126,7 +126,7 @@ export function App({ project: initialProject }) {
         }
       }, 60000);
     });
-  }, []);
+  }, [addMessage]);
 
   const handleCommand = useCallback(async (cmd) => {
     if (awaitingApproval) {
@@ -210,10 +210,10 @@ export function App({ project: initialProject }) {
         approvalResolver.current = null;
         setAwaitingApproval(false);
       }
+    } finally {
+      setBusy(false);
     }
-
-    setBusy(false);
-  }, [project, exit, awaitingApproval, requestApproval, budget]);
+  }, [project, exit, awaitingApproval, requestApproval, budget, addMessage]);
 
   if (screen === 'select') {
     return <ProjectSelect stateManager={stateManager} onSelect={handleProjectSelect} />;

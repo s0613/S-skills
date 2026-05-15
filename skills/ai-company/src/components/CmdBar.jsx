@@ -11,9 +11,9 @@ export function CmdBar({ onSubmit, disabled, focused = false, commandHistory = [
     if (key.return) {
       if (input.trim()) {
         onSubmit(input.trim());
-        setHistIdx(-1);
       }
       setInput('');
+      setHistIdx(-1);
       return;
     }
 
