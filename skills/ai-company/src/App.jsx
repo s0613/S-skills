@@ -5,6 +5,7 @@ import { ChatPanel } from './components/ChatPanel.jsx';
 import { DeptTable } from './components/DeptTable.jsx';
 import { BudgetBar } from './components/BudgetBar.jsx';
 import { CmdBar } from './components/CmdBar.jsx';
+import { LogPanel } from './components/LogPanel.jsx';
 import { orchestrate } from './agents/gm.js';
 import { StateManager } from './state/manager.js';
 
@@ -19,13 +20,16 @@ export function App({ project: initialProject }) {
   const [departments, setDepts] = useState(null);
   const [budget, setBudget] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [showLog, setShowLog] = useState(false);
+  const [logs, setLogs] = useState([]);
   const [startTime] = useState(Date.now());
 
   const addMessage = (role, content) =>
     setMessages(prev => [...prev, { role, content }]);
 
-  useInput((_, key) => {
+  useInput((char, key) => {
     if (key.ctrl && key.name === 'c') exit();
+    if (key.ctrl && char === 'l') setShowLog(prev => !prev);
   });
 
   const handleCommand = useCallback(async (cmd) => {
@@ -59,8 +63,16 @@ export function App({ project: initialProject }) {
       await orchestrate({
         userMessage: cmd,
         projectContext: state,
-        onUpdate: async ({ dept, status, message, tokensUsed, plan }) => {
+        onUpdate: async ({ dept, status, message, tokensUsed, plan, result }) => {
           addMessage(dept || 'GM', message);
+
+          if (result && dept) {
+            setLogs(prev => [...prev, {
+              dept,
+              result,
+              timestamp: new Date().toLocaleTimeString('ko-KR'),
+            }]);
+          }
 
           if (dept && dept !== 'GM') {
             setDepts(prev => ({
@@ -107,8 +119,13 @@ export function App({ project: initialProject }) {
           <ChatPanel messages={messages} height={20} />
         </Box>
         <Box width="40%" flexDirection="column">
-          <DeptTable departments={departments} />
-          <BudgetBar budget={budget} />
+          {showLog
+            ? <LogPanel logs={logs} />
+            : <>
+                <DeptTable departments={departments} />
+                <BudgetBar budget={budget} />
+              </>
+          }
         </Box>
       </Box>
       <CmdBar onSubmit={handleCommand} disabled={busy} />
