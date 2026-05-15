@@ -1,6 +1,6 @@
 ---
 name: pw-loop
-version: 1.1.0
+version: 1.2.0
 description: |
   Playwright 테스트를 자동 생성·실행·수정하는 반복 루프 스킬.
   spec 파일 생성 → npx playwright test 실행 → 실패 분석 → sj-dev 수정 →
@@ -22,10 +22,17 @@ triggers:
 
 Playwright E2E 테스트 자동화 반복 루프.
 
+## 절대 규칙 — 반드시 지킬 것
+
+- **Chrome 확장 사용 금지.** 이 스킬은 Chrome 확장과 무관하다. 사용자에게 시나리오를 붙여넣으라고 요청하지 않는다.
+- **사용자에게 테스트 실행을 위임하지 않는다.** `npx playwright test`는 Claude가 Bash 도구로 직접 실행한다.
+- **Generate 완료 즉시 Run 모드로 자동 진입한다.** 사용자 확인 없이 바로 Playwright를 실행한다.
+- test-scenario 스킬의 `[결과]...[/결과]` 블록 형식은 이 스킬과 관계없다. 사용하지 않는다.
+
 ```
-generate specs → run → parse → fix (sj-dev) → re-run → report
-                                    ↑________________________|
-                                    목표 통과율 미달 시 반복
+generate specs → (자동) → npx playwright test → parse → fix (sj-dev) → re-run → report
+                                                              ↑________________________|
+                                                              목표 통과율 미달 시 반복
 ```
 
 ---
@@ -263,7 +270,7 @@ use: {
 },
 ```
 
-### Step 6: 생성 완료 보고
+### Step 6: 생성 완료 — 즉시 Run 모드 자동 진입
 
 ```
 Cycle N spec 생성 완료.
@@ -277,10 +284,10 @@ Cycle N spec 생성 완료.
    {feature1}.spec.ts
    {feature2}.spec.ts
 
-다음: Run 모드로 진입합니다.
+Playwright 실행 중...
 ```
 
-Generate 완료 후 자동으로 **Run 모드** 진입.
+**사용자 입력을 기다리지 않는다. 즉시 Run 모드 Step 1로 진입한다.**
 
 ---
 
