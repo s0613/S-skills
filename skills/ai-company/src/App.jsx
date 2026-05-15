@@ -7,6 +7,7 @@ import { BudgetBar } from './components/BudgetBar.jsx';
 import { CmdBar } from './components/CmdBar.jsx';
 import { LogPanel } from './components/LogPanel.jsx';
 import { ProjectSelect } from './components/ProjectSelect.jsx';
+import { HelpOverlay } from './components/HelpOverlay.jsx';
 import { orchestrate } from './agents/gm.js';
 import { StateManager } from './state/manager.js';
 
@@ -24,16 +25,64 @@ export function App({ project: initialProject }) {
   const [busy, setBusy] = useState(false);
   const [awaitingApproval, setAwaitingApproval] = useState(false);
   const approvalResolver = useRef(null);
-  const [showLog, setShowLog] = useState(false);
   const [logs, setLogs] = useState([]);
   const [startTime] = useState(Date.now());
 
-  const addMessage = (role, content) =>
+  // 스크롤 & 포커스
+  const [chatScrollOffset, setChatScrollOffset] = useState(0);
+  const [logScrollOffset, setLogScrollOffset] = useState(0);
+  const [focusPanel, setFocusPanel] = useState('chat'); // 'chat' | 'log'
+
+  // 명령 히스토리
+  const [commandHistory, setCommandHistory] = useState([]);
+
+  // 도움말 오버레이
+  const [showHelp, setShowHelp] = useState(false);
+
+  const addMessage = (role, content) => {
     setMessages(prev => [...prev, { role, content }]);
+    setChatScrollOffset(0); // 새 메시지 → 자동 최하단
+  };
 
   useInput((char, key) => {
-    if (key.ctrl && key.name === 'c') exit();
-    if (key.ctrl && char === 'l') setShowLog(prev => !prev);
+    // Tab — 패널 포커스 전환
+    if (key.tab) {
+      setFocusPanel(prev => prev === 'chat' ? 'log' : 'chat');
+      return;
+    }
+
+    // ? — 도움말 토글
+    if (char === '?') {
+      setShowHelp(prev => !prev);
+      return;
+    }
+
+    // Ctrl+C — busy일 때 태스크 취소, 아닐 때 종료
+    if (key.ctrl && key.name === 'c') {
+      if (busy) {
+        if (approvalResolver.current) {
+          approvalResolver.current(false);
+          approvalResolver.current = null;
+          setAwaitingApproval(false);
+        }
+        addMessage('system', '태스크가 취소되었습니다.');
+      } else {
+        exit();
+      }
+      return;
+    }
+
+    // PgUp / PgDn — 포커스 패널 5줄 스크롤
+    if (key.pageUp) {
+      if (focusPanel === 'chat') setChatScrollOffset(prev => prev + 5);
+      else setLogScrollOffset(prev => prev + 5);
+      return;
+    }
+    if (key.pageDown) {
+      if (focusPanel === 'chat') setChatScrollOffset(prev => Math.max(0, prev - 5));
+      else setLogScrollOffset(prev => Math.max(0, prev - 5));
+      return;
+    }
   });
 
   const handleProjectSelect = useCallback(async (name) => {
@@ -91,7 +140,14 @@ export function App({ project: initialProject }) {
 
     if (cmd === 'q' || cmd === ':q') { exit(); return; }
 
+    // 히스토리 추가 (최신이 앞, 중복 제거, 최대 50개)
+    setCommandHistory(prev => {
+      const filtered = prev.filter(h => h !== cmd);
+      return [cmd, ...filtered].slice(0, 50);
+    });
+
     addMessage('user', cmd);
+    setChatScrollOffset(0); // 채팅 자동 최하단
     setBusy(true);
 
     try {
@@ -127,7 +183,6 @@ export function App({ project: initialProject }) {
           }
 
           if (plan) {
-            // used > 0이면 이미 실행 중인 라운드 — 예산 재설정 금지 (자기 승인 방지)
             const currentBudget = await stateManager.loadBudget(project);
             const hasUsage = Object.values(currentBudget).some(b => b?.used > 0);
             if (!hasUsage) {
@@ -150,7 +205,6 @@ export function App({ project: initialProject }) {
       await stateManager.saveState(project, { phase: 'idle', active_task: null });
     } catch (err) {
       addMessage('system', `오류 발생: ${err.message}`);
-      // 오케스트레이션 중단 시 대기 중인 승인 해제
       if (approvalResolver.current) {
         approvalResolver.current(false);
         approvalResolver.current = null;
@@ -168,21 +222,37 @@ export function App({ project: initialProject }) {
   return (
     <Box flexDirection="column" height="100%">
       <Header project={project} startTime={startTime} />
+      <HelpOverlay showHelp={showHelp} onClose={() => setShowHelp(false)} />
       <Box flexGrow={1}>
-        <Box width="60%" flexDirection="column">
-          <ChatPanel messages={messages} height={20} />
+        {/* 채팅 50% */}
+        <Box width="50%" flexDirection="column">
+          <ChatPanel
+            messages={messages}
+            scrollOffset={chatScrollOffset}
+            visibleHeight={20}
+          />
         </Box>
-        <Box width="40%" flexDirection="column">
-          {showLog
-            ? <LogPanel logs={logs} />
-            : <>
-                <DeptTable departments={departments} />
-                <BudgetBar budget={budget} />
-              </>
-          }
+        {/* 부서현황+예산 25% */}
+        <Box width="25%" flexDirection="column">
+          <DeptTable departments={departments} />
+          <BudgetBar budget={budget} />
+        </Box>
+        {/* 로그 25% */}
+        <Box width="25%" flexDirection="column">
+          <LogPanel
+            logs={logs}
+            scrollOffset={logScrollOffset}
+            visibleCount={8}
+            focused={focusPanel === 'log'}
+          />
         </Box>
       </Box>
-      <CmdBar onSubmit={handleCommand} disabled={busy} />
+      <CmdBar
+        onSubmit={handleCommand}
+        disabled={busy}
+        focused={focusPanel === 'chat'}
+        commandHistory={commandHistory}
+      />
     </Box>
   );
 }
