@@ -78,11 +78,28 @@ Preamble 결과를 바탕으로 판단:
 
 **STAGE=none 처리:**
 
-AskUserQuestion으로 태스크를 입력받고 task.txt에 저장:
+task.txt에 잔류 태스크가 있는지 확인한다:
+
+```bash
+_LEFTOVER=$(cat docs/sj-company/.state/task.txt 2>/dev/null | tr -d '[:space:]')
+echo "LEFTOVER: ${_LEFTOVER:-없음}"
+```
+
+**잔류 태스크 있음 (`LEFTOVER` 비어있지 않음):** AskUserQuestion:
+
+```
+이전 세션의 태스크가 남아 있습니다.
+태스크: {LEFTOVER}
+```
+
+옵션:
+- A) 이어서 진행 (추천) → 그대로 `Skill("s-skills:sj-pm")` 호출
+- B) 새 태스크 입력 → 새 태스크를 AskUserQuestion으로 입력받아 task.txt 덮어쓰기 후 `Skill("s-skills:sj-pm")` 호출
+
+**잔류 태스크 없음:** AskUserQuestion으로 태스크를 입력받고 task.txt에 저장:
 
 ```bash
 echo "{사용자 입력}" > docs/sj-company/.state/task.txt
-echo "none" > docs/sj-company/.state/stage.txt
 ```
 
 이후 `Skill("s-skills:sj-pm")` 호출.

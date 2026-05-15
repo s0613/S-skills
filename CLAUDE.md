@@ -11,3 +11,10 @@
 ## 사용법
 
 어느 프로젝트에서든 `/s-skills`로 시작하면 현재 상태를 감지해 안내한다.
+
+## Docs Reference
+- [PRD](docs/prd.md)
+- [Architecture](docs/architecture.md)
+- [Status & Score](docs/STATUS.md)
+- [ADR](docs/adr/)
+- [Specs](docs/spec/) ← created on first spec request
