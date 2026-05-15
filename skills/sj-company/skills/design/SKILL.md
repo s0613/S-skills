@@ -114,7 +114,19 @@ design-context.md + DESIGN.md 참조 + pm-output.md를 바탕으로 Design 역�
 - 컴포넌트 명세 작성
 - 구조 설명
 
-## Step 5: 결과 저장
+## Step 5: 자체 검토
+
+결과 저장 전, 아래 체크리스트를 스스로 검토한다. 문제가 있으면 Step 4로 돌아가 수정한다.
+
+- [ ] PM 요구사항을 모두 반영했는가? (pm-output.md 태스크 목록 대조)
+- [ ] 구현 가능한 설계인가? (존재하지 않는 라이브러리·패턴 사용 없는가)
+- [ ] 디자인 시스템(DESIGN.md) 원칙을 벗어나지 않는가?
+- [ ] 컴포넌트 명세가 Dev가 바로 작업할 수 있는 수준으로 구체적인가?
+- [ ] Base Guidelines 위반 없는가? (요청 이상의 과잉 설계 없는가)
+
+문제 발견 시: 해당 항목을 수정 후 다시 이 체크리스트를 통과시킨다.
+
+## Step 6: 결과 저장
 
 `docs/sj-company/design-output.md`에 저장:
 
@@ -146,6 +158,6 @@ stage.txt 업데이트:
 echo "design" > docs/sj-company/.state/stage.txt
 ```
 
-## Step 6: 완료 보고
+## Step 7: 완료 보고
 
 결과를 사용자에게 요약해서 출력한다. 다음 단계(Dev)를 제안한다.

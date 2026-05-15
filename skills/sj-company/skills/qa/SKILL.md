@@ -90,7 +90,19 @@ qa-context.md + dev-output.md + pm-output.md를 바탕으로 QA 역할을 수행
 - 엣지 케이스 식별
 - 최종 판정
 
-## Step 4: 결과 저장
+## Step 4: 자체 검토
+
+결과 저장 전, 아래 체크리스트를 스스로 검토한다. 문제가 있으면 Step 3으로 돌아가 수정한다.
+
+- [ ] PM 요구사항(pm-output.md)의 모든 태스크에 대응하는 테스트 케이스가 있는가?
+- [ ] 엣지 케이스가 최소 1개 이상 식별됐는가?
+- [ ] 판정(PASS/FAIL/CONDITIONAL) 근거가 구체적인가? ("잘 됨" 같은 표현 없는가)
+- [ ] FAIL 또는 CONDITIONAL인 경우, Dev가 수정할 수 있는 구체적 이슈가 명시됐는가?
+- [ ] Base Guidelines 위반 없는가? (테스트 범위가 요청을 벗어나지 않는가)
+
+문제 발견 시: 해당 항목을 수정 후 다시 이 체크리스트를 통과시킨다.
+
+## Step 5: 결과 저장
 
 `docs/sj-company/qa-output.md`에 저장:
 
@@ -118,6 +130,6 @@ stage.txt 업데이트 (완료):
 echo "done" > docs/sj-company/.state/stage.txt
 ```
 
-## Step 5: 완료 보고
+## Step 6: 완료 보고
 
 전체 파이프라인 결과를 사용자에게 요약해서 출력한다.
