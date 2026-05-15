@@ -1,5 +1,5 @@
 ---
-name: design
+name: sj-design
 version: 1.0.0
 description: |
   Design 역할 에이전트. UI/UX 설계, 비주얼 방향 정의, 컴포넌트 명세를 담당한다.

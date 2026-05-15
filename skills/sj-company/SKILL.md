@@ -85,7 +85,7 @@ echo "{사용자 입력}" > docs/sj-company/.state/task.txt
 echo "none" > docs/sj-company/.state/stage.txt
 ```
 
-이후 `Skill("sj-company:pm")` 호출.
+이후 `Skill("s-skills:sj-pm")` 호출.
 
 **STAGE=pm 처리:**
 
@@ -94,12 +94,12 @@ AskUserQuestion:
 PM 분석이 완료됐습니다.
 다음 단계를 선택하세요:
 ```
-- A) Design 먼저 (UI/UX 작업 포함) → `Skill("sj-company:design")`
-- B) Dev 바로 진행 (UI 작업 없음) → `Skill("sj-company:dev")`
+- A) Design 먼저 (UI/UX 작업 포함) → `Skill("s-skills:sj-design")`
+- B) Dev 바로 진행 (UI 작업 없음) → `Skill("s-skills:sj-dev")`
 
-**STAGE=design 처리:** `Skill("sj-company:dev")` 호출.
+**STAGE=design 처리:** `Skill("s-skills:sj-dev")` 호출.
 
-**STAGE=dev 처리:** `Skill("sj-company:qa")` 호출.
+**STAGE=dev 처리:** `Skill("s-skills:sj-qa")` 호출.
 
 **STAGE=done 처리:**
 
@@ -122,11 +122,11 @@ cat docs/sj-company/qa-output.md 2>/dev/null | grep "판정:"
 
 | 의도 패턴 | 라우팅 |
 |-----------|--------|
-| 버그 수정, 에러 수정, fix | `Skill("sj-company:dev")` → `Skill("sj-company:qa")` |
-| 디자인, UI, 화면, 레이아웃 | `Skill("sj-company:design")` |
-| 기획, 요구사항, 스펙, 분석 | `Skill("sj-company:pm")` |
-| 테스트, 검증, 확인 | `Skill("sj-company:qa")` |
-| 기능 추가, 새 기능, 구현 | `Skill("sj-company:pm")` 완료 후 AskUserQuestion으로 Design/Dev 선택 → `Skill("sj-company:qa")` |
+| 버그 수정, 에러 수정, fix | `Skill("s-skills:sj-dev")` → `Skill("s-skills:sj-qa")` |
+| 디자인, UI, 화면, 레이아웃 | `Skill("s-skills:sj-design")` |
+| 기획, 요구사항, 스펙, 분석 | `Skill("s-skills:sj-pm")` |
+| 테스트, 검증, 확인 | `Skill("s-skills:sj-qa")` |
+| 기능 추가, 새 기능, 구현 | `Skill("s-skills:sj-pm")` 완료 후 AskUserQuestion으로 Design/Dev 선택 → `Skill("s-skills:sj-qa")` |
 
 메시지를 task.txt에 저장 후 라우팅:
 

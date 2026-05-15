@@ -1,5 +1,5 @@
 ---
-name: dev
+name: sj-dev
 version: 1.0.0
 description: |
   Dev 역할 에이전트. PM 분석과 Design 명세를 받아 실제 구현 방법을 제안하고 코드를 작성한다.

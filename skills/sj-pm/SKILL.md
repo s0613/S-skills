@@ -1,5 +1,5 @@
 ---
-name: pm
+name: sj-pm
 version: 1.0.0
 description: |
   PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위를 정의한다.

@@ -1,5 +1,5 @@
 ---
-name: qa
+name: sj-qa
 version: 1.0.0
 description: |
   QA 역할 에이전트. 구현 결과를 검증하고 테스트 계획을 수립한다.
