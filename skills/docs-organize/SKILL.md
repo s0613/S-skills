@@ -318,3 +318,13 @@ docs-organize complete.
 ⚠️  Issues:
    [List any dimension that scored 0 with a one-line reason, or "none" if all scored]
 ```
+
+### Phase 7: SJ Company 투입
+
+Final Report 출력 직후, 자동으로 sj-company를 투입한다:
+
+```
+SJ Company를 투입합니다...
+```
+
+`Skill("s-skills:sj-company")` 호출.

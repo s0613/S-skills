@@ -24,13 +24,13 @@ triggers:
 ## Step 1: 프로젝트 뇌(Brain) 로드
 
 ```bash
-mkdir -p docs/ai-company/.state
-[ -f "docs/ai-company/qa-context.md" ] && echo "EXISTS" || echo "NEW"
+mkdir -p docs/sj-company/.state
+[ -f "docs/sj-company/qa-context.md" ] && echo "EXISTS" || echo "NEW"
 ```
 
-**EXISTS인 경우:** `docs/ai-company/qa-context.md`를 읽어 이 프로젝트의 테스트 패턴과 주요 검증 포인트를 파악한다.
+**EXISTS인 경우:** `docs/sj-company/qa-context.md`를 읽어 이 프로젝트의 테스트 패턴과 주요 검증 포인트를 파악한다.
 
-**NEW인 경우:** 프로젝트를 분석해 `docs/ai-company/qa-context.md`를 생성한다.
+**NEW인 경우:** 프로젝트를 분석해 `docs/sj-company/qa-context.md`를 생성한다.
 
 ```bash
 # 테스트 파일 탐색
@@ -69,9 +69,9 @@ cat package.json 2>/dev/null | grep -A5 '"scripts"'
 ## Step 2: 이전 단계 컨텍스트 로드
 
 ```bash
-[ -f "docs/ai-company/pm-output.md" ]     && echo "=== PM ===" && cat "docs/ai-company/pm-output.md"
-[ -f "docs/ai-company/dev-output.md" ]    && echo "=== DEV ===" && cat "docs/ai-company/dev-output.md"
-[ -f "docs/ai-company/.state/task.txt" ]  && echo "=== TASK ===" && cat "docs/ai-company/.state/task.txt"
+[ -f "docs/sj-company/pm-output.md" ]     && echo "=== PM ===" && cat "docs/sj-company/pm-output.md"
+[ -f "docs/sj-company/dev-output.md" ]    && echo "=== DEV ===" && cat "docs/sj-company/dev-output.md"
+[ -f "docs/sj-company/.state/task.txt" ]  && echo "=== TASK ===" && cat "docs/sj-company/.state/task.txt"
 ```
 
 ## Step 3: 태스크 수행
@@ -83,7 +83,7 @@ qa-context.md + dev-output.md + pm-output.md를 바탕으로 QA 역할을 수행
 
 ## Step 4: 결과 저장
 
-`docs/ai-company/qa-output.md`에 저장:
+`docs/sj-company/qa-output.md`에 저장:
 
 ```markdown
 # QA Output — {태스크명}
@@ -106,7 +106,7 @@ qa-context.md + dev-output.md + pm-output.md를 바탕으로 QA 역할을 수행
 stage.txt 업데이트 (완료):
 
 ```bash
-echo "done" > docs/ai-company/.state/stage.txt
+echo "done" > docs/sj-company/.state/stage.txt
 ```
 
 ## Step 5: 완료 보고

@@ -23,13 +23,13 @@ PM의 분석과 Design 명세를 받아 실제 구현 방법을 제안하거나 
 ## Step 1: 프로젝트 뇌(Brain) 로드
 
 ```bash
-mkdir -p docs/ai-company/.state
-[ -f "docs/ai-company/dev-context.md" ] && echo "EXISTS" || echo "NEW"
+mkdir -p docs/sj-company/.state
+[ -f "docs/sj-company/dev-context.md" ] && echo "EXISTS" || echo "NEW"
 ```
 
-**EXISTS인 경우:** `docs/ai-company/dev-context.md`를 읽어 이 프로젝트의 기술 스택, 코드 패턴, 컨벤션을 파악한다.
+**EXISTS인 경우:** `docs/sj-company/dev-context.md`를 읽어 이 프로젝트의 기술 스택, 코드 패턴, 컨벤션을 파악한다.
 
-**NEW인 경우:** 프로젝트를 분석해 `docs/ai-company/dev-context.md`를 생성한다.
+**NEW인 경우:** 프로젝트를 분석해 `docs/sj-company/dev-context.md`를 생성한다.
 
 ```bash
 # 기술 스택 파악
@@ -72,9 +72,9 @@ find . -maxdepth 4 \
 ## Step 2: 이전 단계 컨텍스트 로드
 
 ```bash
-[ -f "docs/ai-company/pm-output.md" ]     && echo "=== PM ===" && cat "docs/ai-company/pm-output.md"
-[ -f "docs/ai-company/design-output.md" ] && echo "=== DESIGN ===" && cat "docs/ai-company/design-output.md"
-[ -f "docs/ai-company/.state/task.txt" ]  && echo "=== TASK ===" && cat "docs/ai-company/.state/task.txt"
+[ -f "docs/sj-company/pm-output.md" ]     && echo "=== PM ===" && cat "docs/sj-company/pm-output.md"
+[ -f "docs/sj-company/design-output.md" ] && echo "=== DESIGN ===" && cat "docs/sj-company/design-output.md"
+[ -f "docs/sj-company/.state/task.txt" ]  && echo "=== TASK ===" && cat "docs/sj-company/.state/task.txt"
 ```
 
 ## Step 3: 태스크 수행
@@ -86,7 +86,7 @@ dev-context.md + pm-output.md + design-output.md를 바탕으로 Dev 역할을 �
 
 ## Step 4: 결과 저장
 
-`docs/ai-company/dev-output.md`에 저장:
+`docs/sj-company/dev-output.md`에 저장:
 
 ```markdown
 # Dev Output — {태스크명}
@@ -108,7 +108,7 @@ dev-context.md + pm-output.md + design-output.md를 바탕으로 Dev 역할을 �
 stage.txt 업데이트:
 
 ```bash
-echo "dev" > docs/ai-company/.state/stage.txt
+echo "dev" > docs/sj-company/.state/stage.txt
 ```
 
 ## Step 5: 완료 보고

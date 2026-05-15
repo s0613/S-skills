@@ -24,13 +24,13 @@ UI/UX 설계, 비주얼 방향 정의, 컴포넌트 명세를 담당한다.
 ## Step 1: 프로젝트 뇌(Brain) 로드
 
 ```bash
-mkdir -p docs/ai-company/.state
-[ -f "docs/ai-company/design-context.md" ] && echo "EXISTS" || echo "NEW"
+mkdir -p docs/sj-company/.state
+[ -f "docs/sj-company/design-context.md" ] && echo "EXISTS" || echo "NEW"
 ```
 
-**EXISTS인 경우:** `docs/ai-company/design-context.md`를 읽어 이 프로젝트의 비주얼 방향과 참조 브랜드를 파악한다.
+**EXISTS인 경우:** `docs/sj-company/design-context.md`를 읽어 이 프로젝트의 비주얼 방향과 참조 브랜드를 파악한다.
 
-**NEW인 경우:** 프로젝트를 분석해 `docs/ai-company/design-context.md`를 생성한다.
+**NEW인 경우:** 프로젝트를 분석해 `docs/sj-company/design-context.md`를 생성한다.
 
 ```bash
 # 프론트엔드 관련 파일 탐색
@@ -74,7 +74,7 @@ ls /Users/songseungju/awesome-design-md/design-md/
 design-context.md의 primary 브랜드 DESIGN.md를 읽는다:
 
 ```bash
-PRIMARY_BRAND=$(grep "^- primary:" docs/ai-company/design-context.md | sed 's/^- primary:[[:space:]]*//' | awk '{print $1}')
+PRIMARY_BRAND=$(grep "^- primary:" docs/sj-company/design-context.md | sed 's/^- primary:[[:space:]]*//' | awk '{print $1}')
 DESIGN_REF="/Users/songseungju/awesome-design-md/design-md/${PRIMARY_BRAND}/DESIGN.md"
 
 if [ -f "$DESIGN_REF" ]; then
@@ -92,10 +92,10 @@ fi
 
 ```bash
 # PM 결과물이 있으면 읽기
-[ -f "docs/ai-company/pm-output.md" ] && cat "docs/ai-company/pm-output.md"
+[ -f "docs/sj-company/pm-output.md" ] && cat "docs/sj-company/pm-output.md"
 
 # 현재 태스크
-[ -f "docs/ai-company/.state/task.txt" ] && cat "docs/ai-company/.state/task.txt"
+[ -f "docs/sj-company/.state/task.txt" ] && cat "docs/sj-company/.state/task.txt"
 ```
 
 ## Step 4: 태스크 수행
@@ -107,7 +107,7 @@ design-context.md + DESIGN.md 참조 + pm-output.md를 바탕으로 Design 역�
 
 ## Step 5: 결과 저장
 
-`docs/ai-company/design-output.md`에 저장:
+`docs/sj-company/design-output.md`에 저장:
 
 ```markdown
 # Design Output — {태스크명}
@@ -134,7 +134,7 @@ design-context.md + DESIGN.md 참조 + pm-output.md를 바탕으로 Design 역�
 stage.txt 업데이트:
 
 ```bash
-echo "design" > docs/ai-company/.state/stage.txt
+echo "design" > docs/sj-company/.state/stage.txt
 ```
 
 ## Step 6: 완료 보고

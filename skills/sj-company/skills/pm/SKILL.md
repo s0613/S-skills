@@ -22,13 +22,13 @@ triggers:
 ## Step 1: 프로젝트 뇌(Brain) 로드
 
 ```bash
-mkdir -p docs/ai-company/.state
-[ -f "docs/ai-company/pm-context.md" ] && echo "EXISTS" || echo "NEW"
+mkdir -p docs/sj-company/.state
+[ -f "docs/sj-company/pm-context.md" ] && echo "EXISTS" || echo "NEW"
 ```
 
-**EXISTS인 경우:** `docs/ai-company/pm-context.md`를 읽어 프로젝트 컨텍스트를 파악한다.
+**EXISTS인 경우:** `docs/sj-company/pm-context.md`를 읽어 프로젝트 컨텍스트를 파악한다.
 
-**NEW인 경우:** 아래 항목을 분석해 `docs/ai-company/pm-context.md`를 생성한다.
+**NEW인 경우:** 아래 항목을 분석해 `docs/sj-company/pm-context.md`를 생성한다.
 
 ```bash
 # 프로젝트 구조 파악
@@ -77,7 +77,7 @@ find . -maxdepth 3 \
 
 ```bash
 # task.txt가 있으면 읽기
-[ -f "docs/ai-company/.state/task.txt" ] && cat "docs/ai-company/.state/task.txt"
+[ -f "docs/sj-company/.state/task.txt" ] && cat "docs/sj-company/.state/task.txt"
 ```
 
 pm-context.md + 현재 요청을 바탕으로 PM 역할을 수행한다:
@@ -87,7 +87,7 @@ pm-context.md + 현재 요청을 바탕으로 PM 역할을 수행한다:
 
 ## Step 3: 결과 저장
 
-`docs/ai-company/pm-output.md`에 저장:
+`docs/sj-company/pm-output.md`에 저장:
 
 ```markdown
 # PM Output — {태스크명}
@@ -110,7 +110,7 @@ pm-context.md + 현재 요청을 바탕으로 PM 역할을 수행한다:
 stage.txt 업데이트:
 
 ```bash
-echo "pm" > docs/ai-company/.state/stage.txt
+echo "pm" > docs/sj-company/.state/stage.txt
 ```
 
 ## Step 4: 완료 보고

@@ -21,14 +21,14 @@ triggers:
 ## Preamble — 프로젝트 상태 감지
 
 ```bash
-mkdir -p docs/ai-company/.state
+mkdir -p docs/sj-company/.state
 
-_STAGE=$(cat docs/ai-company/.state/stage.txt 2>/dev/null | tr -d '[:space:]')
-_TASK=$(cat docs/ai-company/.state/task.txt 2>/dev/null)
-_HAS_PM=$([ -s "docs/ai-company/pm-output.md" ] && echo "yes" || echo "no")
-_HAS_DESIGN=$([ -s "docs/ai-company/design-output.md" ] && echo "yes" || echo "no")
-_HAS_DEV=$([ -s "docs/ai-company/dev-output.md" ] && echo "yes" || echo "no")
-_HAS_QA=$([ -s "docs/ai-company/qa-output.md" ] && echo "yes" || echo "no")
+_STAGE=$(cat docs/sj-company/.state/stage.txt 2>/dev/null | tr -d '[:space:]')
+_TASK=$(cat docs/sj-company/.state/task.txt 2>/dev/null)
+_HAS_PM=$([ -s "docs/sj-company/pm-output.md" ] && echo "yes" || echo "no")
+_HAS_DESIGN=$([ -s "docs/sj-company/design-output.md" ] && echo "yes" || echo "no")
+_HAS_DEV=$([ -s "docs/sj-company/dev-output.md" ] && echo "yes" || echo "no")
+_HAS_QA=$([ -s "docs/sj-company/qa-output.md" ] && echo "yes" || echo "no")
 
 echo "STAGE: ${_STAGE:-none}"
 echo "TASK: ${_TASK:-없음}"
@@ -56,8 +56,8 @@ Preamble 결과를 바탕으로 판단:
 AskUserQuestion으로 태스크를 입력받고 task.txt에 저장:
 
 ```bash
-echo "{사용자 입력}" > docs/ai-company/.state/task.txt
-echo "none" > docs/ai-company/.state/stage.txt
+echo "{사용자 입력}" > docs/sj-company/.state/task.txt
+echo "none" > docs/sj-company/.state/stage.txt
 ```
 
 이후 `Skill("sj-company:pm")` 호출.
@@ -79,8 +79,8 @@ PM 분석이 완료됐습니다.
 **STAGE=done 처리:**
 
 ```bash
-cat docs/ai-company/pm-output.md 2>/dev/null | head -5
-cat docs/ai-company/qa-output.md 2>/dev/null | grep "판정:"
+cat docs/sj-company/pm-output.md 2>/dev/null | head -5
+cat docs/sj-company/qa-output.md 2>/dev/null | grep "판정:"
 ```
 
 완료 요약 출력. AskUserQuestion으로 새 태스크 여부 확인:
@@ -106,7 +106,7 @@ cat docs/ai-company/qa-output.md 2>/dev/null | grep "판정:"
 메시지를 task.txt에 저장 후 라우팅:
 
 ```bash
-echo "{메시지}" > docs/ai-company/.state/task.txt
+echo "{메시지}" > docs/sj-company/.state/task.txt
 ```
 
 > **참고:** "기능 추가" 라우팅에서 PM 완료 후 STAGE=pm과 동일한 AskUserQuestion을 제시한다 (Design 먼저 vs Dev 바로 진행).
