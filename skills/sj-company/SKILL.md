@@ -25,10 +25,10 @@ mkdir -p docs/ai-company/.state
 
 _STAGE=$(cat docs/ai-company/.state/stage.txt 2>/dev/null | tr -d '[:space:]')
 _TASK=$(cat docs/ai-company/.state/task.txt 2>/dev/null)
-_HAS_PM=$([ -f "docs/ai-company/pm-output.md" ] && echo "yes" || echo "no")
-_HAS_DESIGN=$([ -f "docs/ai-company/design-output.md" ] && echo "yes" || echo "no")
-_HAS_DEV=$([ -f "docs/ai-company/dev-output.md" ] && echo "yes" || echo "no")
-_HAS_QA=$([ -f "docs/ai-company/qa-output.md" ] && echo "yes" || echo "no")
+_HAS_PM=$([ -s "docs/ai-company/pm-output.md" ] && echo "yes" || echo "no")
+_HAS_DESIGN=$([ -s "docs/ai-company/design-output.md" ] && echo "yes" || echo "no")
+_HAS_DEV=$([ -s "docs/ai-company/dev-output.md" ] && echo "yes" || echo "no")
+_HAS_QA=$([ -s "docs/ai-company/qa-output.md" ] && echo "yes" || echo "no")
 
 echo "STAGE: ${_STAGE:-none}"
 echo "TASK: ${_TASK:-없음}"
@@ -101,13 +101,15 @@ cat docs/ai-company/qa-output.md 2>/dev/null | grep "판정:"
 | 디자인, UI, 화면, 레이아웃 | `Skill("sj-company:design")` |
 | 기획, 요구사항, 스펙, 분석 | `Skill("sj-company:pm")` |
 | 테스트, 검증, 확인 | `Skill("sj-company:qa")` |
-| 기능 추가, 새 기능, 구현 | `Skill("sj-company:pm")` → Design/Dev 판단 → `Skill("sj-company:qa")` |
+| 기능 추가, 새 기능, 구현 | `Skill("sj-company:pm")` 완료 후 AskUserQuestion으로 Design/Dev 선택 → `Skill("sj-company:qa")` |
 
 메시지를 task.txt에 저장 후 라우팅:
 
 ```bash
 echo "{메시지}" > docs/ai-company/.state/task.txt
 ```
+
+> **참고:** "기능 추가" 라우팅에서 PM 완료 후 STAGE=pm과 동일한 AskUserQuestion을 제시한다 (Design 먼저 vs Dev 바로 진행).
 
 ---
 

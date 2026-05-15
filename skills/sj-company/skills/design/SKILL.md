@@ -74,7 +74,7 @@ ls /Users/songseungju/awesome-design-md/design-md/
 design-context.md의 primary 브랜드 DESIGN.md를 읽는다:
 
 ```bash
-PRIMARY_BRAND=$(grep "^- primary:" docs/ai-company/design-context.md | awk '{print $3}')
+PRIMARY_BRAND=$(grep "^- primary:" docs/ai-company/design-context.md | sed 's/^- primary:[[:space:]]*//' | awk '{print $1}')
 DESIGN_REF="/Users/songseungju/awesome-design-md/design-md/${PRIMARY_BRAND}/DESIGN.md"
 
 if [ -f "$DESIGN_REF" ]; then
