@@ -9,23 +9,29 @@ const DEPT_COLOR = {
   QA:     'blue',
 };
 
-export function LogPanel({ logs }) {
+export function LogPanel({ logs, scrollOffset = 0, visibleCount = 5, focused = false }) {
   if (!logs || logs.length === 0) {
     return (
       <Box flexDirection="column" paddingX={1} flexGrow={1}>
-        <Text bold>부서 로그</Text>
+        <Text bold color={focused ? 'cyan' : undefined}>부서 로그</Text>
         <Text color="gray">(아직 로그가 없습니다)</Text>
       </Box>
     );
   }
 
-  const visible = logs.slice(-15);
+  const total = logs.length;
+  const end = total - scrollOffset;
+  const start = Math.max(0, end - visibleCount);
+  const visible = logs.slice(start, end);
+
+  const headerColor = focused ? 'cyan' : undefined;
+  const headerText = scrollOffset > 0 ? `부서 로그 ↑ ${scrollOffset}개 위` : '부서 로그';
 
   return (
     <Box flexDirection="column" paddingX={1} flexGrow={1}>
-      <Text bold>부서 로그 <Text color="gray">[Ctrl+L 토글]</Text></Text>
+      <Text bold color={headerColor}>{headerText}</Text>
       {visible.map((entry, i) => (
-        <Box key={i} flexDirection="column" marginBottom={1}>
+        <Box key={start + i} flexDirection="column" marginBottom={1}>
           <Text color={DEPT_COLOR[entry.dept] ?? 'white'} bold>
             [{entry.dept}] {entry.timestamp}
           </Text>
