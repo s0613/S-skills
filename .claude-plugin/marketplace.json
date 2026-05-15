@@ -1,14 +1,14 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "s-skills",
-  "description": "Project documentation and test scenario management skills",
+  "description": "Project documentation, test scenario, and AI company skills",
   "owner": {
     "name": "songseungju"
   },
   "plugins": [
     {
       "name": "s-skills",
-      "description": "Harness + docs-organize + test-scenario skills",
+      "description": "Harness + docs-organize + test-scenario + sj-company skills",
       "author": {
         "name": "songseungju"
       },
