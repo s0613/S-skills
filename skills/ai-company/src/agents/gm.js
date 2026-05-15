@@ -31,7 +31,6 @@ function callAgent(dept, task, context = '') {
       '--tools', '',
       '--model', 'sonnet',
       '--output-format', 'json',
-      '--no-session-persistence',
     ];
 
     const proc = spawn('claude', args, { stdio: ['ignore', 'pipe', 'pipe'] });
