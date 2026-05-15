@@ -148,6 +148,7 @@ _CYCLE=$(cat docs/pw-loop/.state/cycle.txt 2>/dev/null || echo "0")
 case "$_CYCLE" in ''|*[!0-9]*) _CYCLE=0 ;; esac
 _NEXT_CYCLE=$(( _CYCLE + 1 ))
 echo "$_NEXT_CYCLE" > docs/pw-loop/.state/cycle.txt
+echo "0" > docs/pw-loop/.state/fix-attempts.txt
 
 # testDir 확정 후 파일에 저장 (Fix 모드에서 재사용)
 _TEST_DIR=$(cat docs/pw-loop/.state/test-dir.txt 2>/dev/null || echo "tests/e2e")
@@ -404,19 +405,34 @@ EOF
 _CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
 _THRESHOLD=$(cat docs/pw-loop/.state/threshold.txt 2>/dev/null || echo "80")
 _SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
-_RATE=$(python3 -c "import json; d=json.load(open('${_SUMMARY_FILE}')); print(d['rate'])" 2>/dev/null || echo 0)
-case "$_RATE" in ''|*[!0-9]*) _RATE=0 ;; esac
 
-if [ "$_RATE" -ge "$_THRESHOLD" ]; then
-  echo "GATE: PASS — ${_RATE}% >= ${_THRESHOLD}%"
+_RATE=$(python3 -c "import json; d=json.load(open('${_SUMMARY_FILE}')); print(d['rate'])" 2>/dev/null || echo 0)
+_FAILED=$(python3 -c "import json; d=json.load(open('${_SUMMARY_FILE}')); print(d['failed'])" 2>/dev/null || echo 0)
+case "$_RATE" in ''|*[!0-9]*) _RATE=0 ;; esac
+case "$_FAILED" in ''|*[!0-9]*) _FAILED=0 ;; esac
+
+if [ "$_FAILED" -eq 0 ]; then
+  echo "GATE: COMPLETE — 모든 테스트 통과"
+elif [ "$_RATE" -ge "$_THRESHOLD" ]; then
+  echo "GATE: THRESHOLD_MET — ${_RATE}% 달성, 실패 ${_FAILED}건 잔류"
 else
-  echo "GATE: FAIL — ${_RATE}% < ${_THRESHOLD}%"
+  echo "GATE: IN_PROGRESS — ${_RATE}% < ${_THRESHOLD}%, 실패 ${_FAILED}건"
 fi
 ```
 
-**GATE: PASS** → Complete 모드로 진입.
+**GATE: COMPLETE** → Complete 모드로 진입.
 
-**GATE: FAIL** → Fix 모드로 진입.
+**GATE: THRESHOLD_MET** (threshold 달성했지만 실패 잔류):
+
+AskUserQuestion:
+```
+통과율 {RATE}%로 목표 {THRESHOLD}%를 달성했습니다.
+단, {FAILED}건의 실패가 남아있습니다.
+```
+- A) 잔여 실패도 수정 (추천) → Fix 모드로 진입
+- B) 현재 상태로 수용 → Complete 모드로 진입
+
+**GATE: IN_PROGRESS** → 사용자 확인 없이 즉시 Fix 모드로 자동 진입.
 
 ---
 
@@ -488,14 +504,21 @@ echo "dev" > docs/sj-company/.state/stage.txt
 
 `Skill("s-skills:sj-dev")` 호출.
 
-### Step 3: sj-dev 완료 후 재실행
+### Step 3: sj-dev 완료 후 재실행 → 게이트 재체크 루프
 
-sj-dev 완료 후 실패 테스트만 재실행:
+sj-dev 완료 직후, 사용자 확인 없이 즉시 실패 테스트를 재실행한다.
 
 ```bash
 _CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
 _SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
 _ARTIFACT_DIR="docs/pw-loop/reports/cycle-${_CYCLE}-artifacts-rerun"
+
+# fix 시도 횟수 증가
+_FIX_ATTEMPTS=$(cat docs/pw-loop/.state/fix-attempts.txt 2>/dev/null || echo "0")
+case "$_FIX_ATTEMPTS" in ''|*[!0-9]*) _FIX_ATTEMPTS=0 ;; esac
+_FIX_ATTEMPTS=$(( _FIX_ATTEMPTS + 1 ))
+echo "$_FIX_ATTEMPTS" > docs/pw-loop/.state/fix-attempts.txt
+echo "FIX_ATTEMPT: $_FIX_ATTEMPTS"
 
 # 실패 테스트의 describe 이름 추출 → grep 패턴으로 재실행
 _GREP_PATTERN=$(python3 -c "
@@ -574,15 +597,24 @@ EOF
 fi
 ```
 
-재실행 후 게이트 재체크 (Run 모드 Step 4 반복).
+**재실행 완료 후 즉시 Run 모드 Step 4(게이트 체크)로 돌아간다. 사용자 확인 없이 자동으로 루프한다.**
 
-**3회 이상 반복 실패 시** AskUserQuestion:
+fix-attempts가 3 이상이고 동일한 테스트가 계속 실패하면 AskUserQuestion:
 ```
-N번 수정 시도 후에도 {FAIL_COUNT}개 테스트가 실패합니다.
+{N}번 수정 시도 후에도 {FAIL_COUNT}개 테스트가 실패합니다.
+
+실패 테스트:
+- {test1}: {error 요약}
+- {test2}: {error 요약}
 ```
 - A) sj-dev 재시도 (다른 접근법으로)
-- B) 해당 테스트를 임시 skip 처리하고 다음 사이클로
+- B) 해당 테스트를 spec에서 test.skip으로 처리 후 계속
 - C) 수동으로 확인 후 계속
+
+fix-attempts 카운터는 Generate Step 1(새 Cycle 시작)에서 초기화:
+```bash
+echo "0" > docs/pw-loop/.state/fix-attempts.txt
+```
 
 ---
 
