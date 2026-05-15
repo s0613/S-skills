@@ -6,14 +6,15 @@ export const DEPT_PROMPTS = {
 {
   "analysis": "작업 분석 요약",
   "plan": [
-    { "dept": "PM"|"Dev"|"Design"|"QA", "task": "구체적 지시", "budget": 숫자(토큰) }
+    { "dept": "PM"|"Dev"|"Design"|"QA", "task": "구체적 지시", "budget": 숫자(토큰), "parallel": false }
   ],
   "message_to_user": "사용자에게 보여줄 자연어 설명"
 }
 
 원칙:
-- 버그 수정: PM(분석) → Dev(수정) → QA(검증) 순서로
-- 신규 기능: PM(요구사항) → Design+Dev(병렬) → QA 순서로
+- 버그 수정: PM(분석) → Dev(수정) → QA(검증) 순서로, 모두 parallel: false
+- 신규 기능: PM(요구사항, parallel:false) → Design+Dev(병렬, parallel:true) → QA(parallel:false)
+- parallel:true인 연속된 스텝들은 동시에 실행됨
 - 각 부서 예산은 작업 복잡도에 비례해 배분`,
 
   PM: `당신은 AI SI 회사의 PM(프로젝트 매니저)입니다.

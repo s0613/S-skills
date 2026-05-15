@@ -42,26 +42,64 @@ export async function orchestrate({ userMessage, projectContext, onUpdate }) {
     return { success: false, error: 'GM이 계획을 수립하지 못했습니다.' };
   }
 
-  // 2. 부서별 순차 실행
+  // 2. 병렬 그룹으로 묶어서 실행
   const results = {};
-  let previousOutput = '';
 
-  for (const step of plan.plan) {
-    const { dept, task, budget } = step;
+  // consecutive parallel:true steps → same group
+  const groups = [];
+  let i = 0;
+  while (i < plan.plan.length) {
+    if (plan.plan[i].parallel) {
+      const group = [];
+      while (i < plan.plan.length && plan.plan[i].parallel) {
+        group.push(plan.plan[i]);
+        i++;
+      }
+      groups.push(group);
+    } else {
+      groups.push([plan.plan[i]]);
+      i++;
+    }
+  }
 
-    onUpdate({ dept, status: 'in_progress', message: `${dept} 작업 시작...` });
+  let sharedContext = '';
 
-    const deptResult = await callAgent(dept, task, budget || 8000, previousOutput);
-    results[dept] = deptResult.result;
-    previousOutput = deptResult.raw;
-
-    onUpdate({
-      dept,
-      status: 'completed',
-      message: `${dept} 완료`,
-      tokensUsed: deptResult.used,
-      result: deptResult.result,
-    });
+  for (const group of groups) {
+    if (group.length > 1) {
+      // 병렬 실행
+      for (const step of group) {
+        onUpdate({ dept: step.dept, status: 'in_progress', message: `${step.dept} 작업 시작... (병렬)` });
+      }
+      const groupResults = await Promise.all(
+        group.map(async ({ dept, task, budget: stepBudget }) => {
+          const deptResult = await callAgent(dept, task, stepBudget || 8000, sharedContext);
+          results[dept] = deptResult.result;
+          onUpdate({
+            dept,
+            status: 'completed',
+            message: `${dept} 완료 (병렬)`,
+            tokensUsed: deptResult.used,
+            result: deptResult.result,
+          });
+          return deptResult.raw;
+        })
+      );
+      sharedContext = groupResults.join('\n---\n');
+    } else {
+      // 순차 실행
+      const { dept, task, budget: stepBudget } = group[0];
+      onUpdate({ dept, status: 'in_progress', message: `${dept} 작업 시작...` });
+      const deptResult = await callAgent(dept, task, stepBudget || 8000, sharedContext);
+      results[dept] = deptResult.result;
+      sharedContext = deptResult.raw;
+      onUpdate({
+        dept,
+        status: 'completed',
+        message: `${dept} 완료`,
+        tokensUsed: deptResult.used,
+        result: deptResult.result,
+      });
+    }
   }
 
   return { success: true, plan, results };
