@@ -1,8 +1,8 @@
 ---
 name: s-skills
-version: 2.2.0
+version: 2.4.0
 description: |
-  S-skills 하네스. 프로젝트 상태를 감지하고 docs-organize, test-scenario 스킬을
+  S-skills 하네스. 프로젝트 상태를 감지하고 docs-organize, test-scenario, pw-loop 스킬을
   오케스트레이션한다. /s-skills 하나로 지금 무엇이 필요한지 판단해 적절한 스킬을 호출.
 allowed-tools:
   - Bash
@@ -19,7 +19,7 @@ triggers:
 
 # S-skills Harness
 
-프로젝트 상태를 읽고 docs-organize → test-scenario 흐름을 오케스트레이션한다.
+프로젝트 상태를 읽고 docs-organize → test-scenario / pw-loop 흐름을 오케스트레이션한다.
 각 스킬은 독립 호출도 가능하지만, 이 하네스가 "지금 무엇을 해야 하는가"를 판단한다.
 
 ---
@@ -86,6 +86,33 @@ if [ -d "docs/test-scenarios" ]; then
   fi
 fi
 
+# ── pw-loop 상태 ──
+_PW_CYCLE="0"
+_PW_RATE="0"
+_PW_STATUS="NOT_STARTED"
+_PW_THRESHOLD="80"
+
+if [ -d "docs/pw-loop" ]; then
+  _PW_CYCLE_RAW=$(cat "docs/pw-loop/.state/cycle.txt" 2>/dev/null)
+  _PW_CYCLE="${_PW_CYCLE_RAW:-0}"
+  case "$_PW_CYCLE" in ''|*[!0-9]*) _PW_CYCLE=0 ;; esac
+
+  _PW_THRESHOLD_RAW=$(cat "docs/pw-loop/.state/threshold.txt" 2>/dev/null)
+  _PW_THRESHOLD="${_PW_THRESHOLD_RAW:-80}"
+  case "$_PW_THRESHOLD" in ''|*[!0-9]*) _PW_THRESHOLD=80 ;; esac
+
+  if [ "$_PW_CYCLE" -gt 0 ]; then
+    _PW_RATE_RAW=$(python3 -c "import json; d=json.load(open('docs/pw-loop/reports/cycle-${_PW_CYCLE}-summary.json')); print(d.get('rate',0))" 2>/dev/null || echo 0)
+    _PW_RATE="${_PW_RATE_RAW:-0}"
+
+    if [ "$_PW_RATE" -ge "$_PW_THRESHOLD" ]; then
+      _PW_STATUS="COMPLETE"
+    else
+      _PW_STATUS="IN_PROGRESS"
+    fi
+  fi
+fi
+
 # ── sj-company 상태 ──
 _SJ_STAGE=$(cat "docs/sj-company/.state/stage.txt" 2>/dev/null | tr -d '[:space:]')
 _SJ_STAGE="${_SJ_STAGE:-none}"
@@ -98,6 +125,9 @@ echo "TS_CYCLE: $_TS_CYCLE"
 echo "TS_PASS_RATE: $_TS_PASS_RATE%"
 echo "TS_STATUS: $_TS_STATUS"
 echo "SCENARIO_COUNT: ${_SCENARIO_COUNT:-0}"
+echo "PW_CYCLE: $_PW_CYCLE"
+echo "PW_PASS_RATE: $_PW_RATE%"
+echo "PW_STATUS: $_PW_STATUS"
 echo "SJ_STAGE: $_SJ_STAGE"
 echo "SJ_TASK: ${_SJ_TASK:-없음}"
 
@@ -124,7 +154,7 @@ fi
 
 Preamble 결과를 바탕으로 아래 순서로 판단한다.
 
-> **판단 우선순위:** Case 0 → Case 5 → Case 1 → Case 2 → Case 3 → Case 4
+> **판단 우선순위:** Case 0 → Case 5 → Case 6 → Case 1 → Case 2 → Case 3 → Case 4
 
 ### Case 0: 업그레이드 가능 (`UPGRADE_AVAILABLE` 감지 시)
 
@@ -176,6 +206,23 @@ echo "" > docs/sj-company/.state/task.txt
 
 ---
 
+### Case 6: pw-loop 진행 중 (`PW_STATUS=IN_PROGRESS`)
+
+Case 5 다음에 확인. pw-loop 사이클이 진행 중(목표 미달)이면 처리.
+
+AskUserQuestion:
+
+```
+pw-loop Cycle {PW_CYCLE} 진행 중입니다.
+현재 통과율: {PW_RATE}% / 목표: {PW_THRESHOLD}%
+```
+
+옵션:
+- A) 이어서 진행 (추천) → `Skill("s-skills:pw-loop")` 호출
+- B) 무시하고 다른 작업 → Case 1 판단으로 이동
+
+---
+
 ### Case 1: 문서 없음 (`HAS_DOCS=no`)
 
 AskUserQuestion으로 확인:
@@ -190,20 +237,20 @@ AskUserQuestion으로 확인:
 - B) test-scenario 바로 시작 → ⚠️ 경고: docs/ 없이 시작하면 일부 기능이 제한됩니다. 계속 진행합니다. Case 3으로 이동
 - C) 현황만 보기 → 현재 상태 요약 출력 후 종료
 
-### Case 2: 문서 있음, 시나리오 미시작 (`HAS_DOCS=yes`, `TS_STATUS=NOT_STARTED`)
+### Case 2: 문서 있음, 시나리오 미시작 (`HAS_DOCS=yes`, `TS_STATUS=NOT_STARTED`, `PW_STATUS=NOT_STARTED`)
 
 AskUserQuestion:
 
 ```
 docs/가 있습니다. (점수: {DOC_SCORE}/100)
-다음 단계로 test-scenario를 시작해 기능 검증을 할 수 있습니다.
+테스트 방식을 선택하세요:
 ```
 
 옵션:
-- A) test-scenario generate 시작 (추천) → Skill 도구로 `s-skills:test-scenario` 호출
-- B) sj-company 투입 (개발 작업) → Skill 도구로 `s-skills:sj-company` 호출
-- C) docs-organize 재실행 (문서 업데이트) → Skill 도구로 `s-skills:docs-organize` 호출
-- D) 현황만 보기 → 현재 상태 요약 출력 후 종료
+- A) pw-loop 시작 (Playwright 자동화, 추천) → Skill 도구로 `s-skills:pw-loop` 호출
+- B) test-scenario 시작 (Chrome 확장 수동) → Skill 도구로 `s-skills:test-scenario` 호출
+- C) sj-company 투입 (개발 작업) → Skill 도구로 `s-skills:sj-company` 호출
+- D) docs-organize 재실행 (문서 업데이트) → Skill 도구로 `s-skills:docs-organize` 호출
 
 ### Case 3: 시나리오 진행 중 (`TS_STATUS=GENERATED` 또는 `IN_PROGRESS`)
 
@@ -242,23 +289,25 @@ echo "threshold" > docs/test-scenarios/.state/pending-mode.txt
 - A/B/D/E → Skill 도구로 `s-skills:test-scenario` 호출
 - C → Skill 도구로 `s-skills:docs-organize` 호출 (pending-mode 기록 불필요)
 
-### Case 4: 완료 (`TS_STATUS=COMPLETE`)
+### Case 4: 완료 (`TS_STATUS=COMPLETE` 또는 `PW_STATUS=COMPLETE`)
 
 ```
-모든 단계 완료.
+테스트 완료.
 - 문서 점수: {DOC_SCORE}/100
-- 테스트 통과율: {TS_PASS_RATE}% ({TS_CYCLE}사이클)
+- 테스트 통과율: {TS_PASS_RATE}% (test-scenario, {TS_CYCLE}사이클)
+- Playwright 통과율: {PW_RATE}% (pw-loop, {PW_CYCLE}사이클)
 ```
 
 AskUserQuestion:
 
 옵션:
 - A) sj-company 투입 (개발 작업) → Skill 도구로 `s-skills:sj-company` 호출
-- B) test-scenario 새 사이클 시작 → pending-mode 기록 후 Skill 도구로 `s-skills:test-scenario` 호출
-- C) docs-organize 재실행 (최신 상태 반영) → Skill 도구로 `s-skills:docs-organize` 호출
-- D) 종료
+- B) pw-loop 새 사이클 시작 → Skill 도구로 `s-skills:pw-loop` 호출
+- C) test-scenario 새 사이클 시작 → pending-mode 기록 후 Skill 도구로 `s-skills:test-scenario` 호출
+- D) docs-organize 재실행 (최신 상태 반영) → Skill 도구로 `s-skills:docs-organize` 호출
+- E) 종료
 
-B 선택 시 Skill 호출 전:
+C 선택 시 Skill 호출 전:
 
 ```bash
 mkdir -p docs/test-scenarios/.state
@@ -304,8 +353,9 @@ rm -f docs/test-scenarios/.state/pending-mode.txt 2>/dev/null || true
 ```
 S-skills 상태 요약
 ──────────────────
-문서      : {HAS_DOCS}  (점수: {DOC_SCORE}/100)
-시나리오  : {TS_STATUS} (사이클: {TS_CYCLE}, 통과율: {TS_PASS_RATE}%)
-SJ Company: {SJ_STAGE}  (태스크: {SJ_TASK})
-다음 추천 : {다음 액션 한 줄}
+문서        : {HAS_DOCS}  (점수: {DOC_SCORE}/100)
+test-scenario: {TS_STATUS} (사이클: {TS_CYCLE}, 통과율: {TS_PASS_RATE}%)
+pw-loop     : {PW_STATUS} (사이클: {PW_CYCLE}, 통과율: {PW_RATE}%)
+SJ Company  : {SJ_STAGE}  (태스크: {SJ_TASK})
+다음 추천   : {다음 액션 한 줄}
 ```
