@@ -107,12 +107,15 @@ fi
 | `PENDING_MODE` 값 있음 | PENDING_MODE 값으로 직접 진입 |
 | `PW_INSTALLED: no` | **setup** — Playwright 설치 먼저 |
 | `CYCLE: 0` | **generate** — 첫 실행, spec 생성 |
+| 유저 메시지에 수정 완료 내용 포함 | **rerun** — 수동 수정 후 재실행 |
 | `STATUS: COMPLETE` | **complete** — 목표 달성 |
 | 그 외 | AskUserQuestion으로 선택 |
 
+"수정 완료 내용 포함" 판단 기준: 유저가 버그 수정 내역, 코드 변경 내용, "수정했어", "고쳤어" 등을 메시지에 포함한 경우. 이 경우 sj-dev 없이 즉시 Run 모드 Step 2(Playwright 실행)로 진입한다.
+
 ```
 A) 새 Cycle 시작 (spec 재생성 + 실행)
-B) 현재 spec 그대로 실행
+B) 현재 spec 그대로 전체 재실행
 C) 실패 테스트만 재실행
 D) 현황 대시보드
 E) 목표 통과율 변경 (현재: {THRESHOLD}%)
@@ -351,10 +354,15 @@ failed = []
 def collect(suite, path=""):
     title = (path + "/" + suite.get('title', '')) if path else suite.get('title', '')
     for spec in suite.get('specs', []):
+        name = title + " > " + spec.get('title', '')
+        # spec.ok: true → test.fail()로 선언된 expected failure.
+        # 전체 spec이 OK이면 PASS로 처리 (개별 test status 무시)
+        if spec.get('ok', False):
+            passed.append(name)
+            continue
         for test in spec.get('tests', []):
             result = (test.get('results') or [{}])[-1]
             status = result.get('status', 'unknown')
-            name = title + " > " + spec.get('title', '')
             if status == 'passed':
                 passed.append(name)
             else:
@@ -369,6 +377,10 @@ def collect(suite, path=""):
 
 for s in data.get('suites', []):
     collect(s)
+
+# 중복 제거 (같은 spec에 tests 여러 개인 경우)
+passed = list(dict.fromkeys(passed))
+failed = [f for f in failed if f['name'] not in set(passed)]
 
 total = len(passed) + len(failed)
 rate = int(len(passed) * 100 / total) if total > 0 else 0
@@ -557,10 +569,13 @@ new_failed = []
 def collect(suite, path=""):
     title = (path + "/" + suite.get('title', '')) if path else suite.get('title', '')
     for spec in suite.get('specs', []):
+        name = title + " > " + spec.get('title', '')
+        if spec.get('ok', False):
+            new_passed.append(name)
+            continue
         for test in spec.get('tests', []):
             result = (test.get('results') or [{}])[-1]
             status = result.get('status', 'unknown')
-            name = title + " > " + spec.get('title', '')
             if status == 'passed':
                 new_passed.append(name)
             else:
@@ -571,6 +586,9 @@ def collect(suite, path=""):
 
 for s in new_data.get('suites', []):
     collect(s)
+
+new_passed = list(dict.fromkeys(new_passed))
+new_failed = [f for f in new_failed if f['name'] not in set(new_passed)]
 
 # 재실행 대상이 아닌 기존 PASS는 유지
 rerun_names = {f['name'] for f in new_failed} | set(new_passed)
