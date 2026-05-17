@@ -11,12 +11,12 @@
 
 ### SJ Company (역할 기반 개발 워크플로우)
 
-- **s-skills:sj-company** (`/ai`) — 상태/의도 기반 라우터. PM → Design → Tech Lead → QA
+- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터. PM → Design → Tech Lead → QA
 - **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석
 - **s-skills:sj-design** (`/design`) — UI/UX 명세 작성 + Frontend 시각 리뷰
 - **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰
 - **s-skills:sj-qa** (`/qa`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정
-- **s-skills:sj-secretary** (`/secretary`) — 비서. 부서별 산출물 요약·다음 명령 추천·성과 지표 (프로젝트 간 비교)
+- **s-skills:sj-secretary** (`/secretary`) — 비서. 총괄(sj-company)이 사이클 완료 시 작성한 report.md를 읽어 프로젝트별 현황·다음 명령·KPI를 요약 보고 (비서는 요약·전달만, 보고서 작성은 총괄 담당)
 
 ### Sub-agents (Tech Lead가 디스패치)
 
@@ -30,7 +30,7 @@
 ## 사용법
 
 어느 프로젝트에서든 `/s-skills`로 시작하면 현재 상태를 감지해 안내한다.
-새 태스크는 `/ai <태스크 설명>`으로 시작하면 PM부터 자동 라우팅된다.
+새 태스크는 `/sj-company <태스크 설명>`으로 시작하면 PM부터 자동 라우팅된다.
 
 ## Docs Reference
 - [PRD](docs/prd.md)

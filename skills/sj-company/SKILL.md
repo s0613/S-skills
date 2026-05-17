@@ -14,7 +14,7 @@ allowed-tools:
   - Skill
   - AskUserQuestion
 triggers:
-  - /ai
+  - /sj-company
 ---
 
 # SJ Company Harness
@@ -65,7 +65,7 @@ echo "PM: $_HAS_PM | DESIGN: $_HAS_DESIGN | DEV: $_HAS_DEV | QA: $_HAS_QA"
 
 ## 라우팅 결정
 
-### Case A: 인자 없이 호출 (`/ai`) — 상태 기반
+### Case A: 인자 없이 호출 (`/sj-company`) — 상태 기반
 
 Preamble 결과를 바탕으로 판단:
 
@@ -173,7 +173,7 @@ echo "" > docs/sj-company/.state/task.txt
 
 ---
 
-### Case B: 인자와 함께 호출 (`/ai <메시지>`) — 의도 기반
+### Case B: 인자와 함께 호출 (`/sj-company <메시지>`) — 의도 기반
 
 메시지 내용을 분석해 적절한 역할로 라우팅:
 
