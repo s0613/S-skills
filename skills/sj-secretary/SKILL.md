@@ -1,10 +1,10 @@
 ---
 name: sj-secretary
-version: 1.1.0
+version: 1.2.0
 description: |
   비서(Secretary) 에이전트. sj-company가 투입된 모든 프로젝트의 총괄(sj-company 하네스)에게
   받는 보고를 모아, 프로젝트별 WBS 진행 상황·다음 명령 추천·전체 KPI를 사용자에게 한 번에 보고한다.
-  ~/.sj-company/projects.json 인덱스를 사용해 여러 프로젝트를 동시에 추적한다.
+  /secretary 호출 시 mdfind/find로 홈 디렉토리 아래의 모든 docs/sj-company 폴더를 자동 디스커버리해 등록한다.
 allowed-tools:
   - Bash
   - Read
@@ -49,7 +49,10 @@ triggers:
 3. **Surgical Changes** — 비서는 읽고 요약·조언만 한다.
 4. **Goal-Driven Execution** — 사용자가 어느 프로젝트에 다음 무슨 명령을 칠지 명확해져야 한다.
 
-## Step 1: 중앙 인덱스 준비 + 현재 프로젝트 자동 등록
+## Step 1: 중앙 인덱스 준비 + 자동 디스커버리
+
+`$HOME` 아래의 모든 `docs/sj-company` 폴더를 자동으로 찾아 인덱스에 등록한다.
+macOS는 Spotlight(`mdfind`)로 1초 이내, 그 외는 `find` 폴백.
 
 ```bash
 CENTRAL="$HOME/.sj-company"
@@ -57,29 +60,63 @@ INDEX="$CENTRAL/projects.json"
 mkdir -p "$CENTRAL/projects"
 [ -f "$INDEX" ] || echo "{}" > "$INDEX"
 
-CUR_DIR="$(pwd)"
-
-# 현재 디렉터리에 docs/sj-company가 있으면 등록 (없으면 등록 안 함)
-if [ -d "$CUR_DIR/docs/sj-company" ]; then
-  python3 - "$INDEX" "$CUR_DIR" <<'PY'
-import json, os, sys
-idx_path, path = sys.argv[1], sys.argv[2]
-with open(idx_path) as f: idx = json.load(f)
-name = os.path.basename(path)
-slug = ''.join(c if c.isalnum() or c == '-' else '-' for c in name.lower())
-slug = '-'.join(p for p in slug.split('-') if p)
-# 동명 slug가 다른 path를 가리키면 부모 디렉토리 prefix
-if slug in idx and idx[slug] != path:
-    parent = os.path.basename(os.path.dirname(path))[:6].lower()
-    slug = f"{parent}-{slug}"
-idx[slug] = path
-with open(idx_path, "w") as f: json.dump(idx, f, indent=2, ensure_ascii=False)
-print(slug)
-PY
+# 디스커버리: docs/sj-company 후보 수집
+if command -v mdfind >/dev/null 2>&1; then
+  mdfind -onlyin "$HOME" "kMDItemFSName == 'sj-company'" 2>/dev/null > /tmp/sec-raw.txt
+else
+  find "$HOME" -type d -name sj-company \
+    -not -path '*/node_modules/*' \
+    -not -path '*/.git/*' \
+    -not -path '*/.Trash/*' \
+    -not -path '*/Library/*' \
+    -not -path '*/.cache/*' 2>/dev/null > /tmp/sec-raw.txt
 fi
+
+# 현재 디렉터리는 $HOME 밖일 수 있으므로 별도 추가
+[ -d "$(pwd)/docs/sj-company" ] && echo "$(pwd)/docs/sj-company" >> /tmp/sec-raw.txt
+
+# 후보 검증 + 인덱스 병합 (멱등, 기존 항목 보존)
+python3 - "$INDEX" /tmp/sec-raw.txt <<'PY'
+import json, os, sys
+idx_path, raw_path = sys.argv[1], sys.argv[2]
+with open(idx_path) as f: idx = json.load(f)
+
+discovered = set()
+with open(raw_path) as f:
+    for line in f:
+        d = line.strip()
+        if not d or not os.path.isdir(d): continue
+        if os.path.basename(d) != "sj-company": continue
+        # docs/sj-company 패턴만 인정
+        if os.path.basename(os.path.dirname(d)) != "docs": continue
+        project_root = os.path.dirname(os.path.dirname(d))
+        discovered.add(project_root)
+
+def make_slug(path, idx):
+    name = os.path.basename(path)
+    slug = ''.join(c if c.isalnum() or c == '-' else '-' for c in name.lower())
+    slug = '-'.join(p for p in slug.split('-') if p)
+    if slug in idx and idx[slug] != path:
+        parent = os.path.basename(os.path.dirname(path))[:6].lower()
+        slug = f"{parent}-{slug}"
+    return slug
+
+existing_paths = set(idx.values())
+added = 0
+for path in sorted(discovered):
+    if path in existing_paths: continue
+    slug = make_slug(path, idx)
+    idx[slug] = path
+    existing_paths.add(path)
+    added += 1
+
+with open(idx_path, "w") as f: json.dump(idx, f, indent=2, ensure_ascii=False)
+print(f"discovered={len(discovered)} added={added} total={len(idx)}")
+PY
 ```
 
-> 다른 프로젝트는 그곳에서 `/secretary`를 한 번 호출하면 자동 등록된다.
+> 사용자가 별도 등록 명령을 칠 필요 없음. `docs/sj-company` 폴더가 있는 모든 프로젝트는 다음 `/secretary` 호출에서 자동 잡힌다.
+> 디스커버리 범위에서 제외하려면 `~/.sj-company/projects.json`에서 해당 항목을 직접 삭제하면 되지만, 다음 스캔에서 다시 등록될 수 있다. 영구 제외는 `~/.sj-company/blacklist.txt`에 절대경로 한 줄씩 적는다 (현재 미구현, 필요해지면 추가).
 
 ## Step 2: 등록된 모든 프로젝트의 상태 수집
 
@@ -219,6 +256,7 @@ stage + WBS 상태로 1개 명령을 추천(근거 한 줄 포함):
 현재 프로젝트(`docs/sj-company`가 있는 경우)에 한해 스냅샷·로그 저장:
 
 ```bash
+CUR_DIR="$(pwd)"
 if [ -d "$CUR_DIR/docs/sj-company" ]; then
   SLUG=$(python3 -c "
 import json, os
