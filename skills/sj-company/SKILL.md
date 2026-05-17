@@ -101,6 +101,12 @@ echo "LEFTOVER: ${_LEFTOVER:-없음}"
 
 ```bash
 echo "{사용자 입력}" > docs/sj-company/.state/task.txt
+# 새 사이클 시작: 이전 사이클 산출물·타임스탬프 초기화 (크로스-사이클 mtime 오염 방지)
+> docs/sj-company/pm-output.md
+> docs/sj-company/design-output.md
+> docs/sj-company/dev-output.md
+> docs/sj-company/qa-output.md
+echo "{}" > docs/sj-company/.state/timestamps.json
 ```
 
 이후 `Skill("s-skills:sj-pm")` 호출.
@@ -126,12 +132,63 @@ PM 분석이 완료됐습니다.
 TASK_TEXT=$(cat docs/sj-company/.state/task.txt 2>/dev/null)
 QA_VERDICT=$(grep -oE 'PASS|FAIL|CONDITIONAL' docs/sj-company/qa-output.md 2>/dev/null | head -1)
 NOW=$(date "+%Y-%m-%d %H:%M")
-PM_MTIME=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" docs/sj-company/pm-output.md 2>/dev/null || echo "-")
-DESIGN_STATUS=$([ -s docs/sj-company/design-output.md ] && echo "✅ 완료" || echo "⏭️ 생략")
-DESIGN_MTIME=$([ -s docs/sj-company/design-output.md ] && stat -f "%Sm" -t "%Y-%m-%d %H:%M" docs/sj-company/design-output.md 2>/dev/null || echo "-")
-DEV_MTIME=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" docs/sj-company/dev-output.md 2>/dev/null || echo "-")
-QA_MTIME=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" docs/sj-company/qa-output.md 2>/dev/null || echo "-")
-QA_SUMMARY=$(grep -A5 "판정" docs/sj-company/qa-output.md 2>/dev/null | head -8)
+
+# 타임스탬프: timestamps.json 우선, 없으면 mtime 폴백
+eval "$(python3 - <<'PY'
+import json, os, subprocess
+
+ts_path = "docs/sj-company/.state/timestamps.json"
+ts = {}
+try:
+    ts = json.load(open(ts_path))
+except Exception:
+    pass
+
+def mtime(f):
+    try:
+        r = subprocess.run(["stat", "-f", "%Sm", "-t", "%Y-%m-%d %H:%M", f],
+                           capture_output=True, text=True)
+        return r.stdout.strip() if r.returncode == 0 else "-"
+    except Exception:
+        return "-"
+
+pm  = ts.get("pm",  mtime("docs/sj-company/pm-output.md"))
+dev = ts.get("dev", mtime("docs/sj-company/dev-output.md"))
+qa  = ts.get("qa",  mtime("docs/sj-company/qa-output.md"))
+
+has_design = (os.path.isfile("docs/sj-company/design-output.md")
+              and os.path.getsize("docs/sj-company/design-output.md") > 0)
+design_status = "✅ 완료" if has_design else "⏭️ 생략"
+design_mtime  = ts.get("design", mtime("docs/sj-company/design-output.md")) if has_design else "-"
+
+print(f'PM_MTIME="{pm}"')
+print(f'DESIGN_STATUS="{design_status}"')
+print(f'DESIGN_MTIME="{design_mtime}"')
+print(f'DEV_MTIME="{dev}"')
+print(f'QA_MTIME="{qa}"')
+PY
+)"
+
+# QA 요약: 판정 섹션 전체 추출 (다음 ## 이전까지, 최대 800자)
+QA_SUMMARY=$(python3 - <<'PY'
+import re
+try:
+    text = open("docs/sj-company/qa-output.md", encoding="utf-8").read()
+    m = re.search(r'(#{1,3}\s*판정.+?)(?=\n#{1,3}\s|\Z)', text, re.DOTALL)
+    if m:
+        print(m.group(1).strip()[:800])
+    else:
+        lines = text.splitlines()
+        for i, line in enumerate(lines):
+            if "판정" in line:
+                print("\n".join(lines[i:i+25]))
+                break
+        else:
+            print("(판정 섹션 없음)")
+except Exception as e:
+    print(f"(QA 요약 추출 실패: {e})")
+PY
+)
 ```
 
 위 변수를 사용해 `docs/sj-company/report.md`를 **Write 툴로** 작성한다:
@@ -199,6 +256,12 @@ echo "" > docs/sj-company/.state/task.txt
 
 ```bash
 echo "{메시지}" > docs/sj-company/.state/task.txt
+# 새 사이클 시작: 이전 사이클 산출물·타임스탬프 초기화 (크로스-사이클 mtime 오염 방지)
+> docs/sj-company/pm-output.md
+> docs/sj-company/design-output.md
+> docs/sj-company/dev-output.md
+> docs/sj-company/qa-output.md
+echo "{}" > docs/sj-company/.state/timestamps.json
 ```
 
 > **참고:** "기능 추가" 라우팅에서 PM 완료 후 STAGE=pm과 동일한 AskUserQuestion을 제시한다 (Design 먼저 vs Tech Lead 바로 진행).
@@ -208,6 +271,32 @@ echo "{메시지}" > docs/sj-company/.state/task.txt
 ## 스킬 호출 완료 후 귀환
 
 각 서브스킬 완료 후:
+
+0. 완료된 단계의 타임스탬프를 timestamps.json에 기록 (아직 기록 안 된 경우에만):
+
+```bash
+_CURRENT_STAGE=$(cat docs/sj-company/.state/stage.txt 2>/dev/null | tr -d '[:space:]')
+# stage.txt 값 → timestamps.json 키 매핑
+case "$_CURRENT_STAGE" in
+  pm)     _TS_KEY="pm" ;;
+  design) _TS_KEY="design" ;;
+  dev)    _TS_KEY="dev" ;;
+  done)   _TS_KEY="qa" ;;
+  *)      _TS_KEY="" ;;
+esac
+if [ -n "$_TS_KEY" ]; then
+  python3 -c "
+import json, datetime, os, sys
+p = 'docs/sj-company/.state/timestamps.json'
+key = sys.argv[1]
+ts = json.load(open(p)) if os.path.exists(p) else {}
+if key not in ts:
+    ts[key] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+    json.dump(ts, open(p, 'w'), ensure_ascii=False)
+" "$_TS_KEY"
+fi
+```
+
 1. 상태 재감지 (Preamble 재실행)
 2. 완료된 결과물 요약 출력
 3. 다음 단계 제안
