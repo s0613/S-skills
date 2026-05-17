@@ -16,6 +16,7 @@
 - **s-skills:sj-design** (`/design`) — UI/UX 명세 작성 + Frontend 시각 리뷰
 - **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰
 - **s-skills:sj-qa** (`/qa`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정
+- **s-skills:sj-secretary** (`/secretary`) — 비서. 부서별 산출물 요약·다음 명령 추천·성과 지표 (프로젝트 간 비교)
 
 ### Sub-agents (Tech Lead가 디스패치)
 
