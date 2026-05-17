@@ -1,10 +1,10 @@
 ---
 name: pw-loop
-version: 1.2.0
+version: 2.0.0
 description: |
-  Playwright 테스트를 자동 생성·실행·수정하는 반복 루프 스킬.
-  spec 파일 생성 → npx playwright test 실행 → 실패 분석 → sj-dev 수정 →
-  재실행 사이클을 목표 통과율 달성까지 반복한다.
+  기능 단위 Playwright 테스트 반복 루프.
+  한 번에 하나의 기능(feature)을 집중 테스트.
+  시나리오를 심화하며 기능을 완전히 검증한 후 다음 기능으로 이동한다.
 allowed-tools:
   - Bash
   - Read
@@ -18,21 +18,29 @@ triggers:
   - /pw-loop
 ---
 
-# pw-loop
+# pw-loop — 기능 단위 반복 루프
 
-Playwright E2E 테스트 자동화 반복 루프.
+## 절대 규칙
 
-## 절대 규칙 — 반드시 지킬 것
-
-- **Chrome 확장 사용 금지.** 이 스킬은 Chrome 확장과 무관하다. 사용자에게 시나리오를 붙여넣으라고 요청하지 않는다.
-- **사용자에게 테스트 실행을 위임하지 않는다.** `npx playwright test`는 Claude가 Bash 도구로 직접 실행한다.
-- **Generate 완료 즉시 Run 모드로 자동 진입한다.** 사용자 확인 없이 바로 Playwright를 실행한다.
-- test-scenario 스킬의 `[결과]...[/결과]` 블록 형식은 이 스킬과 관계없다. 사용하지 않는다.
+- **Chrome 확장 사용 금지.** `npx playwright test`는 Claude가 Bash로 직접 실행한다.
+- **사용자에게 테스트 위임 금지.**
+- **기능 목표 준수.** sj-dev 수정은 `feature-goal.txt`에 정의된 범위 내에서만. 범위 밖 수정이 필요하면 → AskUserQuestion 에스컬레이션.
+- **PASS 즉시 다음 시나리오 자동 진입.** 사용자 확인 없이.
+- **기능 완료 즉시 다음 기능 자동 진입.** 사용자 확인 없이.
+- **현재 기능의 spec 파일만 실행.** 다른 기능 spec은 건드리지 않는다.
 
 ```
-generate specs → (자동) → npx playwright test → parse → fix (sj-dev) → re-run → report
-                                                              ↑________________________|
-                                                              목표 통과율 미달 시 반복
+[기능 대기열]
+    ↓
+[기능 시작] → goal 확정 (feature-goal.txt 저장)
+    ↓
+[Scenario 1: happy-path 생성] → [실행]
+    ↓ PASS                         ↓ FAIL
+[Scenario 2 생성] → [실행]     [fix (목표 범위)] → [재실행]
+    ↓ PASS                         ↓ FAIL x3
+    ...                        [에스컬레이션]
+    ↓ 모든 시나리오 PASS
+[기능 완료] → 다음 기능
 ```
 
 ---
@@ -43,59 +51,39 @@ generate specs → (자동) → npx playwright test → parse → fix (sj-dev) �
 
 ```bash
 _PW_DIR="docs/pw-loop"
-_STATE_DIR="$_PW_DIR/.state"
-mkdir -p "$_STATE_DIR" "$_PW_DIR/reports"
+_STATE="$_PW_DIR/.state"
+mkdir -p "$_STATE" "$_PW_DIR/reports"
 
-# 상태 읽기
-_CYCLE=$(cat "$_STATE_DIR/cycle.txt" 2>/dev/null || echo "0")
-case "$_CYCLE" in ''|*[!0-9]*) _CYCLE=0 ;; esac
-_THRESHOLD=$(cat "$_STATE_DIR/threshold.txt" 2>/dev/null || echo "80")
-case "$_THRESHOLD" in ''|*[!0-9]*) _THRESHOLD=80 ;; esac
-_DATE=$(date +%Y-%m-%d)
+# 기능 상태
+_QUEUE_COUNT=$(grep -c . "$_STATE/feature-queue.txt" 2>/dev/null || echo 0)
+case "$_QUEUE_COUNT" in ''|*[!0-9]*) _QUEUE_COUNT=0 ;; esac
+_CUR_FEATURE=$(cat "$_STATE/current-feature.txt" 2>/dev/null | tr -d '\n')
+_CUR_SLUG=$(cat "$_STATE/feature-slug.txt" 2>/dev/null | tr -d '\n')
+_CUR_GOAL=$(cat "$_STATE/feature-goal.txt" 2>/dev/null | head -3)
+_SCENARIO_IDX=$(cat "$_STATE/scenario-index.txt" 2>/dev/null || echo "0")
+case "$_SCENARIO_IDX" in ''|*[!0-9]*) _SCENARIO_IDX=0 ;; esac
+_SCENARIO_STATUS=$(cat "$_STATE/scenario-status.txt" 2>/dev/null | tr -d '[:space:]' || echo "none")
+_FIX_ATTEMPTS=$(cat "$_STATE/fix-attempts.txt" 2>/dev/null || echo "0")
+case "$_FIX_ATTEMPTS" in ''|*[!0-9]*) _FIX_ATTEMPTS=0 ;; esac
 
-# Playwright 설치 여부
+# 환경
+_PW_CONFIG=$(ls playwright.config.ts playwright.config.js playwright.config.mts 2>/dev/null | head -1)
+_TEST_DIR=$(cat "$_STATE/test-dir.txt" 2>/dev/null || echo "tests/e2e")
+_BASE_URL=$(cat "$_STATE/base-url.txt" 2>/dev/null || echo "http://localhost:3000")
+
+# Playwright 설치 확인
 _PW_INSTALLED="no"
 if npx playwright --version >/dev/null 2>&1 || [ -f "node_modules/.bin/playwright" ]; then
   _PW_INSTALLED="yes"
 fi
 
-# playwright.config 탐색 → testDir 확인
-_PW_CONFIG=$(ls playwright.config.ts playwright.config.js playwright.config.mts 2>/dev/null | head -1)
-_TEST_DIR=$(cat "$_STATE_DIR/test-dir.txt" 2>/dev/null || echo "tests/e2e")
-if [ -n "$_PW_CONFIG" ]; then
-  _TEST_DIR_RAW=$(grep -oE "testDir:\s*['\"]([^'\"]+)['\"]" "$_PW_CONFIG" 2>/dev/null | grep -oE "['\"][^'\"]+['\"]" | tr -d "'\"" | head -1)
-  [ -n "$_TEST_DIR_RAW" ] && _TEST_DIR="$_TEST_DIR_RAW"
-fi
-
-# 현재 사이클 통계 (summary.json이 있으면 파싱)
-_LAST_REPORT="$_PW_DIR/reports/cycle-${_CYCLE}-summary.json"
-_C_PASS=0; _C_FAIL=0; _C_TOTAL=0; _C_RATE=0
-if [ -f "$_LAST_REPORT" ] && [ "$_CYCLE" -gt 0 ]; then
-  _C_PASS=$(python3 -c "import json; d=json.load(open('$_LAST_REPORT')); print(d.get('passed',0))" 2>/dev/null || echo 0)
-  _C_FAIL=$(python3 -c "import json; d=json.load(open('$_LAST_REPORT')); print(d.get('failed',0))" 2>/dev/null || echo 0)
-  _C_TOTAL=$(( _C_PASS + _C_FAIL ))
-  [ "$_C_TOTAL" -gt 0 ] && _C_RATE=$(( (_C_PASS * 100) / _C_TOTAL )) || _C_RATE=0
-fi
-case "$_C_RATE" in ''|*[!0-9]*) _C_RATE=0 ;; esac
-
-# pending-mode (harness 라우팅용)
-_PENDING_MODE=$(cat "$_STATE_DIR/pending-mode.txt" 2>/dev/null | tr -d ' ')
-[ -n "$_PENDING_MODE" ] && rm -f "$_STATE_DIR/pending-mode.txt"
-
-echo "CYCLE: $_CYCLE"
-echo "THRESHOLD: ${_THRESHOLD}%"
-echo "PW_INSTALLED: $_PW_INSTALLED"
-echo "PW_CONFIG: ${_PW_CONFIG:-없음}"
-echo "TEST_DIR: $_TEST_DIR"
-echo "LAST_RESULT: PASS=${_C_PASS} FAIL=${_C_FAIL} RATE=${_C_RATE}%"
-echo "PENDING_MODE: ${_PENDING_MODE:-none}"
-
-# 완료 체크
-if [ "$_C_RATE" -ge "$_THRESHOLD" ] && [ "$_C_TOTAL" -gt 0 ]; then
-  echo "STATUS: COMPLETE"
-else
-  echo "STATUS: IN_PROGRESS"
-fi
+echo "=== pw-loop 상태 ==="
+echo "FEATURE: ${_CUR_FEATURE:-(없음)} [${_CUR_SLUG:-}]"
+echo "GOAL: ${_CUR_GOAL:-(미설정)}"
+echo "SCENARIO: ${_SCENARIO_IDX} | STATUS: ${_SCENARIO_STATUS}"
+echo "FIX_ATTEMPTS: ${_FIX_ATTEMPTS}"
+echo "QUEUE_COUNT: ${_QUEUE_COUNT}"
+echo "TEST_DIR: ${_TEST_DIR} | PW_INSTALLED: ${_PW_INSTALLED}"
 ```
 
 ---
@@ -104,22 +92,18 @@ fi
 
 | 조건 | 모드 |
 |------|------|
-| `PENDING_MODE` 값 있음 | PENDING_MODE 값으로 직접 진입 |
-| `PW_INSTALLED: no` | **setup** — Playwright 설치 먼저 |
-| `CYCLE: 0` | **generate** — 첫 실행, spec 생성 |
-| 유저 메시지에 수정 완료 내용 포함 | **rerun** — 수동 수정 후 재실행 |
-| `STATUS: COMPLETE` | **complete** — 목표 달성 |
-| 그 외 | AskUserQuestion으로 선택 |
+| `PW_INSTALLED: no` | **setup** |
+| `QUEUE_COUNT == 0` AND `CUR_FEATURE` 없음 | **init** |
+| `CUR_FEATURE` 없음 | **feature-start** |
+| `SCENARIO_IDX == 0` | **scenario-generate** (Scenario 1) |
+| `SCENARIO_STATUS == pass` | **scenario-next** |
+| `SCENARIO_STATUS == fail` AND `FIX_ATTEMPTS < 3` | **fix** |
+| `SCENARIO_STATUS == fail` AND `FIX_ATTEMPTS >= 3` | **escalate** |
+| `SCENARIO_STATUS == running` OR `none` | **run** |
+| 유저 메시지에 수정 완료 내용 포함 | **rerun** |
 
-"수정 완료 내용 포함" 판단 기준: 유저가 버그 수정 내역, 코드 변경 내용, "수정했어", "고쳤어" 등을 메시지에 포함한 경우. 이 경우 sj-dev 없이 즉시 Run 모드 Step 2(Playwright 실행)로 진입한다.
-
-```
-A) 새 Cycle 시작 (spec 재생성 + 실행)
-B) 현재 spec 그대로 전체 재실행
-C) 실패 테스트만 재실행
-D) 현황 대시보드
-E) 목표 통과율 변경 (현재: {THRESHOLD}%)
-```
+"수정 완료" 판단 기준: "수정했어", "고쳤어", 코드 변경 내역, 버그 수정 내용 포함 시.  
+→ sj-dev 없이 Run 모드 Step 2로 직접 진입.
 
 ---
 
@@ -136,162 +120,205 @@ AskUserQuestion:
 Playwright가 설치되어 있지 않습니다.
 ```
 - A) 지금 설치 (추천) → `npm install -D @playwright/test && npx playwright install --with-deps chromium`
-- B) 이미 설치돼 있음 (경로 문제) → 계속 진행
+- B) 이미 설치됨 (경로 문제) → 계속 진행
 
-설치 완료 후 Generate 모드로 진입.
+설치 완료 후 Init 또는 Feature-Start 모드로 진입.
 
 ---
 
-## Generate 모드
+## Init 모드
 
-### Step 1: 사이클 번호 증가
+기능 대기열이 없을 때.
 
 ```bash
-_CYCLE=$(cat docs/pw-loop/.state/cycle.txt 2>/dev/null || echo "0")
-case "$_CYCLE" in ''|*[!0-9]*) _CYCLE=0 ;; esac
-_NEXT_CYCLE=$(( _CYCLE + 1 ))
-echo "$_NEXT_CYCLE" > docs/pw-loop/.state/cycle.txt
-echo "0" > docs/pw-loop/.state/fix-attempts.txt
+# PRD에서 기능 목록 추출 시도
+[ -f "docs/prd.md" ] && grep -A 20 "## Features" docs/prd.md | head -20
+[ -f "docs/STATUS.md" ] && grep -A 20 "## Features" docs/STATUS.md | head -20
+```
 
-# testDir 확정 후 파일에 저장 (Fix 모드에서 재사용)
-_TEST_DIR=$(cat docs/pw-loop/.state/test-dir.txt 2>/dev/null || echo "tests/e2e")
+AskUserQuestion으로 테스트할 기능 목록 입력:
+```
+테스트할 기능 목록을 입력해주세요. (줄 구분)
+PRD에서 발견한 기능: {목록}
+```
+
+입력받은 기능 목록 저장:
+```bash
+# 입력받은 기능을 feature-queue.txt에 저장
+# 예: 사용자 입력 "로그인\n회원가입\n비밀번호 찾기"
+printf '%s\n' "{기능1}" "{기능2}" "{기능3}" > docs/pw-loop/.state/feature-queue.txt
+
+# testDir 확정 및 저장
 _PW_CONFIG=$(ls playwright.config.ts playwright.config.js playwright.config.mts 2>/dev/null | head -1)
+_TEST_DIR="tests/e2e"
 if [ -n "$_PW_CONFIG" ]; then
-  _TEST_DIR_RAW=$(grep -oE "testDir:\s*['\"]([^'\"]+)['\"]" "$_PW_CONFIG" 2>/dev/null | grep -oE "['\"][^'\"]+['\"]" | tr -d "'\"" | head -1)
+  _TEST_DIR_RAW=$(grep -oE "testDir:\s*['\"]([^'\"]+)['\"]" "$_PW_CONFIG" 2>/dev/null \
+    | grep -oE "['\"][^'\"]+['\"]" | tr -d "'\"" | head -1)
   [ -n "$_TEST_DIR_RAW" ] && _TEST_DIR="$_TEST_DIR_RAW"
 fi
 echo "$_TEST_DIR" > docs/pw-loop/.state/test-dir.txt
 mkdir -p "$_TEST_DIR"
-echo "NEXT_CYCLE: $_NEXT_CYCLE | TEST_DIR: $_TEST_DIR"
+
+# base-url 저장 (없으면 묻기)
+if [ ! -f "docs/pw-loop/.state/base-url.txt" ]; then
+  grep -oE "baseURL:\s*['\"][^'\"]+['\"]" "$_PW_CONFIG" 2>/dev/null \
+    | grep -oE "['\"][^'\"]+['\"]" | tr -d "'\"" | head -1 \
+    > docs/pw-loop/.state/base-url.txt
+  [ ! -s "docs/pw-loop/.state/base-url.txt" ] && echo "http://localhost:3000" > docs/pw-loop/.state/base-url.txt
+fi
+
+echo "대기열 저장 완료: $(cat docs/pw-loop/.state/feature-queue.txt | wc -l)개 기능"
 ```
 
-### Step 2: 기능 목록 수집
+이후 **feature-start** 모드로 자동 진입.
 
-우선순위 순서:
-1. `docs/pw-loop/.state/features.txt` (이전 확정 목록)
-2. `docs/prd.md` Features 섹션
-3. `docs/STATUS.md` Features 테이블
-4. 라우트/컴포넌트 직접 탐색
+---
+
+## Feature Start 모드
+
+대기열에서 다음 기능을 꺼내 시작한다.
+
+### Step 1: 기능 꺼내기
 
 ```bash
-find . -maxdepth 5 \
-  \( -path "*/pages/*.tsx" -o -path "*/pages/*.jsx" \
-     -o -path "*/app/*/page.tsx" -o -path "*/routes/*.ts" \) \
-  -not -path "*/node_modules/*" -not -path "*/_*" | head -20
+_NEXT_FEATURE=$(head -1 docs/pw-loop/.state/feature-queue.txt | tr -d '\r')
+_REMAINING=$(tail -n +2 docs/pw-loop/.state/feature-queue.txt)
+echo "$_REMAINING" > docs/pw-loop/.state/feature-queue.txt
 
-[ -f "docs/prd.md" ] && grep -A 30 "## Features" docs/prd.md | head -30
-[ -f "docs/pw-loop/.state/features.txt" ] && cat docs/pw-loop/.state/features.txt
+# 기능 번호 (slug용)
+_FEATURE_NUM=$(cat docs/pw-loop/.state/feature-num.txt 2>/dev/null || echo "0")
+case "$_FEATURE_NUM" in ''|*[!0-9]*) _FEATURE_NUM=0 ;; esac
+_FEATURE_NUM=$(( _FEATURE_NUM + 1 ))
+_SLUG="f${_FEATURE_NUM}"
+
+echo "$_NEXT_FEATURE" > docs/pw-loop/.state/current-feature.txt
+echo "$_SLUG" > docs/pw-loop/.state/feature-slug.txt
+echo "$_FEATURE_NUM" > docs/pw-loop/.state/feature-num.txt
+echo "0" > docs/pw-loop/.state/scenario-index.txt
+echo "none" > docs/pw-loop/.state/scenario-status.txt
+echo "0" > docs/pw-loop/.state/fix-attempts.txt
+echo "" > docs/pw-loop/.state/feature-goal.txt
+
+echo "FEATURE_STARTED: $_NEXT_FEATURE [slug: $_SLUG]"
+echo "REMAINING_QUEUE: $(cat docs/pw-loop/.state/feature-queue.txt | grep -c . 2>/dev/null || echo 0)개"
 ```
 
-수집한 기능 목록을 유저에게 보여주고 확인:
+### Step 2: 기능 목표 확정
 
-```
-Cycle N — 테스트 대상 기능 목록
-
-신규 (spec 없음):
-  1. 로그인
-  2. 회원가입
-
-재테스트 (이전 FAIL):
-  3. 비밀번호 찾기  [FAIL — Cycle N-1]
-
-안정 (연속 PASS, 스킵 가능):
-  4. 메인 페이지  [PASS x 2]
-
-제외할 항목이 있으면 말씀해주세요.
-```
-
-확정 후 `docs/pw-loop/.state/features.txt` 저장.
-
-### Step 3: Base URL 확인
+소스 코드에서 기능 컨텍스트 수집:
 
 ```bash
-grep -r "port\|PORT\|localhost" next.config* vite.config* package.json 2>/dev/null | grep -oE '[0-9]{4}' | head -5
-cat playwright.config.ts 2>/dev/null | grep "baseURL"
-cat docs/pw-loop/.state/base-url.txt 2>/dev/null
+_FEATURE=$(cat docs/pw-loop/.state/current-feature.txt)
+
+# PRD에서 기능 설명 추출
+[ -f "docs/prd.md" ] && grep -A 5 -i "$_FEATURE" docs/prd.md 2>/dev/null | head -10
+
+# 관련 소스 파일 탐색
+grep -rl "$_FEATURE" src/ app/ pages/ components/ \
+  --include="*.tsx" --include="*.ts" 2>/dev/null \
+  | grep -v node_modules | head -5 | xargs head -30 2>/dev/null
 ```
 
-`docs/pw-loop/.state/base-url.txt`가 없으면 AskUserQuestion으로 URL을 입력받아 저장:
+수집한 정보를 바탕으로 기능 목표를 **1-3문장**으로 정의하고 저장:
 
 ```bash
-# AskUserQuestion에서 받은 URL을 _INPUT_URL 변수에 담아 저장
-# 기본값: http://localhost:3000
-echo "${_INPUT_URL:-http://localhost:3000}" > docs/pw-loop/.state/base-url.txt
+# 아래는 예시 — 실제 기능에 맞게 작성
+cat > docs/pw-loop/.state/feature-goal.txt << 'GOAL_EOF'
+{기능 목표: 이 기능이 무엇을 해야 하는지 1-3문장으로 명확히 기술}
+{성공 조건 명시}
+{핵심 제약 조건 명시}
+GOAL_EOF
 ```
 
-### Step 4: spec 파일 생성
+**목표 작성 원칙:**
+- "로그인 기능: 이메일/비밀번호로 인증 → 성공 시 대시보드 이동, 실패 시 에러 표시. 세션 만료 시 로그인 페이지로 리다이렉트." 형식
+- 모호한 표현 없이 검증 가능한 동작 기술
+- 이 파일은 기능 완료까지 수정하지 않는다
 
-신규 + 재테스트 기능마다 `{TEST_DIR}/{feature-slug}.spec.ts` 생성 또는 교체.
+이후 **scenario-generate** 모드로 자동 진입.
+
+---
+
+## Scenario Generate 모드
+
+현재 기능의 다음 시나리오 spec 파일을 생성한다.
+
+### Step 1: 시나리오 번호 증가
+
+```bash
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt 2>/dev/null || echo "0")
+case "$_SCENARIO_IDX" in ''|*[!0-9]*) _SCENARIO_IDX=0 ;; esac
+_NEXT_IDX=$(( _SCENARIO_IDX + 1 ))
+echo "$_NEXT_IDX" > docs/pw-loop/.state/scenario-index.txt
+echo "running" > docs/pw-loop/.state/scenario-status.txt
+echo "0" > docs/pw-loop/.state/fix-attempts.txt
+echo "SCENARIO: $_NEXT_IDX"
+```
+
+**시나리오 유형 (순서 고정):**
+
+| 번호 | 유형 | 검증 내용 |
+|------|------|-----------|
+| 1 | happy-path | 기능의 주요 성공 경로 |
+| 2 | error-handling | 잘못된 입력, 에러 응답, 경계값 |
+| 3 | state-persistence | 상태 유지, 새로고침 후 동작, 세션 처리 |
+| 4+ | context-specific | 기능 목표에 미검증 동작이 있는 경우에만 |
+
+시나리오 3 완료 후 기능 목표를 재검토해 4+가 필요한지 판단한다. 필요 없으면 기능 완료.
+
+### Step 2: 소스 코드 분석
+
+```bash
+_FEATURE=$(cat docs/pw-loop/.state/current-feature.txt)
+_GOAL=$(cat docs/pw-loop/.state/feature-goal.txt)
+
+grep -r "placeholder\|aria-label\|htmlFor\|data-testid\|<button\|<Link\|getByRole" \
+  src/ app/ pages/ components/ --include="*.tsx" --include="*.jsx" \
+  2>/dev/null | grep -v node_modules | head -20
+```
+
+### Step 3: spec 파일 생성
+
+spec 파일명: `{TEST_DIR}/{SLUG}-s{N}.spec.ts`
 
 **생성 원칙:**
-- `getByRole`, `getByLabel`, `getByText`, `getByTestId` 순서로 선호
-- 하드코딩된 CSS 선택자 금지
-- 각 기능당 happy path + 최소 1개 edge case
-- `test.describe` 블록으로 묶기
-
-코드 참조가 필요하면 실제 소스 파일을 읽어 정확한 텍스트/역할 확인:
-
-```bash
-grep -r "placeholder\|aria-label\|htmlFor\|<label\|<button\|<Link" \
-  src/ app/ pages/ components/ 2>/dev/null \
-  --include="*.tsx" --include="*.jsx" | head -30
-```
-
-**파일 포맷:**
+- 이번 시나리오 유형(happy-path / error-handling / state-persistence)에 집중
+- 기능 목표 범위 내의 동작만 검증 — 목표에 없는 동작은 테스트하지 않는다
+- `getByRole`, `getByLabel`, `getByText`, `getByTestId` 우선 사용
+- CSS 선택자 하드코딩 금지
+- 이전 시나리오(S1, S2...) 테스트는 이 파일에 포함하지 않는다 (별도 파일 존재)
 
 ```typescript
+/**
+ * Feature: {feature-name}
+ * Scenario {N}: {scenario-type} — {scenario-description}
+ * Goal: {feature-goal 1줄 요약}
+ *
+ * ⚠️  이 파일은 {scenario-type} 케이스만 검증한다.
+ *     기능 목표 범위를 벗어나는 테스트는 추가하지 않는다.
+ */
 import { test, expect } from '@playwright/test';
 
-test.describe('{기능명}', () => {
-  test('{기능}: {성공 시나리오}', async ({ page }) => {
-    await page.goto('{URL}');
-    await page.getByLabel('{레이블}').fill('{값}');
-    await page.getByRole('button', { name: '{버튼명}' }).click();
-    await expect(page).toHaveURL('{예상 URL}');
-    await expect(page.getByText('{기대 텍스트}')).toBeVisible();
-  });
+const BASE_URL = process.env.BASE_URL || '{BASE_URL}';
 
-  test('{기능}: {실패 시나리오}', async ({ page }) => {
-    await page.goto('{URL}');
+test.describe('{feature-name} — {scenario-type}', () => {
+  test('{주요 성공/오류 시나리오}', async ({ page }) => {
+    await page.goto(`${BASE_URL}{경로}`);
     // ...
-    await expect(page.getByRole('alert')).toContainText('{에러 메시지}');
   });
 });
 ```
 
-### Step 5: playwright.config 확인 및 보정
-
-```bash
-cat "$_PW_CONFIG" 2>/dev/null || echo "config 없음"
-```
-
-`baseURL`이 설정되지 않았으면 config에 추가 제안:
-
-```typescript
-// playwright.config.ts에 추가 권장
-use: {
-  baseURL: process.env.BASE_URL || 'http://localhost:3000',
-},
-```
-
-### Step 6: 생성 완료 — 즉시 Run 모드 자동 진입
+### Step 4: 생성 완료 → 즉시 Run 모드 자동 진입
 
 ```
-Cycle N spec 생성 완료.
-
-생성/업데이트:
-   신규: {기능 목록}
-   재테스트: {기능 목록}
-   스킵: {기능 목록}
-
-{TEST_DIR}/
-   {feature1}.spec.ts
-   {feature2}.spec.ts
+기능 [{FEATURE}] Scenario {N} ({scenario-type}) 생성 완료.
+파일: {TEST_DIR}/{SLUG}-s{N}.spec.ts
 
 Playwright 실행 중...
 ```
 
-**사용자 입력을 기다리지 않는다. 즉시 Run 모드 Step 1로 진입한다.**
+사용자 입력을 기다리지 않는다. 즉시 Run 모드 Step 1로 진입.
 
 ---
 
@@ -302,47 +329,60 @@ Playwright 실행 중...
 ```bash
 _BASE_URL=$(cat docs/pw-loop/.state/base-url.txt 2>/dev/null || echo "http://localhost:3000")
 _HTTP_CODE=$(curl -s --connect-timeout 3 "$_BASE_URL" -o /dev/null -w "%{http_code}" 2>/dev/null || echo "000")
-echo "SERVER_STATUS: $_HTTP_CODE (${_BASE_URL})"
+echo "SERVER: $_HTTP_CODE (${_BASE_URL})"
 ```
 
-`_HTTP_CODE`가 `000`이면 AskUserQuestion:
+`000`이면 AskUserQuestion:
 ```
-개발 서버({BASE_URL})에 접근할 수 없습니다.
-서버를 먼저 실행해주세요. (예: npm run dev)
+개발 서버({BASE_URL})에 접근할 수 없습니다. 서버를 먼저 실행해주세요.
 ```
-- A) 서버 실행 완료, 계속 진행
+- A) 실행 완료, 계속 진행
 - B) BASE_URL 변경
 
-### Step 2: Playwright 실행
+### Step 2: 현재 시나리오 spec만 실행
 
 ```bash
-_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
-_RAW_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-raw.json"
-_ARTIFACT_DIR="docs/pw-loop/reports/cycle-${_CYCLE}-artifacts"
+_SLUG=$(cat docs/pw-loop/.state/feature-slug.txt | tr -d '\n')
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt)
+_TEST_DIR=$(cat docs/pw-loop/.state/test-dir.txt 2>/dev/null || echo "tests/e2e")
 
-# stderr 분리하여 JSON stdout만 캡처
-npx playwright test \
+_SPEC_FILE="${_TEST_DIR}/${_SLUG}-s${_SCENARIO_IDX}.spec.ts"
+_RAW_FILE="docs/pw-loop/reports/${_SLUG}-s${_SCENARIO_IDX}-raw.json"
+
+echo "RUNNING: ${_SPEC_FILE}"
+
+if [ ! -f "$_SPEC_FILE" ]; then
+  echo "SPEC_NOT_FOUND: $_SPEC_FILE"
+  exit 1
+fi
+
+npx playwright test "$_SPEC_FILE" \
   --reporter=json \
-  --output="$_ARTIFACT_DIR" \
   2>/tmp/pw-loop-stderr.log > "$_RAW_FILE" || true
 
-echo "EXIT_CODE: $?"
 echo "STDERR_LINES: $(wc -l < /tmp/pw-loop-stderr.log 2>/dev/null || echo 0)"
 ```
 
 ### Step 3: 결과 파싱
 
 ```bash
-_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
-_RAW_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-raw.json"
-_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+_SLUG=$(cat docs/pw-loop/.state/feature-slug.txt | tr -d '\n')
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt)
+_RAW_FILE="docs/pw-loop/reports/${_SLUG}-s${_SCENARIO_IDX}-raw.json"
+_SUMMARY_FILE="docs/pw-loop/reports/${_SLUG}-s${_SCENARIO_IDX}-summary.json"
 _DATE=$(date +%Y-%m-%d)
 
 python3 - <<EOF
 import json, sys
 
 try:
-    data = json.load(open('${_RAW_FILE}'))
+    content = open('${_RAW_FILE}').read()
+    lines = content.split('\n')
+    json_content = '\n'.join(l for l in lines if not l.startswith('[dotenv'))
+    start = json_content.find('{')
+    if start < 0:
+        raise ValueError("JSON not found")
+    data = json.loads(json_content[start:])
 except Exception as e:
     print(f"PARSE_ERROR: {e}")
     print("STDERR:", open('/tmp/pw-loop-stderr.log').read()[:500])
@@ -355,8 +395,6 @@ def collect(suite, path=""):
     title = (path + "/" + suite.get('title', '')) if path else suite.get('title', '')
     for spec in suite.get('specs', []):
         name = title + " > " + spec.get('title', '')
-        # spec.ok: true → test.fail()로 선언된 expected failure.
-        # 전체 spec이 OK이면 PASS로 처리 (개별 test status 무시)
         if spec.get('ok', False):
             passed.append(name)
             continue
@@ -367,38 +405,31 @@ def collect(suite, path=""):
                 passed.append(name)
             else:
                 err = result.get('error') or {}
-                failed.append({
-                    'name': name,
-                    'error': err.get('message', ''),
-                    'snippet': err.get('snippet', '')
-                })
+                failed.append({'name': name, 'error': err.get('message', ''), 'snippet': err.get('snippet', '')})
     for child in suite.get('suites', []):
         collect(child, title)
 
 for s in data.get('suites', []):
     collect(s)
 
-# 중복 제거 (같은 spec에 tests 여러 개인 경우)
 passed = list(dict.fromkeys(passed))
 failed = [f for f in failed if f['name'] not in set(passed)]
 
 total = len(passed) + len(failed)
 rate = int(len(passed) * 100 / total) if total > 0 else 0
 
-print(f"TOTAL: {total}")
-print(f"PASS: {len(passed)}")
-print(f"FAIL: {len(failed)}")
-print(f"RATE: {rate}%")
-
+print(f"TOTAL: {total} | PASS: {len(passed)} | FAIL: {len(failed)} | RATE: {rate}%")
 if failed:
     print("")
     for f in failed:
-        print(f"[FAIL] {f['name']}")
+        print(f"  [FAIL] {f['name']}")
         if f['error']:
-            print(f"  Error: {f['error'][:200]}")
+            print(f"         {f['error'][:200]}")
 
 summary = {
-    'cycle': int(open('docs/pw-loop/.state/cycle.txt').read().strip()),
+    'feature': open('docs/pw-loop/.state/current-feature.txt').read().strip(),
+    'slug': '${_SLUG}',
+    'scenario': ${_SCENARIO_IDX},
     'date': '${_DATE}',
     'passed': len(passed),
     'failed': len(failed),
@@ -414,77 +445,69 @@ EOF
 ### Step 4: 게이트 체크
 
 ```bash
-_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
-_THRESHOLD=$(cat docs/pw-loop/.state/threshold.txt 2>/dev/null || echo "80")
-_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+_SLUG=$(cat docs/pw-loop/.state/feature-slug.txt | tr -d '\n')
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt)
+_SUMMARY_FILE="docs/pw-loop/reports/${_SLUG}-s${_SCENARIO_IDX}-summary.json"
 
-_RATE=$(python3 -c "import json; d=json.load(open('${_SUMMARY_FILE}')); print(d['rate'])" 2>/dev/null || echo 0)
-_FAILED=$(python3 -c "import json; d=json.load(open('${_SUMMARY_FILE}')); print(d['failed'])" 2>/dev/null || echo 0)
-case "$_RATE" in ''|*[!0-9]*) _RATE=0 ;; esac
-case "$_FAILED" in ''|*[!0-9]*) _FAILED=0 ;; esac
+_FAILED=$(python3 -c "import json; print(json.load(open('${_SUMMARY_FILE}'))['failed'])" 2>/dev/null || echo 1)
+_RATE=$(python3 -c "import json; print(json.load(open('${_SUMMARY_FILE}'))['rate'])" 2>/dev/null || echo 0)
+case "$_FAILED" in ''|*[!0-9]*) _FAILED=1 ;; esac
 
 if [ "$_FAILED" -eq 0 ]; then
-  echo "GATE: COMPLETE — 모든 테스트 통과"
-elif [ "$_RATE" -ge "$_THRESHOLD" ]; then
-  echo "GATE: THRESHOLD_MET — ${_RATE}% 달성, 실패 ${_FAILED}건 잔류"
+    echo "GATE: PASS — 시나리오 ${_SCENARIO_IDX} 완전 통과 (${_RATE}%)"
+    echo "pass" > docs/pw-loop/.state/scenario-status.txt
 else
-  echo "GATE: IN_PROGRESS — ${_RATE}% < ${_THRESHOLD}%, 실패 ${_FAILED}건"
+    echo "GATE: FAIL — ${_FAILED}건 실패 (통과율: ${_RATE}%)"
+    echo "fail" > docs/pw-loop/.state/scenario-status.txt
 fi
 ```
 
-**GATE: COMPLETE** → Complete 모드로 진입.
-
-**GATE: THRESHOLD_MET** (threshold 달성했지만 실패 잔류):
-
-AskUserQuestion:
-```
-통과율 {RATE}%로 목표 {THRESHOLD}%를 달성했습니다.
-단, {FAILED}건의 실패가 남아있습니다.
-```
-- A) 잔여 실패도 수정 (추천) → Fix 모드로 진입
-- B) 현재 상태로 수용 → Complete 모드로 진입
-
-**GATE: IN_PROGRESS** → 사용자 확인 없이 즉시 Fix 모드로 자동 진입.
+**GATE: PASS** → **scenario-next** 모드 자동 진입.
+**GATE: FAIL** → **fix** 모드 자동 진입.
 
 ---
 
 ## Fix 모드
 
-실패한 테스트가 있을 때 자동 진입.
+기능 목표 범위 내에서만 소스 코드를 수정한다.
 
 ### Step 1: 실패 컨텍스트 수집
 
 ```bash
-_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
-_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+_SLUG=$(cat docs/pw-loop/.state/feature-slug.txt | tr -d '\n')
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt)
+_TEST_DIR=$(cat docs/pw-loop/.state/test-dir.txt 2>/dev/null || echo "tests/e2e")
+_SUMMARY_FILE="docs/pw-loop/reports/${_SLUG}-s${_SCENARIO_IDX}-summary.json"
 
+# 실패 내용 출력
 python3 -c "
 import json
 d = json.load(open('${_SUMMARY_FILE}'))
 for f in d.get('failed_tests', []):
     print('=== FAILED:', f['name'])
     print('Error:', f['error'][:400])
-    if f.get('snippet'):
-        print('Snippet:', f['snippet'][:400])
+    if f.get('snippet'): print('Snippet:', f['snippet'][:400])
     print()
 "
+
+# 현재 시나리오 spec 파일 읽기
+cat "${_TEST_DIR}/${_SLUG}-s${_SCENARIO_IDX}.spec.ts" 2>/dev/null
 ```
 
-실패한 spec 파일 읽기:
+### Step 2: fix-attempts 증가 및 sj-dev 호출
 
 ```bash
-_TEST_DIR=$(cat docs/pw-loop/.state/test-dir.txt 2>/dev/null || echo "tests/e2e")
-for _SPEC in "$_TEST_DIR"/*.spec.ts; do
-  [ -f "$_SPEC" ] && echo "=== SPEC: $_SPEC ===" && cat "$_SPEC"
-done
+_FIX_ATTEMPTS=$(cat docs/pw-loop/.state/fix-attempts.txt 2>/dev/null || echo "0")
+case "$_FIX_ATTEMPTS" in ''|*[!0-9]*) _FIX_ATTEMPTS=0 ;; esac
+_FIX_ATTEMPTS=$(( _FIX_ATTEMPTS + 1 ))
+echo "$_FIX_ATTEMPTS" > docs/pw-loop/.state/fix-attempts.txt
+echo "FIX_ATTEMPT: $_FIX_ATTEMPTS / 3"
 ```
 
-### Step 2: sj-dev 호출
-
 ```bash
-_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
-_THRESHOLD=$(cat docs/pw-loop/.state/threshold.txt 2>/dev/null || echo "80")
-_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
+_SLUG=$(cat docs/pw-loop/.state/feature-slug.txt | tr -d '\n')
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt)
+_SUMMARY_FILE="docs/pw-loop/reports/${_SLUG}-s${_SCENARIO_IDX}-summary.json"
 mkdir -p docs/sj-company/.state
 
 python3 - <<EOF
@@ -492,20 +515,24 @@ import json
 
 d = json.load(open('${_SUMMARY_FILE}'))
 failed = d.get('failed_tests', [])
-threshold = '${_THRESHOLD}'
+goal = open('docs/pw-loop/.state/feature-goal.txt').read().strip()
+feature = open('docs/pw-loop/.state/current-feature.txt').read().strip()
 
-task = f"Playwright 테스트 실패 수정 (Cycle {d['cycle']})\n\n"
-task += f"통과율: {d['rate']}% -> 목표: {threshold}%\n\n"
-task += "## 실패한 테스트\n"
+task = f"# Playwright 실패 수정 — {feature} Scenario {d['scenario']}\n\n"
+task += "## ⚠️ 기능 목표 (이 범위에서만 수정)\n\n"
+task += f"{goal}\n\n"
+task += "## 수정 범위 제한\n\n"
+task += "- 위 기능 목표와 직접 관련된 소스 코드만 수정하세요.\n"
+task += "- spec 파일은 수정하지 않습니다.\n"
+task += "- 기능 목표 범위 밖의 코드 리팩토링·기능 추가는 하지 않습니다.\n"
+task += "- 범위 밖 수정이 불가피하면 이유를 dev-output.md에 명시하세요.\n\n"
+task += "## 실패한 테스트\n\n"
 for i, f in enumerate(failed, 1):
-    task += f"\n### {i}. {f['name']}\n"
+    task += f"### {i}. {f['name']}\n"
     task += f"**오류:** {f['error'][:300]}\n"
     if f.get('snippet'):
         task += f"**코드 위치:**\n\`\`\`\n{f['snippet'][:300]}\n\`\`\`\n"
-
-task += "\n## 요청\n"
-task += "위 테스트가 통과하도록 소스 코드를 수정해주세요.\n"
-task += "spec 파일 자체는 수정하지 말고, 앱 소스 코드만 수정하세요."
+    task += "\n"
 
 open('docs/sj-company/.state/task.txt', 'w').write(task)
 print("TASK_SAVED")
@@ -516,221 +543,140 @@ echo "dev" > docs/sj-company/.state/stage.txt
 
 `Skill("s-skills:sj-dev")` 호출.
 
-### Step 3: sj-dev 완료 후 재실행 → 게이트 재체크 루프
+### Step 3: sj-dev 완료 후 즉시 재실행
 
-sj-dev 완료 직후, 사용자 확인 없이 즉시 실패 테스트를 재실행한다.
+사용자 확인 없이 즉시 Run 모드 Step 2(Playwright 실행)로 돌아간다.
+
+---
+
+## Escalate 모드
+
+fix-attempts >= 3이고 동일 실패 지속 시.
 
 ```bash
-_CYCLE=$(cat docs/pw-loop/.state/cycle.txt)
-_SUMMARY_FILE="docs/pw-loop/reports/cycle-${_CYCLE}-summary.json"
-_ARTIFACT_DIR="docs/pw-loop/reports/cycle-${_CYCLE}-artifacts-rerun"
+_SLUG=$(cat docs/pw-loop/.state/feature-slug.txt | tr -d '\n')
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt)
+_FEATURE=$(cat docs/pw-loop/.state/current-feature.txt)
 
-# fix 시도 횟수 증가
-_FIX_ATTEMPTS=$(cat docs/pw-loop/.state/fix-attempts.txt 2>/dev/null || echo "0")
-case "$_FIX_ATTEMPTS" in ''|*[!0-9]*) _FIX_ATTEMPTS=0 ;; esac
-_FIX_ATTEMPTS=$(( _FIX_ATTEMPTS + 1 ))
-echo "$_FIX_ATTEMPTS" > docs/pw-loop/.state/fix-attempts.txt
-echo "FIX_ATTEMPT: $_FIX_ATTEMPTS"
-
-# 실패 테스트의 describe 이름 추출 → grep 패턴으로 재실행
-_GREP_PATTERN=$(python3 -c "
+python3 -c "
 import json
-d = json.load(open('${_SUMMARY_FILE}'))
-names = []
+d = json.load(open('docs/pw-loop/reports/${_SLUG}-s${_SCENARIO_IDX}-summary.json'))
 for f in d.get('failed_tests', []):
-    part = f['name'].split(' > ')[0].strip('/')
-    if part:
-        names.append(part)
-print('|'.join(set(names)))
-" 2>/dev/null || echo "")
-
-if [ -n "$_GREP_PATTERN" ]; then
-  npx playwright test \
-    --reporter=json \
-    --grep="$_GREP_PATTERN" \
-    --output="$_ARTIFACT_DIR" \
-    2>/tmp/pw-loop-rerun-stderr.log > "${_SUMMARY_FILE}.rerun.json" || true
-
-  # rerun 결과로 summary.json 갱신
-  _DATE=$(date +%Y-%m-%d)
-  python3 - <<EOF
-import json
-
-try:
-    new_data = json.load(open('${_SUMMARY_FILE}.rerun.json'))
-except:
-    print("RERUN_PARSE_FAILED — summary 유지")
-    exit(0)
-
-old = json.load(open('${_SUMMARY_FILE}'))
-new_passed = []
-new_failed = []
-
-def collect(suite, path=""):
-    title = (path + "/" + suite.get('title', '')) if path else suite.get('title', '')
-    for spec in suite.get('specs', []):
-        name = title + " > " + spec.get('title', '')
-        if spec.get('ok', False):
-            new_passed.append(name)
-            continue
-        for test in spec.get('tests', []):
-            result = (test.get('results') or [{}])[-1]
-            status = result.get('status', 'unknown')
-            if status == 'passed':
-                new_passed.append(name)
-            else:
-                err = result.get('error') or {}
-                new_failed.append({'name': name, 'error': err.get('message', ''), 'snippet': err.get('snippet', '')})
-    for child in suite.get('suites', []):
-        collect(child, title)
-
-for s in new_data.get('suites', []):
-    collect(s)
-
-new_passed = list(dict.fromkeys(new_passed))
-new_failed = [f for f in new_failed if f['name'] not in set(new_passed)]
-
-# 재실행 대상이 아닌 기존 PASS는 유지
-rerun_names = {f['name'] for f in new_failed} | set(new_passed)
-kept_passed = [n for n in old.get('passed_names', []) if n not in rerun_names]
-
-total_pass = len(new_passed) + len(kept_passed)
-total_fail = len(new_failed)
-total = total_pass + total_fail
-rate = int(total_pass * 100 / total) if total > 0 else 0
-
-summary = {
-    'cycle': old['cycle'],
-    'date': '${_DATE}',
-    'passed': total_pass,
-    'failed': total_fail,
-    'total': total,
-    'rate': rate,
-    'failed_tests': new_failed,
-    'passed_names': new_passed + kept_passed
-}
-json.dump(summary, open('${_SUMMARY_FILE}', 'w'), indent=2, ensure_ascii=False)
-print(f"RERUN_UPDATED: {total_pass}/{total} = {rate}%")
-EOF
-fi
+    print(f\"  - {f['name']}: {f['error'][:150]}\")
+"
 ```
 
-**재실행 완료 후 즉시 Run 모드 Step 4(게이트 체크)로 돌아간다. 사용자 확인 없이 자동으로 루프한다.**
-
-fix-attempts가 3 이상이고 동일한 테스트가 계속 실패하면 AskUserQuestion:
+AskUserQuestion:
 ```
-{N}번 수정 시도 후에도 {FAIL_COUNT}개 테스트가 실패합니다.
+기능 [{FEATURE}] Scenario {N}에서 3회 수정 후에도 실패 지속.
 
 실패 테스트:
-- {test1}: {error 요약}
-- {test2}: {error 요약}
+- {test1}: {error}
 ```
-- A) sj-dev 재시도 (다른 접근법으로)
-- B) 해당 테스트를 spec에서 test.skip으로 처리 후 계속
-- C) 수동으로 확인 후 계속
+- A) sj-dev 재시도 (다른 접근법으로) → fix-attempts 초기화 후 Fix 모드 재진입
+- B) 해당 테스트를 `test.skip`으로 표시 후 다음 시나리오 진행
+- C) 직접 수정 후 `/pw-loop`로 계속
 
-fix-attempts 카운터는 Generate Step 1(새 Cycle 시작)에서 초기화:
+A 선택 시:
 ```bash
 echo "0" > docs/pw-loop/.state/fix-attempts.txt
+echo "fail" > docs/pw-loop/.state/scenario-status.txt
 ```
 
 ---
 
-## Report 저장
+## Scenario Next 모드
 
-Run 또는 Fix 완료 후 사이클 보고서 작성.
+현재 시나리오가 PASS됐을 때 자동 진입.
 
-`docs/pw-loop/reports/cycle-{N}-report.md`:
-
-```markdown
-# Playwright 테스트 보고서 — Cycle N
-
-**날짜:** YYYY-MM-DD
-**통과율:** N% (목표: THRESHOLD%)
-**결과:** PASS / FAIL
-
----
-
-## 결과 요약
-
-| 구분 | 수 |
-|------|---|
-| 통과 | N |
-| 실패 | N |
-| 전체 | N |
-
-## 실패 테스트
-
-| 테스트명 | 오류 요약 | 수정 여부 |
-|----------|----------|---------|
-| {이름} | {오류} | sj-dev 수정 완료 |
-
-## sj-dev 수정 내역
-
-docs/sj-company/dev-output.md 참조
-
-## 다음 단계
-
-{GATE PASS}: 목표 달성. 완료.
-{GATE FAIL}: Cycle N+1 재테스트 대상 — {목록}
-```
-
-`docs/pw-loop/.state/history.jsonl`에 이력 추가:
-```json
-{"cycle": N, "date": "YYYY-MM-DD", "passed": N, "failed": N, "rate": N, "fixed_by_dev": N}
-```
-
----
-
-## Complete 모드
-
-`STATUS: COMPLETE`이면:
+### Step 1: 다음 시나리오 결정
 
 ```bash
-cat docs/pw-loop/.state/history.jsonl 2>/dev/null
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt)
+_FEATURE=$(cat docs/pw-loop/.state/current-feature.txt)
+_GOAL=$(cat docs/pw-loop/.state/feature-goal.txt)
+echo "COMPLETED_SCENARIO: ${_SCENARIO_IDX} | FEATURE: ${_FEATURE}"
+```
+
+**판단 기준:**
+
+| 완료 시나리오 | 다음 액션 |
+|--------------|-----------|
+| Scenario 1 | Scenario 2 (error-handling) 자동 생성 |
+| Scenario 2 | Scenario 3 (state-persistence) 자동 생성 |
+| Scenario 3 | 기능 목표 재검토 → 4+ 필요 시 생성, 불필요 시 기능 완료 |
+| Scenario 4+ | 기능 목표 완전 검증 여부 판단 후 추가 또는 완료 |
+
+**Scenario 3+ 이후 추가 생성 조건:** 기능 목표에 아직 검증하지 않은 중요 동작이 명시된 경우에만.
+
+### Step 2: 다음 시나리오 생성 또는 기능 완료
+
+**다음 시나리오 생성:** → scenario-generate 모드 자동 진입.
+
+**기능 완료:**
+
+```bash
+_FEATURE=$(cat docs/pw-loop/.state/current-feature.txt)
+_SLUG=$(cat docs/pw-loop/.state/feature-slug.txt | tr -d '\n')
+_SCENARIO_IDX=$(cat docs/pw-loop/.state/scenario-index.txt)
+_DATE=$(date +%Y-%m-%d)
+
+# 완료 이력 저장
+echo "${_FEATURE}|${_SLUG}|DONE|scenarios=${_SCENARIO_IDX}|${_DATE}" \
+  >> docs/pw-loop/.state/completed-features.txt
+
+# 현재 기능 상태 초기화
+echo "" > docs/pw-loop/.state/current-feature.txt
+echo "" > docs/pw-loop/.state/feature-slug.txt
+echo "" > docs/pw-loop/.state/feature-goal.txt
+echo "0" > docs/pw-loop/.state/scenario-index.txt
+echo "none" > docs/pw-loop/.state/scenario-status.txt
+echo "0" > docs/pw-loop/.state/fix-attempts.txt
+
+_REMAINING=$(grep -c . docs/pw-loop/.state/feature-queue.txt 2>/dev/null || echo 0)
+echo "FEATURE_COMPLETE: ${_FEATURE} | REMAINING: ${_REMAINING}개"
 ```
 
 출력:
 ```
-pw-loop 완료
+✓ 기능 [{FEATURE}] 완료
 
-목표 통과율 {THRESHOLD}% 달성.
+  Scenario 1 (happy-path): PASS
+  Scenario 2 (error-handling): PASS
+  Scenario 3 (state-persistence): PASS
 
-최종 결과 (Cycle N):
-  PASS: N개 / 전체 N개 = N%
+완료: {N}개 / 대기열: {N}개
+```
 
-사이클 이력:
-  Cycle 1: N%
-  Cycle 2: N%
-  Cycle N: N% <- 달성
+대기열에 남은 기능 있으면 → **feature-start** 자동 진입.
+대기열 비었으면 → **all-complete** 모드.
 
+---
+
+## All Complete 모드
+
+```bash
+cat docs/pw-loop/.state/completed-features.txt 2>/dev/null
+_TEST_DIR=$(cat docs/pw-loop/.state/test-dir.txt 2>/dev/null || echo "tests/e2e")
+ls "$_TEST_DIR"/*.spec.ts 2>/dev/null | wc -l
+```
+
+출력:
+```
+pw-loop 전체 완료
+
+완료된 기능:
+  ✓ {기능1} ({N} 시나리오)
+  ✓ {기능2} ({N} 시나리오)
+
+생성된 spec: {TEST_DIR}/ — 총 {N}개
 보고서: docs/pw-loop/reports/
 ```
 
-새 목표로 계속하려면:
-```
-/pw-loop -> E) 목표 통과율 변경
-```
-
----
-
-## 대시보드 모드
-
-```bash
-cat docs/pw-loop/.state/history.jsonl 2>/dev/null
-ls docs/pw-loop/reports/*.md 2>/dev/null | xargs -I{} tail -5 {}
-```
-
-출력:
-```
-pw-loop 현황 (YYYY-MM-DD)
-목표: THRESHOLD%  |  현재: N%  |  Cycle: N
-
-Cycle | PASS | FAIL | 통과율
-------|------|------|------
-  1   |  3   |  4   | 43%
-  2   |  6   |  1   | 86%  <- 달성
-```
+AskUserQuestion:
+- A) 새 기능 추가 → Init 모드
+- B) 전체 회귀 테스트 실행 → `npx playwright test` 전체 실행 후 결과 출력
+- C) 종료
 
 ---
 
@@ -739,20 +685,28 @@ Cycle | PASS | FAIL | 통과율
 ```
 docs/pw-loop/
 ├── .state/
-│   ├── cycle.txt          <- 현재 사이클 번호
-│   ├── threshold.txt      <- 목표 통과율 (기본 80)
-│   ├── features.txt       <- 확정된 테스트 기능 목록
-│   ├── base-url.txt       <- 앱 base URL
-│   ├── test-dir.txt       <- spec 파일 디렉토리 (Generate Step 1에서 확정)
-│   └── history.jsonl      <- 사이클별 이력
-├── reports/
-│   ├── cycle-N-raw.json          <- playwright --reporter=json 원본
-│   ├── cycle-N-summary.json      <- 파싱된 요약
-│   └── cycle-N-report.md         <- 사람이 읽는 보고서
-└── improvement.md
+│   ├── feature-queue.txt        # 대기 중인 기능 목록 (줄 구분)
+│   ├── current-feature.txt      # 현재 작업 기능명
+│   ├── feature-slug.txt         # 현재 기능 slug (f1, f2, ...)
+│   ├── feature-num.txt          # 기능 순번 (slug 생성용)
+│   ├── feature-goal.txt         # 현재 기능 목표 (불변 — 기능 완료까지 수정 금지)
+│   ├── scenario-index.txt       # 현재 시나리오 번호 (1, 2, 3, ...)
+│   ├── scenario-status.txt      # pass / fail / running / none
+│   ├── fix-attempts.txt         # 현재 시나리오 수정 시도 횟수
+│   ├── completed-features.txt   # 완료된 기능 이력
+│   ├── base-url.txt             # 앱 base URL
+│   ├── test-dir.txt             # spec 파일 디렉토리
+│   └── threshold.txt            # (미사용 — 기능 단위는 항상 100% 목표)
+└── reports/
+    ├── {slug}-s1-raw.json       # Playwright JSON 원본
+    ├── {slug}-s1-summary.json   # 파싱된 요약
+    ├── {slug}-s2-raw.json
+    └── ...
 
-{TEST_DIR}/                <- playwright.config의 testDir
-├── {feature1}.spec.ts
-├── {feature2}.spec.ts
+{TEST_DIR}/
+├── f1-s1.spec.ts   # 기능1 Scenario 1: happy-path
+├── f1-s2.spec.ts   # 기능1 Scenario 2: error-handling
+├── f1-s3.spec.ts   # 기능1 Scenario 3: state-persistence
+├── f2-s1.spec.ts   # 기능2 Scenario 1: happy-path
 └── ...
 ```
