@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 1.1.0
+version: 1.2.0
 description: |
   SJ Company 하네스. 프로젝트 상태를 감지하고 PM / Design / Tech Lead / QA 역할로 라우팅한다.
   Tech Lead가 Frontend/Backend/Database/DevOps/Security/Data 전문 서브에이전트를 병렬 디스패치한다.
@@ -122,11 +122,52 @@ PM 분석이 완료됐습니다.
 **STAGE=done 처리:**
 
 ```bash
-cat docs/sj-company/pm-output.md 2>/dev/null | head -5
-cat docs/sj-company/qa-output.md 2>/dev/null | grep "판정:"
+# 1. 총괄 보고서(report.md) 작성 — 총괄(sj-company)이 직접 기록
+TASK_TEXT=$(cat docs/sj-company/.state/task.txt 2>/dev/null)
+QA_VERDICT=$(grep -oE 'PASS|FAIL|CONDITIONAL' docs/sj-company/qa-output.md 2>/dev/null | head -1)
+NOW=$(date "+%Y-%m-%d %H:%M")
+PM_MTIME=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" docs/sj-company/pm-output.md 2>/dev/null || echo "-")
+DESIGN_STATUS=$([ -s docs/sj-company/design-output.md ] && echo "✅ 완료" || echo "⏭️ 생략")
+DESIGN_MTIME=$([ -s docs/sj-company/design-output.md ] && stat -f "%Sm" -t "%Y-%m-%d %H:%M" docs/sj-company/design-output.md 2>/dev/null || echo "-")
+DEV_MTIME=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" docs/sj-company/dev-output.md 2>/dev/null || echo "-")
+QA_MTIME=$(stat -f "%Sm" -t "%Y-%m-%d %H:%M" docs/sj-company/qa-output.md 2>/dev/null || echo "-")
+QA_SUMMARY=$(grep -A5 "판정" docs/sj-company/qa-output.md 2>/dev/null | head -8)
 ```
 
-완료 요약 출력. AskUserQuestion으로 새 태스크 여부 확인:
+위 변수를 사용해 `docs/sj-company/report.md`를 **Write 툴로** 작성한다:
+
+```markdown
+---
+task: "{TASK_TEXT}"
+completed: "{NOW}"
+qa_verdict: {QA_VERDICT}
+---
+
+# 태스크 보고서
+
+**태스크:** {TASK_TEXT}
+**완료:** {NOW}
+
+## WBS 결과
+
+| 단계 | 상태 | 완료 시각 |
+|------|------|-----------|
+| PM | ✅ 완료 | {PM_MTIME} |
+| Design | {DESIGN_STATUS} | {DESIGN_MTIME} |
+| Tech Lead | ✅ 완료 | {DEV_MTIME} |
+| QA | {QA_VERDICT} | {QA_MTIME} |
+
+## QA 핵심 요약
+
+{QA_SUMMARY}
+```
+
+```bash
+# 2. task.txt 초기화 (완료된 태스크 잔류 방지)
+echo "" > docs/sj-company/.state/task.txt
+```
+
+완료 요약을 사용자에게 출력한 뒤 AskUserQuestion으로 새 태스크 여부 확인:
 - A) 새 태스크 시작 → stage.txt 초기화 후 재시작
 - B) 종료
 
