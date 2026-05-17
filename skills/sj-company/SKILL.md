@@ -1,8 +1,9 @@
 ---
 name: sj-company
-version: 1.0.0
+version: 1.1.0
 description: |
-  SJ Company 하네스. 프로젝트 상태를 감지하고 PM/Dev/Design/QA 역할로 라우팅한다.
+  SJ Company 하네스. 프로젝트 상태를 감지하고 PM / Design / Tech Lead / QA 역할로 라우팅한다.
+  Tech Lead가 Frontend/Backend/Database/DevOps/Security/Data 전문 서브에이전트를 병렬 디스패치한다.
   인자 없이 호출하면 상태 기반 라우팅, 메시지와 함께 호출하면 의도 기반 라우팅.
 allowed-tools:
   - Bash
@@ -112,9 +113,9 @@ PM 분석이 완료됐습니다.
 다음 단계를 선택하세요:
 ```
 - A) Design 먼저 (UI/UX 작업 포함) → `Skill("s-skills:sj-design")`
-- B) Dev 바로 진행 (UI 작업 없음) → `Skill("s-skills:sj-dev")`
+- B) Tech Lead 바로 진행 (UI 작업 없음) → `Skill("s-skills:sj-tech-lead")`
 
-**STAGE=design 처리:** `Skill("s-skills:sj-dev")` 호출.
+**STAGE=design 처리:** `Skill("s-skills:sj-tech-lead")` 호출.
 
 **STAGE=dev 처리:** `Skill("s-skills:sj-qa")` 호출.
 
@@ -139,11 +140,19 @@ cat docs/sj-company/qa-output.md 2>/dev/null | grep "판정:"
 
 | 의도 패턴 | 라우팅 |
 |-----------|--------|
-| 버그 수정, 에러 수정, fix | `Skill("s-skills:sj-dev")` → `Skill("s-skills:sj-qa")` |
-| 디자인, UI, 화면, 레이아웃 | `Skill("s-skills:sj-design")` |
+| 버그 수정, 에러 수정, fix | `Skill("s-skills:sj-tech-lead")` → `Skill("s-skills:sj-qa")` |
+| 디자인, UI 명세, 화면 설계 | `Skill("s-skills:sj-design")` |
 | 기획, 요구사항, 스펙, 분석 | `Skill("s-skills:sj-pm")` |
 | 테스트, 검증, 확인 | `Skill("s-skills:sj-qa")` |
-| 기능 추가, 새 기능, 구현 | `Skill("s-skills:sj-pm")` 완료 후 AskUserQuestion으로 Design/Dev 선택 → `Skill("s-skills:sj-qa")` |
+| 기능 추가, 새 기능, 구현 | `Skill("s-skills:sj-pm")` 완료 후 Design/Tech Lead 선택 → `Skill("s-skills:sj-qa")` |
+| 프론트만, UI 구현, 컴포넌트만 | `Skill("s-skills:sj-tech-lead")` (single dispatch: frontend) |
+| 백엔드만, API만 | `Skill("s-skills:sj-tech-lead")` (single dispatch: backend) |
+| 마이그레이션, 스키마 변경, DB | `Skill("s-skills:sj-tech-lead")` (single dispatch: database) |
+| CI/CD, 배포, Docker, 워크플로우 | `Skill("s-skills:sj-tech-lead")` (single dispatch: devops) |
+| 인증, 권한, 보안, 취약점 | `Skill("s-skills:sj-tech-lead")` (single dispatch: security) |
+| 파이프라인, ML, 모델, 데이터 처리 | `Skill("s-skills:sj-tech-lead")` (single dispatch: data) |
+
+> single dispatch 패턴: Tech Lead에게 "이 태스크는 {role} 1명만 필요"라고 힌트를 전달해 불필요한 병렬·리뷰 단계를 생략하게 한다.
 
 메시지를 task.txt에 저장 후 라우팅:
 
@@ -151,7 +160,7 @@ cat docs/sj-company/qa-output.md 2>/dev/null | grep "판정:"
 echo "{메시지}" > docs/sj-company/.state/task.txt
 ```
 
-> **참고:** "기능 추가" 라우팅에서 PM 완료 후 STAGE=pm과 동일한 AskUserQuestion을 제시한다 (Design 먼저 vs Dev 바로 진행).
+> **참고:** "기능 추가" 라우팅에서 PM 완료 후 STAGE=pm과 동일한 AskUserQuestion을 제시한다 (Design 먼저 vs Tech Lead 바로 진행).
 
 ---
 

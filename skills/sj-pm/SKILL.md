@@ -136,4 +136,4 @@ echo "pm" > docs/sj-company/.state/stage.txt
 
 ## Step 6: 완료 보고
 
-결과를 사용자에게 요약해서 출력한다. 다음 단계(Design 또는 Dev)를 제안한다.
+결과를 사용자에게 요약해서 출력한다. 다음 단계(Design 또는 Tech Lead)를 제안한다.
