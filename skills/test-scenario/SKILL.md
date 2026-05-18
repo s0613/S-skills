@@ -121,13 +121,41 @@ D) 목표 통과율 변경 (현재: {THRESHOLD}%)
 
 ## Generate 모드
 
-### Step 1: 다음 사이클 번호 증가
+### Step 1: 이전 사이클 아카이브 (Cycle ≥ 1인 경우)
+
+`_CYCLE` ≥ 1이면 현재 `scenarios.md`를 아카이브한 뒤 새 사이클 시작.
 
 ```bash
 _NEXT_CYCLE=$(( _CYCLE + 1 ))
+_ARCHIVE_DIR="docs/test-scenarios/scenarios/archive"
+mkdir -p "$_ARCHIVE_DIR"
+
+# 이전 사이클 시나리오 아카이브
+if [ -f "docs/test-scenarios/scenarios/scenarios.md" ] && [ "$_CYCLE" -gt 0 ]; then
+  _ARCHIVE_FILE="$_ARCHIVE_DIR/cycle-${_CYCLE}-scenarios.md"
+  cp "docs/test-scenarios/scenarios/scenarios.md" "$_ARCHIVE_FILE"
+  echo "ARCHIVED: $_ARCHIVE_FILE"
+fi
+
 echo "$_NEXT_CYCLE" > docs/test-scenarios/.state/cycle.txt
 echo "Cycle $_NEXT_CYCLE 시작"
 ```
+
+아카이브 후 `scenarios.md` 상단에 이전 사이클 요약 섹션을 축약 형태로 기록:
+
+```markdown
+# 이전 사이클 요약
+
+| Cycle | 날짜 | PASS | FAIL | PARTIAL | 통과율 | 아카이브 |
+|-------|------|------|------|---------|--------|----------|
+| {N}   | {날짜} | {pass수} | {fail수} | {partial수} | {rate}% | [보기](archive/cycle-{N}-scenarios.md) |
+
+---
+```
+
+이 요약은 매 사이클 축적(append)되어 이력을 볼 수 있게 한다. 아카이브 링크로 이전 상세 시나리오에 접근 가능.
+
+`_CYCLE` = 0이면 첫 사이클이므로 아카이브 없이 바로 다음 단계.
 
 ### Step 2: 기능 목록 수집
 
@@ -178,6 +206,16 @@ Cycle N — 테스트 대상 기능 목록
 **현재 Cycle:** N  
 **기능 수:** N개  
 **대상:** {기능1}, {기능2}, ...
+
+<!-- 이전 사이클 요약 — 매 사이클 append, 삭제 금지 -->
+# 이전 사이클 요약
+
+| Cycle | 날짜 | PASS | FAIL | PARTIAL | 통과율 | 아카이브 |
+|-------|------|------|------|---------|--------|----------|
+| 1 | 2024-01-01 | 3 | 2 | 0 | 60% | [보기](archive/cycle-1-scenarios.md) |
+
+---
+<!-- 현재 사이클 시나리오 시작 -->
 
 ---
 
@@ -557,7 +595,9 @@ docs/test-scenarios/
 │   └── history.jsonl      ← 사이클별 통과율 이력
 ├── README.md              ← 전체 현황 인덱스 + 추이 테이블
 ├── scenarios/
-│   └── scenarios.md                  ← 유일한 파일, 모든 사이클·기능 누적
+│   ├── scenarios.md       ← 현재 사이클 시나리오 + 이전 사이클 요약 테이블
+│   └── archive/
+│       └── cycle-{N}-scenarios.md   ← 이전 사이클 전체 시나리오 (읽기 전용)
 ├── reports/
 │   └── YYYY-MM-DD-{feature}-c{N}-report.md
 └── improvement/

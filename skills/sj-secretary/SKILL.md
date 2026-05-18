@@ -80,6 +80,10 @@ import json, os, sys, re
 idx = json.load(open(sys.argv[1]))
 out = []
 
+def get(text, key):
+    m = re.search(rf"^{key}:(.+)$", text, re.MULTILINE)
+    return m.group(1).strip() if m else ""
+
 for slug, path in idx.items():
     docs = os.path.join(path, "docs/sj-company")
     project_md = os.path.join(docs, "PROJECT.md")
@@ -87,15 +91,12 @@ for slug, path in idx.items():
 
     if os.path.isfile(project_md):
         text = open(project_md, encoding="utf-8").read()
-        def get(key):
-            m = re.search(rf"^{key}:(.+)$", text, re.MULTILINE)
-            return m.group(1).strip() if m else ""
         info["has_project"] = True
-        info["goal"]         = get("goal")
-        info["last_session"] = get("last_session")
-        info["next"]         = get("next")
-        info["blockers"]     = get("blockers")
-        info["status"]       = get("status") or "active"
+        info["goal"]         = get(text, "goal")
+        info["last_session"] = get(text, "last_session")
+        info["next"]         = get(text, "next")
+        info["blockers"]     = get(text, "blockers")
+        info["status"]       = get(text, "status") or "active"
         name_m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
         info["name"] = name_m.group(1).strip() if name_m else os.path.basename(path)
     else:

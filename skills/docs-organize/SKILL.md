@@ -54,6 +54,62 @@ From this analysis, extract:
 - **Existing ADRs or key decisions** visible in code or comments
 - **What you cannot confidently infer** → these become interview questions
 
+### Phase 1.5: Stale Document Detection
+
+`docs/` 디렉터리가 존재하면 실행. 없으면 이 단계 건너뜀.
+
+#### 탐지 기준
+
+각 기존 docs 파일을 열어 다음을 확인:
+- 파일에 언급된 **기능명·컴포넌트명·API 경로·용어**가 현재 코드베이스에 존재하는가?
+- 파일의 목적이 현재 프로젝트 방향과 일치하는가?
+
+탐지 방법:
+```bash
+# docs에서 고유 키워드 추출 후 코드에 존재하는지 확인 (예시)
+# 실제로는 파일을 읽고 핵심 명사/경로를 추출해 grep으로 교차 검증
+grep -r "{키워드}" --include="*.ts" --include="*.py" --include="*.go" --include="*.js" . \
+  --exclude-dir=node_modules --exclude-dir=.git 2>/dev/null | wc -l
+```
+
+#### 분류
+
+각 docs 파일을 세 범주로 분류:
+
+| 범주 | 기준 |
+|------|------|
+| **최신** | 내용이 현재 코드와 일치 |
+| **부분 낡음** | 일부 용어/기능이 변경됐으나 구조는 유효 |
+| **완전 낡음** | 참조하는 기능/용어가 코드에 더 이상 존재하지 않거나 목적 자체가 바뀜 |
+
+#### 사용자에게 보고
+
+낡은 파일이 발견되면 Phase 2 인터뷰 전에 먼저 보고:
+
+```
+⚠️  낡은 문서 발견
+
+완전 낡음 (삭제 또는 아카이브 권장):
+  - docs/old-feature-spec.md  → "결제 V1 API" 참조, 코드에 해당 모듈 없음
+  - docs/adr/001-graphql.md   → GraphQL 제거됨, REST로 전환
+
+부분 낡음 (업데이트 필요):
+  - docs/architecture.md      → "UserService" 언급, 현재는 "AuthService"로 리네임됨
+  - docs/prd.md               → "모바일 앱" 언급, 현재 웹 전용으로 범위 변경
+
+처리 방법:
+  A) 완전 낡음은 docs/archive/로 이동, 부분 낡음은 Phase 3에서 업데이트
+  B) 완전 낡음 삭제 + 부분 낡음 업데이트
+  C) 일단 모두 보존하고 Phase 3에서 업데이트만
+```
+
+AskUserQuestion으로 처리 방법 선택받기. 선택에 따라:
+- **A (아카이브)**: `docs/archive/YYYY-MM-DD-{filename}` 으로 이동
+- **B (삭제)**: 완전 낡음 파일 삭제 (`rm`)
+- **C (보존)**: 삭제/이동 없이 Phase 3에서 업데이트
+
+낡은 파일이 없으면 이 단계 조용히 통과.
+
 ### Phase 2: Gap Interview
 
 Before skipping this phase, you MUST be able to answer ALL four of the following from code analysis alone. If even one is unknown, ask it.
