@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 1.0.0
+version: 1.1.0
 description: |
   Tech Lead 역할. PM/Design output을 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data)를 식별·병렬 디스패치하고,
@@ -56,12 +56,32 @@ _HAS_DEV_CTX=$([ -s "docs/sj-company/dev-context.md" ] && echo "yes" || echo "no
 _MODEL_POLICY=$(cat docs/sj-company/.state/model-policy.txt 2>/dev/null | tr -d '[:space:]')
 _MODEL_POLICY="${_MODEL_POLICY:-auto}"
 
+# [HINT:single={role}] 파싱 — sj-company v3에서 전달하는 단일 디스패치 힌트
+_HINT_SINGLE=$(echo "$_TASK" | grep -oE 'HINT:single=[a-z]+' | cut -d= -f2 || echo "")
+_TASK_CLEAN=$(echo "$_TASK" | sed 's/\[HINT:[^]]*\]//g' | xargs)
+echo "SINGLE_HINT: ${_HINT_SINGLE:-없음}"
+
 echo "TASK: ${_TASK:-없음}"
 echo "PM: $_HAS_PM | DESIGN: $_HAS_DESIGN | DEV_CTX: $_HAS_DEV_CTX"
 echo "MODEL_POLICY: $_MODEL_POLICY"
 ```
 
-`_HAS_PM=no`이면 즉시 멈추고 PM 먼저 돌리도록 사용자에게 안내한다.
+`_HINT_SINGLE` 값에 따라 디스패치 범위를 결정한다:
+- `_HINT_SINGLE=frontend` → sj-dev-frontend 1개만 Agent 디스패치, 나머지 생략
+- `_HINT_SINGLE=backend`  → sj-dev-backend 1개만
+- `_HINT_SINGLE=없음`     → 기존 로직대로 (Step 3에서 specialist 식별)
+
+```bash
+if [ "$_HAS_PM" = "no" ]; then
+  # PROJECT.md에서 goal을 폴백으로 사용 (sj-company v3에서 PM 단계 생략 가능)
+  _PM_CONTEXT=$(grep "^goal:" docs/sj-company/PROJECT.md 2>/dev/null | cut -d: -f2- | xargs || echo "")
+  if [ -n "$_PM_CONTEXT" ]; then
+    echo "PM_CONTEXT (PROJECT.md goal): $_PM_CONTEXT"
+  else
+    echo "PM output 없고 PROJECT.md goal도 없음 — 태스크 텍스트만으로 진행"
+  fi
+fi
+```
 
 `docs/sj-company/dev-context.md`가 없으면 분석 후 생성한다(기존 `sj-dev` 스킬의 Step 1 절차와 동일):
 

@@ -1,6 +1,6 @@
 ---
 name: sj-pm
-version: 1.0.0
+version: 1.1.0
 description: |
   PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위를 정의한다.
   프로젝트별 pm-context.md를 생성·유지해 프로젝트에 최적화된 분석을 제공한다.
@@ -132,6 +132,31 @@ stage.txt 업데이트:
 
 ```bash
 echo "pm" > docs/sj-company/.state/stage.txt
+
+# sj-company v3: PROJECT.md goal/next 동기화
+python3 - <<'PY'
+import re, os
+
+path = "docs/sj-company/PROJECT.md"
+if not os.path.exists(path):
+    print("PROJECT.md 없음, 스킵")
+    exit(0)
+
+# pm-output.md에서 첫 번째 태스크 추출
+pm_out = open("docs/sj-company/pm-output.md", encoding="utf-8").read() if os.path.exists("docs/sj-company/pm-output.md") else ""
+first_task = ""
+m = re.search(r"- \[ \] (.+)$", pm_out, re.MULTILINE)
+if m: first_task = m.group(1).strip()
+
+text = open(path, encoding="utf-8").read()
+def upd(key, val, t):
+    return re.sub(rf"^{key}:.*$", f"{key}: {val}", t, flags=re.MULTILINE)
+
+if first_task:
+    text = upd("next", first_task, text)
+open(path, "w", encoding="utf-8").write(text)
+print(f"PROJECT.md next 업데이트: {first_task or '(태스크 없음)'}")
+PY
 ```
 
 ## Step 6: 완료 보고

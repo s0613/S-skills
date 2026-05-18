@@ -1,6 +1,6 @@
 ---
 name: sj-qa
-version: 1.0.0
+version: 1.1.0
 description: |
   QA 역할 에이전트. 구현 결과를 검증하고 테스트 계획을 수립한다.
   PASS / FAIL / CONDITIONAL 판정을 내린다.
@@ -130,6 +130,63 @@ stage.txt 업데이트 (완료):
 echo "done" > docs/sj-company/.state/stage.txt
 ```
 
-## Step 6: 완료 보고
+## Step 6: pw-loop 연동
+
+```bash
+_HAS_PW=$([ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ] && echo "yes" || echo "no")
+_PW_TARGET=$(python3 -c "
+import re, sys
+try:
+    text = open('docs/sj-company/PROJECT.md', encoding='utf-8').read()
+    m = re.search(r'^pw_target:(.+)$', text, re.MULTILINE)
+    print(m.group(1).strip() if m else '80')
+except:
+    print('80')
+" 2>/dev/null || echo "80")
+echo "Playwright: $_HAS_PW | 목표: $_PW_TARGET%"
+```
+
+`_HAS_PW=yes`이면: `Skill("s-skills:pw-loop")` 호출 (목표: `$_PW_TARGET`%)
+`_HAS_PW=no`이면: 빌드 확인으로 대체
+
+## Step 7: PROJECT.md 업데이트
+
+QA 완료 후:
+
+```python
+import re, datetime, os
+
+path = "docs/sj-company/PROJECT.md"
+if not os.path.exists(path):
+    print("PROJECT.md 없음, 스킵")
+    exit(0)
+
+text = open(path, encoding="utf-8").read()
+today = datetime.date.today().strftime("%Y-%m-%d")
+
+# QA 판정 읽기 (qa-output.md 또는 pw-loop 결과)
+verdict = "확인필요"
+for f in ["docs/sj-company/qa-output.md"]:
+    if os.path.exists(f):
+        content = open(f, encoding="utf-8").read()
+        if "PASS" in content: verdict = "PASS"; break
+        if "FAIL" in content: verdict = "FAIL"; break
+
+def upd(key, val, t):
+    return re.sub(rf"^{key}:.*$", f"{key}: {val}", t, flags=re.MULTILINE)
+
+text = upd("last_session", f"{today} — QA {verdict}", text)
+if verdict == "FAIL":
+    text = upd("status", "blocked", text)
+    text = upd("blockers", "QA FAIL — 재구현 필요", text)
+elif verdict == "PASS":
+    text = upd("status", "active", text)
+    text = upd("blockers", "없음", text)
+
+open(path, "w", encoding="utf-8").write(text)
+print(f"PROJECT.md 업데이트: QA {verdict}")
+```
+
+## Step 8: 완료 보고
 
 전체 파이프라인 결과를 사용자에게 요약해서 출력한다.
