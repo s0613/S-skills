@@ -108,31 +108,29 @@ pm-context.md + 현재 요청을 바탕으로 PM 역할을 수행한다:
 
 ## Step 5: 결과 저장
 
-`docs/sj-company/pm-output.md`에 저장:
+`docs/sj-company/.state/task.txt`에 저장 (Tech Lead가 읽는 파일):
 
 ```markdown
-# PM Output — {태스크명}
-> 생성일: {날짜}
+PM Output — {태스크명}
+생성일: {날짜}
 
-## 요구사항 분석
+요구사항 분석:
 [분석 요약]
 
-## 태스크 목록
+태스크 목록:
 - [ ] {태스크1}
 - [ ] {태스크2}
 
-## 리스크
+리스크:
 - {리스크1}
 
-## Dev/QA에 전달할 핵심 지침
+Dev/QA에 전달할 핵심 지침:
 [핵심 지침]
 ```
 
-stage.txt 업데이트:
+PROJECT.md 업데이트 (sj-company v3):
 
 ```bash
-echo "pm" > docs/sj-company/.state/stage.txt
-
 # sj-company v3: PROJECT.md goal/next 동기화
 python3 - <<'PY'
 import re, os
@@ -142,15 +140,15 @@ if not os.path.exists(path):
     print("PROJECT.md 없음, 스킵")
     exit(0)
 
-# pm-output.md에서 첫 번째 태스크 추출
-pm_out = open("docs/sj-company/pm-output.md", encoding="utf-8").read() if os.path.exists("docs/sj-company/pm-output.md") else ""
+# task.txt에서 첫 번째 태스크 추출
+task_txt = open("docs/sj-company/.state/task.txt", encoding="utf-8").read() if os.path.exists("docs/sj-company/.state/task.txt") else ""
 first_task = ""
-m = re.search(r"- \[ \] (.+)$", pm_out, re.MULTILINE)
+m = re.search(r"- \[ \] (.+)$", task_txt, re.MULTILINE)
 if m: first_task = m.group(1).strip()
 
 text = open(path, encoding="utf-8").read()
 def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", f"{key}: {val}", t, flags=re.MULTILINE)
+    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
 
 if first_task:
     text = upd("next", first_task, text)

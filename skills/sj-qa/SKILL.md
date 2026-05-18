@@ -124,16 +124,10 @@ qa-context.md + dev-output.md + pm-output.md를 바탕으로 QA 역할을 수행
 - {이슈1}
 ```
 
-stage.txt 업데이트 (완료):
-
-```bash
-echo "done" > docs/sj-company/.state/stage.txt
-```
-
 ## Step 6: pw-loop 연동
 
 ```bash
-_HAS_PW=$([ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ] && echo "yes" || echo "no")
+if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW="yes"; else _HAS_PW="no"; fi
 _PW_TARGET=$(python3 -c "
 import re, sys
 try:
@@ -164,21 +158,25 @@ if not os.path.exists(path):
 text = open(path, encoding="utf-8").read()
 today = datetime.date.today().strftime("%Y-%m-%d")
 
-# QA 판정 읽기 (qa-output.md 또는 pw-loop 결과)
+# QA 판정 읽기 (qa-output.md 또는 pw-loop 결과) — CONDITIONAL 먼저 체크
 verdict = "확인필요"
 for f in ["docs/sj-company/qa-output.md"]:
     if os.path.exists(f):
         content = open(f, encoding="utf-8").read()
+        if "CONDITIONAL" in content: verdict = "CONDITIONAL"; break
         if "PASS" in content: verdict = "PASS"; break
         if "FAIL" in content: verdict = "FAIL"; break
 
 def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", f"{key}: {val}", t, flags=re.MULTILINE)
+    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
 
 text = upd("last_session", f"{today} — QA {verdict}", text)
 if verdict == "FAIL":
     text = upd("status", "blocked", text)
     text = upd("blockers", "QA FAIL — 재구현 필요", text)
+elif verdict == "CONDITIONAL":
+    text = upd("status", "active", text)
+    text = upd("blockers", "QA CONDITIONAL — 조건부 통과, 후속 수정 필요", text)
 elif verdict == "PASS":
     text = upd("status", "active", text)
     text = upd("blockers", "없음", text)

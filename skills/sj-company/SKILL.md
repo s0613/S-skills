@@ -111,19 +111,23 @@ goal과 next를 확인하세요: docs/sj-company/PROJECT.md
 PROJECT_MD="docs/sj-company/PROJECT.md"
 
 python3 - <<'PY'
-import re, sys
-text = open("docs/sj-company/PROJECT.md", encoding="utf-8").read()
-def get(key):
-    m = re.search(rf"^{key}:(.+)$", text, re.MULTILINE)
-    return m.group(1).strip() if m else ""
-print("GOAL=" + get("goal"))
-print("STACK=" + get("stack"))
-print("LAST=" + get("last_session"))
-print("NEXT=" + get("next"))
-print("BLOCKERS=" + get("blockers"))
-print("STATUS=" + get("status"))
-name_m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
-print("NAME=" + (name_m.group(1).strip() if name_m else ""))
+import re, sys, os
+if not os.path.exists("docs/sj-company/PROJECT.md"):
+    for k in ("GOAL","STACK","LAST","NEXT","BLOCKERS","STATUS","NAME"):
+        print(f"{k}=")
+else:
+    text = open("docs/sj-company/PROJECT.md", encoding="utf-8").read()
+    def get(key):
+        m = re.search(rf"^{key}:(.+)$", text, re.MULTILINE)
+        return m.group(1).strip() if m else ""
+    print("GOAL=" + get("goal"))
+    print("STACK=" + get("stack"))
+    print("LAST=" + get("last_session"))
+    print("NEXT=" + get("next"))
+    print("BLOCKERS=" + get("blockers"))
+    print("STATUS=" + get("status"))
+    name_m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
+    print("NAME=" + (name_m.group(1).strip() if name_m else ""))
 PY
 ```
 
@@ -264,8 +268,9 @@ text = open(path, encoding="utf-8").read()
 today = datetime.date.today().strftime("%Y-%m-%d")
 summary = "{완료한 작업 한 줄 요약}"
 def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", f"{key}: {val}", t, flags=re.MULTILINE)
+    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
 text = upd("last_session", f"{today} — {summary}", text)
+text = upd("next", "없음", text)
 open(path, "w", encoding="utf-8").write(text)
 ```
 
@@ -289,7 +294,7 @@ open(path, "w", encoding="utf-8").write(text)
 4. pw-loop 필요 여부:
 
 ```bash
-_HAS_PW=$([ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ] && echo "yes" || echo "no")
+if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW="yes"; else _HAS_PW="no"; fi
 ```
 
 `_HAS_PW=yes`이고 기능 변경이면: AskUserQuestion으로 pw-loop 실행 여부 확인
@@ -306,7 +311,7 @@ _HAS_PW=$([ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ] && echo
 [Medium] PM 브리핑 후 구현합니다.
 ```
 
-1. PM 브리핑 (인라인, 파일 저장 없음):
+1. PM 브리핑 생성:
 ```
 PM 브리핑:
 - 요구사항: {2~3줄}
@@ -327,17 +332,23 @@ else:
 print(f"HINT={hint}")
 ```
 
-3. 힌트가 있으면 task.txt에 기록:
-```bash
-mkdir -p docs/sj-company/.state
-echo "[HINT:single={hint}] {태스크}" > docs/sj-company/.state/task.txt
+3. HINT와 PM 브리핑을 task.txt에 함께 기록 (Tech Lead가 서브에이전트에 전달):
+
+Write 툴로 `docs/sj-company/.state/task.txt` 작성:
+```
+[HINT:single={hint}] {태스크}
+
+PM 브리핑:
+- 요구사항: {1에서 생성한 요구사항}
+- 엣지케이스: {1에서 생성한 엣지케이스}
+- 리스크: {1에서 생성한 리스크}
 ```
 
 4. Tech Lead 실행: `Skill("s-skills:sj-tech-lead")`
 
 5. pw-loop 실행:
 ```bash
-_HAS_PW=$([ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ] && echo "yes" || echo "no")
+if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW="yes"; else _HAS_PW="no"; fi
 _PW_TARGET=$(python3 -c "import re; text=open('docs/sj-company/PROJECT.md').read(); m=re.search(r'^pw_target:(.+)$', text, re.MULTILINE); print(m.group(1).strip() if m else '80')" 2>/dev/null || echo "80")
 ```
 
@@ -352,7 +363,7 @@ text = open(path, encoding="utf-8").read()
 today = datetime.date.today().strftime("%Y-%m-%d")
 summary = "{완료한 작업 한 줄 요약}"
 def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", f"{key}: {val}", t, flags=re.MULTILINE)
+    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
 text = upd("last_session", f"{today} — {summary}", text)
 text = upd("next", "없음", text)
 text = upd("blockers", "없음", text)
@@ -382,7 +393,8 @@ open(path, "w", encoding="utf-8").write(text)
 3. 단계별 Tech Lead 실행: `Skill("s-skills:sj-tech-lead")`
 4. 각 단계 완료 후 빌드 확인
 5. 전체 완료 후 pw-loop 실행 (Medium과 동일)
-6. PROJECT.md 업데이트 (Medium과 동일)
+6. QA 실행: `Skill("s-skills:sj-qa")` — 구현 전체 검증 + PROJECT.md 업데이트 포함
+   (sj-qa가 PROJECT.md를 업데이트하므로 Large 경로는 별도 PROJECT.md 업데이트 불필요)
 
 ---
 

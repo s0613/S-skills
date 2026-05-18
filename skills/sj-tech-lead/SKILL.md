@@ -50,7 +50,7 @@ PM/Design output을 받아 **필요한 전문 개발 서브에이전트만** 골
 mkdir -p docs/sj-company/.state docs/sj-company/dev-output
 
 _TASK=$(cat docs/sj-company/.state/task.txt 2>/dev/null)
-_HAS_PM=$([ -s "docs/sj-company/pm-output.md" ] && echo "yes" || echo "no")
+_HAS_PM=$([ -s "docs/sj-company/pm-output.md" ] && echo "yes" || [ -s "docs/sj-company/.state/task.txt" ] && echo "yes" || echo "no")
 _HAS_DESIGN=$([ -s "docs/sj-company/design-output.md" ] && echo "yes" || echo "no")
 _HAS_DEV_CTX=$([ -s "docs/sj-company/dev-context.md" ] && echo "yes" || echo "no")
 _MODEL_POLICY=$(cat docs/sj-company/.state/model-policy.txt 2>/dev/null | tr -d '[:space:]')
@@ -336,10 +336,9 @@ echo $((_ITER + 1)) > docs/sj-company/.state/review-iterations.txt
 - ...
 ```
 
-stage 업데이트 + 반복 카운터 초기화:
+반복 카운터 초기화:
 
 ```bash
-echo "dev" > docs/sj-company/.state/stage.txt
 rm -f docs/sj-company/.state/review-iterations.txt
 ```
 
