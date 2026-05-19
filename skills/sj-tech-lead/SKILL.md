@@ -41,6 +41,7 @@ PM/Design output을 받아 **필요한 전문 개발 서브에이전트만** 골
 | `sj-dev-devops` | haiku | CI/CD·배포·인프라 |
 | `sj-dev-security` | opus | 보안 구현 + cross-cutting 리뷰 (겸업) |
 | `sj-dev-data` | sonnet | 데이터 파이프라인·ML |
+| `sj-dev-si` | sonnet | SI 문서 (작업 개요·제안서·요구사항·WBS·도메인 맵) |
 
 ---
 
@@ -69,6 +70,7 @@ echo "MODEL_POLICY: $_MODEL_POLICY"
 `_HINT_SINGLE` 값에 따라 디스패치 범위를 결정한다:
 - `_HINT_SINGLE=frontend` → sj-dev-frontend 1개만 Agent 디스패치, 나머지 생략
 - `_HINT_SINGLE=backend`  → sj-dev-backend 1개만
+- `_HINT_SINGLE=si`       → sj-dev-si 1개만 (SI 문서 작성)
 - `_HINT_SINGLE=없음`     → 기존 로직대로 (Step 3에서 specialist 식별)
 
 ```bash
@@ -126,6 +128,7 @@ PM/Design output과 task.txt를 읽고 **어떤 영역이 실제로 필요한지
 | CI/배포/Docker/환경 변수 | `sj-dev-devops` |
 | 인증/권한/암호화/세션/토큰 | `sj-dev-security` (구현자 모드) |
 | 데이터 파이프라인/ML/추천/예측 | `sj-dev-data` |
+| 작업 개요/제안서/요구사항/WBS/도메인 맵/SI 문서 | `sj-dev-si` |
 
 **규칙:**
 - 단순 태스크(예: "버튼 라벨 오타 수정")는 **1명만** 호출.
