@@ -790,7 +790,7 @@ upflow 앱 기준: `src/app/projects/[id]/domain-map/` — 시각적 캔버스 (
 
 **작성 템플릿 (문서화용):**
 
-```markdown
+````markdown
 # 도메인 맵 — {프로젝트명}
 
 작성일: {YYYY-MM-DD}  |  방법론: DDD (Domain-Driven Design)
@@ -859,7 +859,7 @@ upflow 앱 기준: `src/app/projects/[id]/domain-map/` — 시각적 캔버스 (
 | `MemberRegistered` | 회원 관리 | 가입 완료 시 | 주문 처리 | 신규 회원 장바구니 초기화 |
 | `OrderPlaced` | 주문 처리 | 주문 확정 시 | 결제 | 결제 요청 생성 |
 | `PaymentCompleted` | 결제 | 결제 승인 시 | 주문 처리 | 주문 상태 → 처리중 |
-```
+````
 
 ---
 
