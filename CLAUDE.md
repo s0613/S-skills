@@ -17,6 +17,7 @@
 - **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰
 - **s-skills:sj-qa** (`/qa`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정
 - **s-skills:sj-secretary** (`/secretary`) — 비서. 총괄(sj-company)이 사이클 완료 시 작성한 report.md를 읽어 프로젝트별 현황·다음 명령·KPI를 요약 보고 (비서는 요약·전달만, 보고서 작성은 총괄 담당)
+- **s-skills:sj-dev-si** (`/sj-dev-si`) — SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 도메인 맵 직접 작성
 
 ### Sub-agents (Tech Lead가 디스패치)
 
