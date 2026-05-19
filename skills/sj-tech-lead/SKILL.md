@@ -41,7 +41,7 @@ PM/Design output을 받아 **필요한 전문 개발 서브에이전트만** 골
 | `sj-dev-devops` | haiku | CI/CD·배포·인프라 |
 | `sj-dev-security` | opus | 보안 구현 + cross-cutting 리뷰 (겸업) |
 | `sj-dev-data` | sonnet | 데이터 파이프라인·ML |
-| `sj-dev-si` | sonnet | SI 문서 (작업 개요·제안서·요구사항·WBS·도메인 맵) |
+| `sj-dev-si` | sonnet | SI 문서 6종(작업 개요·제안서·요구사항·WBS·데모·결과보고서) + 주간 보고서 + 도메인 맵 |
 
 ---
 
@@ -51,7 +51,7 @@ PM/Design output을 받아 **필요한 전문 개발 서브에이전트만** 골
 mkdir -p docs/sj-company/.state docs/sj-company/dev-output
 
 _TASK=$(cat docs/sj-company/.state/task.txt 2>/dev/null)
-_HAS_PM=$([ -s "docs/sj-company/pm-output.md" ] && echo "yes" || [ -s "docs/sj-company/.state/task.txt" ] && echo "yes" || echo "no")
+_HAS_PM=$([ -s "docs/sj-company/.state/task.txt" ] && echo "yes" || echo "no")
 _HAS_DESIGN=$([ -s "docs/sj-company/design-output.md" ] && echo "yes" || echo "no")
 _HAS_DEV_CTX=$([ -s "docs/sj-company/dev-context.md" ] && echo "yes" || echo "no")
 _MODEL_POLICY=$(cat docs/sj-company/.state/model-policy.txt 2>/dev/null | tr -d '[:space:]')
@@ -128,7 +128,7 @@ PM/Design output과 task.txt를 읽고 **어떤 영역이 실제로 필요한지
 | CI/배포/Docker/환경 변수 | `sj-dev-devops` |
 | 인증/권한/암호화/세션/토큰 | `sj-dev-security` (구현자 모드) |
 | 데이터 파이프라인/ML/추천/예측 | `sj-dev-data` |
-| 작업 개요/제안서/요구사항/WBS/도메인 맵/SI 문서 | `sj-dev-si` |
+| 작업 개요/제안서/요구사항/WBS/데모/결과보고서/주간 보고서/도메인 맵/SI 문서 | `sj-dev-si` |
 
 **규칙:**
 - 단순 태스크(예: "버튼 라벨 오타 수정")는 **1명만** 호출.
@@ -175,7 +175,7 @@ PM/Design output과 task.txt를 읽고 **어떤 영역이 실제로 필요한지
 
 태스크: {docs/sj-company/.state/task.txt 내용}
 
-PM 분석 요약: {pm-output.md에서 본인 영역 관련 부분 발췌}
+PM 분석 요약: {docs/sj-company/.state/task.txt에서 본인 영역 관련 부분 발췌}
 Design 명세: {frontend 디스패치 시에만, design-output.md 요약}
 선행 결과: {database/backend 결과가 있으면 경로 명시}
 

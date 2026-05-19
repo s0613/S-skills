@@ -32,9 +32,9 @@ upflow 앱의 SI 문서 6종 — 작업 개요(overview), 제안서(proposal), �
 ## 입력 컨텍스트
 
 Tech Lead가 다음 정보를 프롬프트로 전달한다:
-- 태스크 설명 (`docs/sj-company/.state/task.txt`)
-- PM 분석 (`docs/sj-company/pm-output.md` 또는 PROJECT.md goal)
+- 태스크 설명 + PM 분석 (`docs/sj-company/.state/task.txt`)
 - 프로젝트 컨텍스트 (`docs/sj-company/pm-context.md`)
+- 프로젝트 목표 (`docs/sj-company/PROJECT.md`)
 
 ## 작업 절차
 
@@ -42,7 +42,6 @@ Tech Lead가 다음 정보를 프롬프트로 전달한다:
 
 ```bash
 [ -f "docs/sj-company/.state/task.txt" ] && cat docs/sj-company/.state/task.txt
-[ -f "docs/sj-company/pm-output.md" ] && cat docs/sj-company/pm-output.md
 [ -f "docs/sj-company/pm-context.md" ] && cat docs/sj-company/pm-context.md
 [ -f "docs/sj-company/PROJECT.md" ] && cat docs/sj-company/PROJECT.md
 ```
@@ -894,12 +893,6 @@ upflow 앱 기준: `src/app/projects/[id]/domain-map/` — 시각적 캔버스 (
 - [ ] `상태`가 `not_started`/`in_progress`/`done`/`blocked` 중 하나인가?
 - [ ] 공수 요약 합계가 기재됐는가?
 
-**주간 보고서 (weekly report)**
-- [ ] 4개 섹션 키(`summary`, `issues`, `note`, `next_plan`) 모두 작성됐는가?
-- [ ] `issues`에 심각도·현황·조치가 있는가 (없으면 "없음" 명시)?
-- [ ] `next_plan`에 이월 항목이 구분됐는가?
-- [ ] 주차·기간이 명시됐는가?
-
 **데모 (demo)**
 - [ ] 화면 목록에 `label`·`path`·`description`이 있는가?
 - [ ] 데모 URL이 명시됐는가 (미확정이면 `[확인 필요]`)?
@@ -911,6 +904,12 @@ upflow 앱 기준: `src/app/projects/[id]/domain-map/` — 시각적 캔버스 (
 - [ ] `goals`에 미달성 항목의 사유가 명시됐는가?
 - [ ] `feedback`에 인수 확인일·하자보수 기간이 있는가?
 - [ ] `lessons`에 Keep / Problem→Try 구분이 있는가?
+
+**주간 보고서 (weekly report)**
+- [ ] 4개 섹션 키(`summary`, `issues`, `note`, `next_plan`) 모두 작성됐는가?
+- [ ] `issues`에 심각도·현황·조치가 있는가 (없으면 "없음" 명시)?
+- [ ] `next_plan`에 이월 항목이 구분됐는가?
+- [ ] 주차·기간이 명시됐는가?
 
 **도메인 맵 (domain-map)**
 - [ ] BC가 2개 이상 식별됐는가?
