@@ -24,6 +24,8 @@ upflow 앱의 SI 문서 6종 — 작업 개요(overview), 제안서(proposal), �
 
 코드는 건드리지 않는다.
 
+> **작업 환경**: 문서 작성 결과는 https://ax.upflow.ai.kr/dashboard 에서 확인·입력한다. 계정 정보는 사용자에게 직접 확인한다.
+
 > **참고**: 도메인 맵은 6종 문서와 별개의 독립 산출물(DDD 캔버스)이다.
 
 ## Base Guidelines (Karpathy)
