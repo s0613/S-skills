@@ -26,7 +26,7 @@
 - `sj-dev-devops` — CI/CD·배포·인프라 (haiku)
 - `sj-dev-security` — 보안 구현 + cross-cutting 리뷰 (opus)
 - `sj-dev-data` — 데이터 파이프라인·ML (sonnet)
-- `sj-dev-si` — SI 문서 전문 (작업 개요·제안서·요구사항·WBS·데모 5종 + DDD 도메인 맵) (sonnet)
+- `sj-dev-si` — SI 문서 전문 (작업 개요·제안서·요구사항·WBS·데모·결과보고서 6종 + DDD 도메인 맵) (sonnet)
 
 ## 사용법
 
