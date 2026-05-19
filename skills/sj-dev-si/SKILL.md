@@ -38,7 +38,7 @@ upflow 앱의 SI 문서 6종 — 작업 개요(overview), 제안서(proposal), �
 사용자가 직접 다음 형태로 호출한다:
 - `/sj-dev-si` — 인자 없음: 현재 프로젝트 컨텍스트를 읽고 어떤 문서를 작성할지 확인 후 진행
 - `/sj-dev-si <문서 유형>` — 지정 문서만 작성 (예: `/sj-dev-si 제안서`, `/sj-dev-si wbs`)
-- `/sj-dev-si 전체` — 6종 전부 작성
+- `/sj-dev-si 전체` — 6종 전부 작성 (견적서·주간 보고서·도메인 맵은 별도 요청 시만 작성)
 
 ## 작업 절차
 
@@ -73,7 +73,7 @@ find docs/ -name "*.md" -not -path '*/sj-company/*' -not -path '*/archive/*' | h
 | 견적서, estimate, 견적, 단가, 항목별, 가격표, 공급가액 | 견적서 |
 | 도메인 맵, domain map, DDD, 엔티티, 용어, BC | 도메인 맵 (독립 산출물) |
 
-명확하지 않으면 6종 모두 작성한다.
+명확하지 않으면 6종 모두 작성한다. (견적서·주간 보고서·도메인 맵은 명시적 요청이 있을 때만 작성)
 
 ---
 
@@ -1034,7 +1034,7 @@ mkdir -p docs/si
 - `docs/si/demo.md`
 - `docs/si/result.md`
 - `docs/si/weekly-{YYYY-MM-DD}.md` (주간 보고서, 주차별 파일)
-- `docs/si/estimate.md` (견적서, 버전별로 estimate-v2.md 등으로 관리)
+- `docs/si/estimate-v{N}.md` (견적서, 항상 버전 번호 포함 — 예: estimate-v1.md, estimate-v2.md)
 - `docs/si/domain-map.md` (독립 산출물)
 
 ### Step 6: 완료 보고
