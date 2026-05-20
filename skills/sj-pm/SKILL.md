@@ -1,9 +1,9 @@
 ---
 name: sj-pm
-version: 1.1.0
+version: 2.0.0
 description: |
-  PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위를 정의한다.
-  프로젝트별 pm-context.md를 생성·유지해 프로젝트에 최적화된 분석을 제공한다.
+  PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위, 역할 힌트를 정의한다.
+  결과는 .state/pm-brief.md(휘발)에, 학습 인사이트는 pm-context.md(영속)에 누적한다.
 allowed-tools:
   - Bash
   - Read
@@ -82,10 +82,12 @@ find . -maxdepth 3 \
 
 ## Step 2: 태스크 수행
 
-현재 요청(스킬 호출 시 전달된 메시지 또는 `/ai`에서 넘겨받은 task.txt)을 분석한다.
+현재 요청을 분석한다. 입력 우선순위:
+1. 스킬 호출 시 전달된 메시지 (인자)
+2. sj-company에서 작성한 `docs/sj-company/.state/task.txt` (Large 경로의 raw 태스크 텍스트)
+3. PROJECT.md의 `next` 필드 (그것도 없으면 사용자에게 AskUserQuestion)
 
 ```bash
-# task.txt가 있으면 읽기
 [ -f "docs/sj-company/.state/task.txt" ] && cat "docs/sj-company/.state/task.txt"
 ```
 
@@ -106,32 +108,54 @@ pm-context.md + 현재 요청을 바탕으로 PM 역할을 수행한다:
 
 문제 발견 시: 해당 항목을 수정 후 다시 이 체크리스트를 통과시킨다.
 
+## Step 4: 역할 힌트 판단
+
+태스크 내용에서 단일 디스패치 힌트를 추출한다(Tech Lead가 이 힌트로 단일 specialist만 호출).
+
+```python
+task_lower = "{태스크}".lower()
+if any(k in task_lower for k in ["작업 개요", "제안서 작성", "요구사항 명세서", "요구사항 정의서", "wbs", "데모 보고서", "결과보고서", "주간 보고서", "도메인 맵", "견적서", "si 문서", "srs"]):
+    hint = "si"
+elif any(k in task_lower for k in ["ui", "컴포넌트", "화면", "페이지", "css", "스타일"]):
+    hint = "frontend"
+elif any(k in task_lower for k in ["api", "서버", "백엔드", "db", "데이터베이스"]):
+    hint = "backend"
+elif any(k in task_lower for k in ["스키마", "마이그레이션", "쿼리"]):
+    hint = "database"
+elif any(k in task_lower for k in ["인증", "권한", "암호화", "토큰"]):
+    hint = "security"
+else:
+    hint = ""  # Tech Lead가 Step 3에서 판단
+print(f"HINT={hint}")
+```
+
 ## Step 5: 결과 저장
 
-`docs/sj-company/.state/task.txt`에 저장 (Tech Lead가 읽는 파일):
+`docs/sj-company/.state/pm-brief.md`에 저장 (Tech Lead가 읽는 파일).
+**첫 줄은 반드시 `[HINT:single={hint}]` 형태로 시작**한다(빈 hint일 경우 `[HINT:single=]`).
 
 ```markdown
-PM Output — {태스크명}
-생성일: {날짜}
+[HINT:single={hint}]
+# PM Brief — {태스크명}
+> 생성일: {날짜}
 
-요구사항 분석:
+## 요구사항 분석
 [분석 요약]
 
-태스크 목록:
+## 태스크 목록
 - [ ] {태스크1}
 - [ ] {태스크2}
 
-리스크:
+## 리스크
 - {리스크1}
 
-Dev/QA에 전달할 핵심 지침:
+## Dev/QA에 전달할 핵심 지침
 [핵심 지침]
 ```
 
-PROJECT.md 업데이트 (sj-company v3):
+PROJECT.md 업데이트:
 
 ```bash
-# sj-company v3: PROJECT.md goal/next 동기화
 python3 - <<'PY'
 import re, os
 
@@ -140,10 +164,10 @@ if not os.path.exists(path):
     print("PROJECT.md 없음, 스킵")
     exit(0)
 
-# task.txt에서 첫 번째 태스크 추출
-task_txt = open("docs/sj-company/.state/task.txt", encoding="utf-8").read() if os.path.exists("docs/sj-company/.state/task.txt") else ""
+brief_path = "docs/sj-company/.state/pm-brief.md"
+brief_txt = open(brief_path, encoding="utf-8").read() if os.path.exists(brief_path) else ""
 first_task = ""
-m = re.search(r"- \[ \] (.+)$", task_txt, re.MULTILINE)
+m = re.search(r"^- \[ \] (.+)$", brief_txt, re.MULTILINE)
 if m: first_task = m.group(1).strip()
 
 text = open(path, encoding="utf-8").read()
@@ -157,6 +181,33 @@ print(f"PROJECT.md next 업데이트: {first_task or '(태스크 없음)'}")
 PY
 ```
 
-## Step 6: 완료 보고
+## Step 6: pm-context.md 학습 누적
 
-결과를 사용자에게 요약해서 출력한다. 다음 단계(Design 또는 Tech Lead)를 제안한다.
+이번 사이클에서 **새로 알게 된 인사이트** 1~3줄을 `docs/sj-company/pm-context.md`의 `## 히스토리` 섹션 끝에 추가한다. 단순한 작업 기록이 아니라 "다음 사이클이 알면 좋을 사실"만 기록.
+
+```python
+import os, datetime
+
+ctx_path = "docs/sj-company/pm-context.md"
+if not os.path.exists(ctx_path):
+    print("pm-context.md 없음, 스킵 (Step 1에서 생성됐어야 함)")
+    exit(0)
+
+today = datetime.date.today().strftime("%Y-%m-%d")
+insight = "{이번 사이클에서 알게 된 사실 — 예: '결제 도메인은 idempotency key 패턴 사용', '디자인 시안은 모바일 우선'}"
+
+text = open(ctx_path, encoding="utf-8").read()
+# 마지막 줄이 빈 줄이면 보존하면서 append
+if not text.endswith("\n"):
+    text += "\n"
+text += f"- {today}: {insight}\n"
+open(ctx_path, "w", encoding="utf-8").write(text)
+print(f"pm-context.md 누적: {insight}")
+```
+
+인사이트가 정말로 없으면 이 Step은 스킵 가능 (단순 작업이었다면 누적 가치 없음).
+
+## Step 7: 완료 보고
+
+결과를 사용자에게 요약해서 출력한다. 다음 단계(Tech Lead)를 제안한다.
+(Design 명세 단계는 sj-company v3에서 제거됨 — Frontend가 들어가는 사이클에서만 Tech Lead가 sentinel로 Design 리뷰 호출)
