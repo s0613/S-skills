@@ -36,6 +36,7 @@ mkdir -p docs/sj-company
 
 # 마이그레이션 감지: PROJECT.md 없고 구파일 있으면 자동 마이그레이션
 _HAS_PROJECT=$([ -f "docs/sj-company/PROJECT.md" ] && echo "yes" || echo "no")
+# v2 잔재 감지(아래 자동 이주 블록은 PROJECT.md가 없는 신규/구버전 워크스페이스에서만 일회성으로 트리거된다)
 _HAS_OLD=$([ -f "docs/sj-company/.state/stage.txt" ] && echo "yes" || [ -f "docs/sj-company/pm-output.md" ] && echo "yes" || echo "no")
 
 if [ "$_HAS_PROJECT" = "no" ] && [ "$_HAS_OLD" = "yes" ]; then
@@ -156,8 +157,8 @@ NEXT가 "없음"이면:
 ```
 
 AskUserQuestion으로 사용자 입력 받기:
-- A) 바로 시작 (NEXT 태스크로) → NEXT 값을 태스크로 Case B 실행
-- B) 새 태스크 입력 → 입력값으로 Case B 실행
+- A) 바로 시작 (NEXT 태스크로) → NEXT 값을 태스크로 두고 **이 시점부터 Case B Step 1(태스크 크기 판정)부터 실행**
+- B) 새 태스크 입력 → 입력값을 태스크로 두고 **이 시점부터 Case B Step 1부터 실행**
 
 PROJECT.md가 없는 경우 (신규 프로젝트):
 1. AskUserQuestion으로 프로젝트 목표 입력 받기
@@ -193,6 +194,8 @@ status: active
 open("docs/sj-company/PROJECT.md", "w").write(content)
 print("PROJECT.md 생성 완료")
 ```
+
+생성 직후, 사용자에게 "프로젝트가 등록됐습니다. 다음 태스크를 입력하세요"를 출력하고 새 태스크 입력을 받아 **Case B Step 1(태스크 크기 판정)부터 실행**한다.
 
 ---
 
@@ -323,7 +326,9 @@ PM 브리핑:
 
 ```python
 task_lower = "{태스크}".lower()
-if any(k in task_lower for k in ["ui", "컴포넌트", "화면", "페이지", "css", "스타일"]):
+if any(k in task_lower for k in ["작업 개요", "제안서 작성", "요구사항 명세서", "요구사항 정의서", "wbs", "데모 보고서", "결과보고서", "주간 보고서", "도메인 맵", "견적서", "si 문서", "srs"]):
+    hint = "si"
+elif any(k in task_lower for k in ["ui", "컴포넌트", "화면", "페이지", "css", "스타일"]):
     hint = "frontend"
 elif any(k in task_lower for k in ["api", "서버", "백엔드", "db", "데이터베이스"]):
     hint = "backend"
@@ -392,9 +397,9 @@ open(path, "w", encoding="utf-8").write(text)
 
 3. 단계별 Tech Lead 실행: `Skill("s-skills:sj-tech-lead")`
 4. 각 단계 완료 후 빌드 확인
-5. 전체 완료 후 pw-loop 실행 (Medium과 동일)
-6. QA 실행: `Skill("s-skills:sj-qa")` — 구현 전체 검증 + PROJECT.md 업데이트 포함
-   (sj-qa가 PROJECT.md를 업데이트하므로 Large 경로는 별도 PROJECT.md 업데이트 불필요)
+5. QA 실행: `Skill("s-skills:sj-qa")` — 구현 전체 검증 + pw-loop 호출 + PROJECT.md 업데이트 포함
+   (Large 경로의 pw-loop는 sj-qa Step 6에서 수행하므로 sj-company는 직접 호출하지 않는다.
+    sj-qa가 PROJECT.md를 업데이트하므로 Large 경로는 별도 PROJECT.md 업데이트 불필요)
 
 ---
 
