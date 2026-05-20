@@ -75,7 +75,7 @@ _MODEL_POLICY="${_MODEL_POLICY:-auto}"
 
 # [HINT:single={role}] 파싱 — pm-brief.md 첫 줄 또는 task.txt 본문에서
 _HINT_SINGLE=$(echo "$_TASK" | grep -oE 'HINT:single=[a-z]+' | head -1 | cut -d= -f2 || echo "")
-_TASK_CLEAN=$(echo "$_TASK" | sed 's/\[HINT:[^]]*\]//g' | head -c 2000)
+_TASK_CLEAN=$(echo "$_TASK" | sed 's/\[HINT:[^]]*\]//g' | python3 -c "import sys; sys.stdout.write(sys.stdin.read()[:2000])")
 echo "SOURCE: $_SOURCE | HAS_PM: $_HAS_PM | HINT: ${_HINT_SINGLE:-없음} | MODEL: $_MODEL_POLICY"
 ```
 
