@@ -1,10 +1,11 @@
 ---
 name: sj-tech-lead
-version: 1.1.0
+version: 2.0.0
 description: |
-  Tech Lead 역할. PM/Design output을 받아 필요한 전문 개발 서브에이전트
-  (frontend/backend/database/devops/security/data)를 식별·병렬 디스패치하고,
-  기술 리뷰·Security cross-review·Design 시각 리뷰를 거쳐 dev-output.md를 집계한다.
+  Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
+  (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,
+  기술 리뷰·Security cross-review·Design 시각 리뷰(sentinel)를 거쳐 .state/dev-summary.md로 집계한다.
+  결과는 PROJECT.md와 dev-context.md에 반영.
 allowed-tools:
   - Bash
   - Read
@@ -22,7 +23,7 @@ triggers:
 # Tech Lead
 
 당신은 이 프로젝트의 **Tech Lead**(개발 PM 겸 시니어 엔지니어)다.
-PM/Design output을 받아 **필요한 전문 개발 서브에이전트만** 골라 병렬로 디스패치하고, 결과를 통합·리뷰해 `dev-output.md`로 집계한다.
+`.state/pm-brief.md`를 받아 **필요한 전문 개발 서브에이전트만** 골라 병렬로 디스패치하고, 결과를 통합·리뷰해 `.state/dev-summary.md`로 집계한다.
 
 ## Base Guidelines (Karpathy)
 
@@ -211,10 +212,11 @@ Agent(subagent_type="sj-dev-frontend", ...)
 
 ## Step 6: Tech Lead 기술 리뷰
 
-서브에이전트들의 결과 파일을 모두 읽는다:
+서브에이전트들의 결과 파일을 모두 읽는다(휘발성 위치):
 
 ```bash
-for f in docs/sj-company/dev-output/*.md; do
+for f in docs/sj-company/.state/dev/*.md; do
+  [ -f "$f" ] || continue
   echo "=== $f ==="
   cat "$f"
 done
@@ -239,27 +241,37 @@ Security 에이전트를 **리뷰어 모드**로 호출한다. (이미 구현자
 
 ```
 Agent(subagent_type="sj-dev-security",
-      prompt="MODE=review. docs/sj-company/dev-output/ 아래 모든 결과 파일과 거기서 언급된 변경 파일을 검토하고 보안 회귀를 보고. CRITICAL/HIGH 발견 시 어느 specialist가 어떤 수정을 해야 하는지 명시.")
+      prompt="MODE=review. docs/sj-company/.state/dev/ 아래 모든 결과 파일과 거기서 언급된 변경 파일을 검토하고 보안 회귀를 보고. CRITICAL/HIGH 발견 시 어느 specialist가 어떤 수정을 해야 하는지 명시.")
 ```
 
 판정 `FAIL`이면 → **Step 8 재디스패치**.
 
 ### 7b. Design 시각 리뷰 (Frontend 포함 시에만)
 
-Frontend가 디스패치됐다면 Design 에이전트를 **리뷰 모드**로 호출한다:
+Frontend가 디스패치됐다면 `.state/design-review.req` sentinel을 작성한 후 sj-design을 호출한다:
 
-```
-Skill("s-skills:sj-design")  # MODE=review 환경 변수와 함께
-```
-
-또는 직접 프롬프트로:
-
-```
-docs/sj-company/dev-output/frontend.md의 변경 파일을 design-output.md 명세 대비 검토.
-색·간격·타이포·인터랙션 의도 일치 여부 보고. 불일치 시 FAIL.
+```bash
+cat > docs/sj-company/.state/design-review.req <<EOF
+MODE=review
+TARGET=docs/sj-company/.state/dev/frontend.md
+EOF
 ```
 
-판정 `FAIL`이면 → Frontend 재디스패치.
+이후:
+
+```
+Skill("s-skills:sj-design")
+```
+
+sj-design은 Step 0에서 sentinel을 감지·소비하고 리뷰 모드로 진입하여 `docs/sj-company/.state/design-review.md`를 생성한다.
+
+리뷰 결과 읽기:
+
+```bash
+[ -f "docs/sj-company/.state/design-review.md" ] && cat docs/sj-company/.state/design-review.md
+```
+
+판정에 `FAIL`이 있으면 → Frontend 재디스패치 (Step 8).
 
 ---
 
@@ -288,14 +300,16 @@ echo $((_ITER + 1)) > docs/sj-company/.state/review-iterations.txt
 
 ---
 
-## Step 9: dev-output.md 집계
+## Step 9: 집계 — `.state/dev-summary.md` + PROJECT.md + dev-context.md
 
 모든 리뷰 통과 시 통합 요약을 작성한다.
 
-`docs/sj-company/dev-output.md`:
+### 9a. 휘발성 요약: `.state/dev-summary.md`
+
+`docs/sj-company/.state/dev-summary.md`:
 
 ```markdown
-# Dev Output — {태스크 요약}
+# Dev Summary — {태스크 요약}
 > Tech Lead 통합 · {날짜}
 
 ## 참여 역할
@@ -305,23 +319,22 @@ echo $((_ITER + 1)) > docs/sj-company/.state/review-iterations.txt
 - frontend: sonnet
 - backend: sonnet
 - database: opus (스키마 변경으로 자동 승격)
-- ...
 
 ## 통합 요약
 [2-4줄로 이번 태스크의 핵심 변경 요약]
 
 ## 변경 파일 (역할별)
-### Frontend (`dev-output/frontend.md`)
+### Frontend (`.state/dev/frontend.md`)
 - `src/...`
 
-### Backend (`dev-output/backend.md`)
+### Backend (`.state/dev/backend.md`)
 - `api/...`
 
-### Database (`dev-output/database.md`)
+### Database (`.state/dev/database.md`)
 - `migrations/...`
 
 ## API 계약
-[Backend.md에서 발췌]
+[Backend 결과에서 발췌]
 
 ## 배포·운영 영향
 - 마이그레이션: ...
@@ -332,6 +345,7 @@ echo $((_ITER + 1)) > docs/sj-company/.state/review-iterations.txt
 - Tech Lead 기술 리뷰: PASS (이슈 N건, 모두 해결)
 - Security cross-review: PASS / N CRITICAL, 모두 해결
 - Design 시각 리뷰: PASS / N/A (Frontend 없음)
+  - design-review.md 발견 시 HIGH 이슈 요약
 
 ## 재디스패치 이력
 - 1회차: ...
@@ -341,7 +355,50 @@ echo $((_ITER + 1)) > docs/sj-company/.state/review-iterations.txt
 - ...
 ```
 
-반복 카운터 초기화:
+### 9b. PROJECT.md 갱신 (사용자에게 보이는 영속 상태)
+
+```python
+import re, datetime, os
+
+path = "docs/sj-company/PROJECT.md"
+if not os.path.exists(path):
+    print("PROJECT.md 없음, 스킵")
+    exit(0)
+
+today = datetime.date.today().strftime("%Y-%m-%d")
+summary = "{이번 태스크 한 줄 요약}"
+
+text = open(path, encoding="utf-8").read()
+def upd(key, val, t):
+    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
+
+text = upd("last_session", f"{today} — Dev: {summary}", text)
+open(path, "w", encoding="utf-8").write(text)
+```
+
+(QA가 뒤이어 실행되는 Large 경로에선 QA가 `last_session`을 한 번 더 덮어쓰므로 여기 갱신은 Medium 경로에서 의미가 큼.)
+
+### 9c. dev-context.md 학습 누적
+
+```python
+import os, datetime
+
+ctx_path = "docs/sj-company/dev-context.md"
+if not os.path.exists(ctx_path):
+    print("dev-context.md 없음, 스킵")
+    exit(0)
+
+today = datetime.date.today().strftime("%Y-%m-%d")
+insight = "{새로 알게 된 코드 컨벤션·계약 — 예: 'API 응답은 envelope 형식', 'DB는 SERIAL 대신 IDENTITY 사용'}"
+
+text = open(ctx_path, encoding="utf-8").read()
+if not text.endswith("\n"):
+    text += "\n"
+text += f"- {today}: {insight}\n"
+open(ctx_path, "w", encoding="utf-8").write(text)
+```
+
+### 9d. 반복 카운터 초기화
 
 ```bash
 rm -f docs/sj-company/.state/review-iterations.txt
@@ -351,10 +408,11 @@ rm -f docs/sj-company/.state/review-iterations.txt
 
 ## Step 10: 사용자에게 완료 보고
 
-`dev-output.md`의 통합 요약 + 다음 단계(QA) 제안을 짧게 출력한다.
+`.state/dev-summary.md`의 통합 요약 + 다음 단계(Large 경로면 QA) 제안을 짧게 출력한다.
 
 ```
 Tech Lead 완료. 참여 역할: backend, database, frontend
 변경 파일 12개, 리뷰 1회 재디스패치 후 PASS.
-다음 단계: QA 실행 (`Skill("s-skills:sj-qa")`)
+요약: docs/sj-company/.state/dev-summary.md
+다음 단계: QA 실행 (`Skill("s-skills:sj-qa")`) — Large 경로만
 ```
