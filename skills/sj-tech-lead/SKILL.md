@@ -48,44 +48,45 @@ PM/Design output을 받아 **필요한 전문 개발 서브에이전트만** 골
 ## Step 1: 입력 컨텍스트 로드
 
 ```bash
-mkdir -p docs/sj-company/.state docs/sj-company/dev-output
+mkdir -p docs/sj-company/.state docs/sj-company/.state/dev
 
-_TASK=$(cat docs/sj-company/.state/task.txt 2>/dev/null)
-_HAS_PM=$([ -s "docs/sj-company/.state/task.txt" ] && echo "yes" || echo "no")
-_HAS_DESIGN=$([ -s "docs/sj-company/design-output.md" ] && echo "yes" || echo "no")
+# 입력 우선순위: .state/pm-brief.md(PM 거친 경우) > .state/task.txt(Medium 인라인 브리핑) > PROJECT.md goal
+_BRIEF_FILE="docs/sj-company/.state/pm-brief.md"
+_TASK_FILE="docs/sj-company/.state/task.txt"
+
+if [ -s "$_BRIEF_FILE" ]; then
+  _SOURCE="pm-brief"
+  _TASK=$(cat "$_BRIEF_FILE")
+  _HAS_PM="yes"
+elif [ -s "$_TASK_FILE" ]; then
+  _SOURCE="task.txt"
+  _TASK=$(cat "$_TASK_FILE")
+  _HAS_PM="no"  # Medium 인라인 브리핑은 PM 단계 정식 통과는 아님
+else
+  _SOURCE="project"
+  _TASK=$(grep "^goal:" docs/sj-company/PROJECT.md 2>/dev/null | cut -d: -f2- | xargs)
+  _HAS_PM="no"
+fi
+
 _HAS_DEV_CTX=$([ -s "docs/sj-company/dev-context.md" ] && echo "yes" || echo "no")
 _MODEL_POLICY=$(cat docs/sj-company/.state/model-policy.txt 2>/dev/null | tr -d '[:space:]')
 _MODEL_POLICY="${_MODEL_POLICY:-auto}"
 
-# [HINT:single={role}] 파싱 — sj-company v3에서 전달하는 단일 디스패치 힌트
-_HINT_SINGLE=$(echo "$_TASK" | grep -oE 'HINT:single=[a-z]+' | cut -d= -f2 || echo "")
-_TASK_CLEAN=$(echo "$_TASK" | sed 's/\[HINT:[^]]*\]//g' | xargs)
-echo "SINGLE_HINT: ${_HINT_SINGLE:-없음}"
-
-echo "TASK: ${_TASK:-없음}"
-echo "PM: $_HAS_PM | DESIGN: $_HAS_DESIGN | DEV_CTX: $_HAS_DEV_CTX"
-echo "MODEL_POLICY: $_MODEL_POLICY"
+# [HINT:single={role}] 파싱 — pm-brief.md 첫 줄 또는 task.txt 본문에서
+_HINT_SINGLE=$(echo "$_TASK" | grep -oE 'HINT:single=[a-z]+' | head -1 | cut -d= -f2 || echo "")
+_TASK_CLEAN=$(echo "$_TASK" | sed 's/\[HINT:[^]]*\]//g' | head -c 2000)
+echo "SOURCE: $_SOURCE | HAS_PM: $_HAS_PM | HINT: ${_HINT_SINGLE:-없음} | MODEL: $_MODEL_POLICY"
 ```
 
 `_HINT_SINGLE` 값에 따라 디스패치 범위를 결정한다:
 - `_HINT_SINGLE=frontend` → sj-dev-frontend 1개만 Agent 디스패치, 나머지 생략
 - `_HINT_SINGLE=backend`  → sj-dev-backend 1개만
+- `_HINT_SINGLE=database` → sj-dev-database 1개만
+- `_HINT_SINGLE=security` → sj-dev-security 1개만
 - `_HINT_SINGLE=si`       → sj-dev-si 1개만 (SI 문서 작성)
-- `_HINT_SINGLE=없음`     → 기존 로직대로 (Step 3에서 specialist 식별)
+- `_HINT_SINGLE=없음`     → Step 3에서 specialist 식별
 
-```bash
-if [ "$_HAS_PM" = "no" ]; then
-  # PROJECT.md에서 goal을 폴백으로 사용 (sj-company v3에서 PM 단계 생략 가능)
-  _PM_CONTEXT=$(grep "^goal:" docs/sj-company/PROJECT.md 2>/dev/null | cut -d: -f2- | xargs || echo "")
-  if [ -n "$_PM_CONTEXT" ]; then
-    echo "PM_CONTEXT (PROJECT.md goal): $_PM_CONTEXT"
-  else
-    echo "PM output 없고 PROJECT.md goal도 없음 — 태스크 텍스트만으로 진행"
-  fi
-fi
-```
-
-`docs/sj-company/dev-context.md`가 없으면 분석 후 생성한다(기존 `sj-dev` 스킬의 Step 1 절차와 동일):
+`docs/sj-company/dev-context.md`가 없으면 분석 후 생성한다:
 
 ```bash
 # 기술 스택 / 디렉토리 구조 파악
@@ -173,23 +174,24 @@ PM/Design output과 task.txt를 읽고 **어떤 영역이 실제로 필요한지
 ```
 당신은 sj-dev-{role} 서브에이전트입니다.
 
-태스크: {docs/sj-company/.state/task.txt 내용}
+태스크 본문: {_TASK_CLEAN — HINT 라인 제거된 본문, 최대 2KB}
 
-PM 분석 요약: {docs/sj-company/.state/task.txt에서 본인 영역 관련 부분 발췌}
-Design 명세: {frontend 디스패치 시에만, design-output.md 요약}
-선행 결과: {database/backend 결과가 있으면 경로 명시}
+PM Brief 경로: docs/sj-company/.state/pm-brief.md (있는 경우 — 본인이 직접 cat해서 본인 영역 부분 참고)
+영속 컨텍스트: docs/sj-company/dev-context.md
+선행 산출: docs/sj-company/.state/dev/{database,backend}.md (의존 관계가 있다면)
 
 본인 SKILL 파일(`agents/sj-dev-{role}.md`)의 작업 절차를 따라:
-1. 컨텍스트 로드
+1. 컨텍스트 로드 (위 경로들 cat)
 2. 구현
 3. Self-Review 체크리스트 통과
-4. `docs/sj-company/dev-output/{role}.md`에 결과 저장
+4. **결과를 `docs/sj-company/.state/dev/{role}.md`에 저장** (휘발 — 다음 사이클에서 덮어쓰기)
 5. 변경 파일·미해결 이슈를 보고
 
 본인 영역 외 파일은 절대 수정하지 마세요.
+중요: `docs/sj-company/{pm,design,dev,qa}-output.md` / `report.md` / `stage.txt` / `dev-output/` 절대 생성·수정 금지 (v3 룰).
 ```
 
-Security를 리뷰어 모드로 호출할 때는 프롬프트에 `MODE=review`를 명시한다.
+Security를 리뷰어 모드로 호출할 때는 프롬프트에 `MODE=review`를 명시하고 검토 대상으로 `docs/sj-company/.state/dev/*.md`를 지정한다.
 
 ### 호출 예 (개념)
 
