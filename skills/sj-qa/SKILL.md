@@ -1,10 +1,10 @@
 ---
 name: sj-qa
-version: 1.1.0
+version: 2.0.0
 description: |
-  QA 역할 에이전트. 구현 결과를 검증하고 테스트 계획을 수립한다.
-  PASS / FAIL / CONDITIONAL 판정을 내린다.
-  프로젝트별 qa-context.md를 생성·유지한다.
+  QA 역할 에이전트. .state/dev-summary.md + .state/pm-brief.md를 받아 검증하고 테스트 계획을 수립한다.
+  PASS / FAIL / CONDITIONAL 판정을 .state/qa-verdict.md에 저장하고 PROJECT.md를 갱신한다.
+  qa-context.md에 학습된 검증 포인트를 누적한다.
 allowed-tools:
   - Bash
   - Read
@@ -78,23 +78,24 @@ cat package.json 2>/dev/null | grep -A5 '"scripts"'
 ## Step 2: 이전 단계 컨텍스트 로드
 
 ```bash
-[ -f "docs/sj-company/pm-output.md" ]     && echo "=== PM ===" && cat "docs/sj-company/pm-output.md"
-[ -f "docs/sj-company/dev-output.md" ]    && echo "=== DEV ===" && cat "docs/sj-company/dev-output.md"
-[ -f "docs/sj-company/.state/task.txt" ]  && echo "=== TASK ===" && cat "docs/sj-company/.state/task.txt"
+[ -f "docs/sj-company/.state/pm-brief.md" ]   && echo "=== PM BRIEF ===" && cat "docs/sj-company/.state/pm-brief.md"
+[ -f "docs/sj-company/.state/dev-summary.md" ] && echo "=== DEV SUMMARY ===" && cat "docs/sj-company/.state/dev-summary.md"
+[ -f "docs/sj-company/.state/task.txt" ]      && echo "=== TASK (raw) ===" && cat "docs/sj-company/.state/task.txt"
+[ -f "docs/sj-company/PROJECT.md" ]           && echo "=== PROJECT ===" && cat "docs/sj-company/PROJECT.md"
 ```
 
 ## Step 3: 태스크 수행
 
-qa-context.md + dev-output.md + pm-output.md를 바탕으로 QA 역할을 수행한다:
+qa-context.md + `.state/dev-summary.md` + `.state/pm-brief.md`를 바탕으로 QA 역할을 수행한다:
 - 테스트 케이스 목록 작성
 - 엣지 케이스 식별
-- 최종 판정
+- 최종 판정 (PASS / FAIL / CONDITIONAL)
 
 ## Step 4: 자체 검토
 
 결과 저장 전, 아래 체크리스트를 스스로 검토한다. 문제가 있으면 Step 3으로 돌아가 수정한다.
 
-- [ ] PM 요구사항(pm-output.md)의 모든 태스크에 대응하는 테스트 케이스가 있는가?
+- [ ] PM 요구사항(`.state/pm-brief.md`의 태스크 목록)의 모든 항목에 대응하는 테스트 케이스가 있는가?
 - [ ] 엣지 케이스가 최소 1개 이상 식별됐는가?
 - [ ] 판정(PASS/FAIL/CONDITIONAL) 근거가 구체적인가? ("잘 됨" 같은 표현 없는가)
 - [ ] FAIL 또는 CONDITIONAL인 경우, Dev가 수정할 수 있는 구체적 이슈가 명시됐는가?
@@ -104,10 +105,11 @@ qa-context.md + dev-output.md + pm-output.md를 바탕으로 QA 역할을 수행
 
 ## Step 5: 결과 저장
 
-`docs/sj-company/qa-output.md`에 저장:
+`docs/sj-company/.state/qa-verdict.md`에 저장 (휘발성).
+**판정 헤더는 반드시 한 줄에 `## 판정: <PASS|FAIL|CONDITIONAL>` 형식**으로 작성한다(파싱이 정규식으로 강건화됨).
 
 ```markdown
-# QA Output — {태스크명}
+# QA Verdict — {태스크명}
 > 생성일: {날짜}
 
 ## 테스트 케이스
@@ -117,8 +119,8 @@ qa-context.md + dev-output.md + pm-output.md를 바탕으로 QA 역할을 수행
 ## 엣지 케이스
 - {엣지케이스1}
 
-## 판정: PASS | FAIL | CONDITIONAL
-[판정 이유]
+## 판정: PASS
+[판정 이유 — 본문에 PASS/FAIL/CONDITIONAL 단어가 다시 등장해도 무방. 헤더만 파싱됨]
 
 ## 발견된 이슈
 - {이슈1}
@@ -158,14 +160,21 @@ if not os.path.exists(path):
 text = open(path, encoding="utf-8").read()
 today = datetime.date.today().strftime("%Y-%m-%d")
 
-# QA 판정 읽기 (qa-output.md 또는 pw-loop 결과) — CONDITIONAL 먼저 체크
+# QA 판정 — 헤더 정규식으로 강건하게 추출
 verdict = "확인필요"
-for f in ["docs/sj-company/qa-output.md"]:
-    if os.path.exists(f):
-        content = open(f, encoding="utf-8").read()
-        if "CONDITIONAL" in content: verdict = "CONDITIONAL"; break
-        if "PASS" in content: verdict = "PASS"; break
-        if "FAIL" in content: verdict = "FAIL"; break
+qa_file = "docs/sj-company/.state/qa-verdict.md"
+if os.path.exists(qa_file):
+    content = open(qa_file, encoding="utf-8").read()
+    m = re.search(r"^## 판정:\s*(PASS|FAIL|CONDITIONAL)\b", content, re.MULTILINE)
+    if m:
+        verdict = m.group(1)
+    else:
+        print("경고: qa-verdict.md에 '## 판정: <PASS|FAIL|CONDITIONAL>' 헤더가 없음. 본문 fallback 시도")
+        # Fallback: 본문 첫 매칭 — 헤더가 누락된 경우만
+        for v in ("CONDITIONAL", "FAIL", "PASS"):
+            if v in content:
+                verdict = v
+                break
 
 def upd(key, val, t):
     return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
@@ -185,6 +194,28 @@ open(path, "w", encoding="utf-8").write(text)
 print(f"PROJECT.md 업데이트: QA {verdict}")
 ```
 
-## Step 8: 완료 보고
+## Step 8: qa-context.md 학습 누적
+
+이번 사이클에서 **새로 알게 된 검증 포인트·취약 영역** 1~3줄을 `docs/sj-company/qa-context.md`의 `## 히스토리`에 append.
+
+```python
+import os, datetime
+
+ctx_path = "docs/sj-company/qa-context.md"
+if not os.path.exists(ctx_path):
+    print("qa-context.md 없음, 스킵")
+    exit(0)
+
+today = datetime.date.today().strftime("%Y-%m-%d")
+insight = "{새로 알게 된 사실 — 예: '결제 플로우는 idempotency 키 누락 시 무한 재시도', 'mobile safari에서 sticky 깨짐'}"
+
+text = open(ctx_path, encoding="utf-8").read()
+if not text.endswith("\n"):
+    text += "\n"
+text += f"- {today}: {insight}\n"
+open(ctx_path, "w", encoding="utf-8").write(text)
+```
+
+## Step 9: 완료 보고
 
 전체 파이프라인 결과를 사용자에게 요약해서 출력한다.
