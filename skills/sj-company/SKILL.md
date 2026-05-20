@@ -332,8 +332,12 @@ elif any(k in task_lower for k in ["ui", "컴포넌트", "화면", "페이지", 
     hint = "frontend"
 elif any(k in task_lower for k in ["api", "서버", "백엔드", "db", "데이터베이스"]):
     hint = "backend"
+elif any(k in task_lower for k in ["스키마", "마이그레이션", "쿼리"]):
+    hint = "database"
+elif any(k in task_lower for k in ["인증", "권한", "암호화", "토큰"]):
+    hint = "security"
 else:
-    hint = ""  # Tech Lead가 판단
+    hint = ""  # Tech Lead가 Step 3에서 판단
 print(f"HINT={hint}")
 ```
 
