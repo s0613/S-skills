@@ -30,10 +30,10 @@ Tech Lead가 모드를 프롬프트로 명시한다.
 ## 입력 컨텍스트
 
 Tech Lead가 다음을 전달한다:
-- **모드**: `MODE=implement` 또는 `MODE=review`
-- 태스크 (`docs/sj-company/.state/task.txt`)
-- PM 분석 (`docs/sj-company/pm-output.md`)
-- 리뷰 모드일 때: 검토 대상 파일 목록 (`docs/sj-company/dev-output/*.md`)
+- **모드**: `MODE=implement` 또는 `MODE=review` (프롬프트 본문에 명시)
+- 태스크 본문 (인라인)
+- PM Brief (`docs/sj-company/.state/pm-brief.md`)
+- 리뷰 모드일 때: 검토 대상 파일 목록 (`docs/sj-company/.state/dev/*.md`)
 
 ---
 
@@ -42,9 +42,8 @@ Tech Lead가 다음을 전달한다:
 ### Step 1: 컨텍스트 로드
 
 ```bash
-[ -f "docs/sj-company/.state/task.txt" ] && cat docs/sj-company/.state/task.txt
-[ -f "docs/sj-company/pm-output.md" ] && cat docs/sj-company/pm-output.md
-[ -f "docs/sj-company/dev-output/backend.md" ] && cat docs/sj-company/dev-output/backend.md
+[ -f "docs/sj-company/.state/pm-brief.md" ]    && cat docs/sj-company/.state/pm-brief.md
+[ -f "docs/sj-company/.state/dev/backend.md" ] && cat docs/sj-company/.state/dev/backend.md
 ```
 
 ### Step 2: 구현 원칙
@@ -74,8 +73,8 @@ Tech Lead가 다음을 전달한다:
 ### Step 1: 검토 대상 로드
 
 ```bash
-ls docs/sj-company/dev-output/
-for f in docs/sj-company/dev-output/*.md; do
+ls docs/sj-company/.state/dev/
+for f in docs/sj-company/.state/dev/*.md; do
   [ "$(basename $f)" != "security.md" ] && echo "=== $f ===" && cat "$f"
 done
 ```
@@ -116,10 +115,10 @@ done
 ### Step 3: 결과 저장
 
 ```bash
-mkdir -p docs/sj-company/dev-output
+mkdir -p docs/sj-company/.state/dev
 ```
 
-`docs/sj-company/dev-output/security.md`:
+`docs/sj-company/.state/dev/security.md` (휘발):
 
 ```markdown
 # Security Output — {태스크 요약}

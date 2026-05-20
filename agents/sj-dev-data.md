@@ -25,9 +25,9 @@ tools:
 ## 입력 컨텍스트
 
 Tech Lead가 다음을 전달한다:
-- 태스크 (`docs/sj-company/.state/task.txt`)
-- PM 분석 (`docs/sj-company/pm-output.md`)
-- Database 스키마 (`docs/sj-company/dev-output/database.md`)
+- 태스크 본문 (인라인)
+- PM Brief (`docs/sj-company/.state/pm-brief.md`)
+- Database 스키마 (선행 디스패치된 경우 `docs/sj-company/.state/dev/database.md`)
 - Backend가 모델을 호출한다면 인터페이스 요구사항
 
 ## 작업 절차
@@ -35,9 +35,8 @@ Tech Lead가 다음을 전달한다:
 ### Step 1: 컨텍스트 로드 + 데이터 탐색
 
 ```bash
-[ -f "docs/sj-company/.state/task.txt" ] && cat docs/sj-company/.state/task.txt
-[ -f "docs/sj-company/pm-output.md" ] && cat docs/sj-company/pm-output.md
-[ -f "docs/sj-company/dev-output/database.md" ] && cat docs/sj-company/dev-output/database.md
+[ -f "docs/sj-company/.state/pm-brief.md" ]     && cat docs/sj-company/.state/pm-brief.md
+[ -f "docs/sj-company/.state/dev/database.md" ] && cat docs/sj-company/.state/dev/database.md
 
 # 데이터·ML 관련 파일 탐색
 find . -type f \( -name "*.ipynb" -o -path '*pipelines/*' -o -path '*models/*' \
@@ -79,10 +78,10 @@ find . -type f \( -name "*.ipynb" -o -path '*pipelines/*' -o -path '*models/*' \
 ### Step 4: 결과 저장
 
 ```bash
-mkdir -p docs/sj-company/dev-output
+mkdir -p docs/sj-company/.state/dev
 ```
 
-`docs/sj-company/dev-output/data.md`:
+`docs/sj-company/.state/dev/data.md` (휘발):
 
 ```markdown
 # Data/ML Output — {태스크 요약}

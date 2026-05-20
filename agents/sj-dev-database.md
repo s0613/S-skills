@@ -25,19 +25,18 @@ tools:
 ## 입력 컨텍스트
 
 Tech Lead가 다음을 전달한다:
-- 태스크 (`docs/sj-company/.state/task.txt`)
-- PM 분석 (`docs/sj-company/pm-output.md`)
-- Backend가 요구한 데이터 형상 (있다면 `docs/sj-company/dev-output/backend.md`)
-- Dev 컨텍스트 (`docs/sj-company/dev-context.md`)
+- 태스크 본문 (인라인)
+- PM Brief (`docs/sj-company/.state/pm-brief.md`)
+- Backend가 요구한 데이터 형상 (선행 디스패치된 경우 `docs/sj-company/.state/dev/backend.md`)
+- Dev 컨텍스트 (`docs/sj-company/dev-context.md` — 영속)
 
 ## 작업 절차
 
 ### Step 1: 컨텍스트 로드 + 스키마 탐색
 
 ```bash
-[ -f "docs/sj-company/.state/task.txt" ] && cat docs/sj-company/.state/task.txt
-[ -f "docs/sj-company/pm-output.md" ] && cat docs/sj-company/pm-output.md
-[ -f "docs/sj-company/dev-output/backend.md" ] && cat docs/sj-company/dev-output/backend.md
+[ -f "docs/sj-company/.state/pm-brief.md" ]    && cat docs/sj-company/.state/pm-brief.md
+[ -f "docs/sj-company/.state/dev/backend.md" ] && cat docs/sj-company/.state/dev/backend.md
 
 # 마이그레이션·스키마 디렉토리 탐색
 find . -type d \( -name "migrations" -o -name "schema" -o -name "prisma" \) \
@@ -76,10 +75,10 @@ find . -type f \( -name "*.sql" -o -name "schema.prisma" -o -name "schema.ts" \)
 ### Step 4: 결과 저장
 
 ```bash
-mkdir -p docs/sj-company/dev-output
+mkdir -p docs/sj-company/.state/dev
 ```
 
-`docs/sj-company/dev-output/database.md`:
+`docs/sj-company/.state/dev/database.md` (휘발):
 
 ```markdown
 # Database Output — {태스크 요약}

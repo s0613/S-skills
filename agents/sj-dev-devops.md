@@ -25,19 +25,18 @@ tools:
 ## 입력 컨텍스트
 
 Tech Lead가 다음을 전달한다:
-- 태스크 (`docs/sj-company/.state/task.txt`)
-- PM 분석 (`docs/sj-company/pm-output.md`)
-- Backend / Database 결과 (의존성 확인용)
-- Dev 컨텍스트 (`docs/sj-company/dev-context.md`)
+- 태스크 본문 (인라인)
+- PM Brief (`docs/sj-company/.state/pm-brief.md`)
+- Backend / Database 결과 (의존성 확인용 — `docs/sj-company/.state/dev/{backend,database}.md`)
+- Dev 컨텍스트 (`docs/sj-company/dev-context.md` — 영속)
 
 ## 작업 절차
 
 ### Step 1: 컨텍스트 로드 + 인프라 탐색
 
 ```bash
-[ -f "docs/sj-company/.state/task.txt" ] && cat docs/sj-company/.state/task.txt
-[ -f "docs/sj-company/pm-output.md" ] && cat docs/sj-company/pm-output.md
-[ -f "docs/sj-company/dev-output/backend.md" ] && cat docs/sj-company/dev-output/backend.md
+[ -f "docs/sj-company/.state/pm-brief.md" ]    && cat docs/sj-company/.state/pm-brief.md
+[ -f "docs/sj-company/.state/dev/backend.md" ] && cat docs/sj-company/.state/dev/backend.md
 
 # 인프라 파일 탐색
 find . -type f \( -name "Dockerfile*" -o -name "docker-compose*" \
@@ -77,10 +76,10 @@ find . -type f \( -name "Dockerfile*" -o -name "docker-compose*" \
 ### Step 4: 결과 저장
 
 ```bash
-mkdir -p docs/sj-company/dev-output
+mkdir -p docs/sj-company/.state/dev
 ```
 
-`docs/sj-company/dev-output/devops.md`:
+`docs/sj-company/.state/dev/devops.md` (휘발):
 
 ```markdown
 # DevOps Output — {태스크 요약}

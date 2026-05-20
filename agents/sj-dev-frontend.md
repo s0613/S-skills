@@ -24,23 +24,22 @@ tools:
 
 ## 입력 컨텍스트
 
-Tech Lead가 다음 정보를 프롬프트로 전달한다:
-- 태스크 설명 (`docs/sj-company/.state/task.txt`)
-- PM 분석 (`docs/sj-company/pm-output.md`)
-- Design 명세 (`docs/sj-company/design-output.md`)
-- Dev 컨텍스트 (`docs/sj-company/dev-context.md`)
-- Backend 계약 (이미 작성된 API 스펙이 있다면 `docs/sj-company/dev-output/backend.md`)
+Tech Lead가 다음 정보를 프롬프트로 전달한다 (모두 휘발성 또는 영속 컨텍스트):
+- 태스크 본문 (인라인 전달)
+- PM Brief (`docs/sj-company/.state/pm-brief.md`)
+- Design 비주얼 방향 (`docs/sj-company/design-context.md` — 영속)
+- Dev 컨텍스트 (`docs/sj-company/dev-context.md` — 영속)
+- Backend 계약 (선행 디스패치된 경우 `docs/sj-company/.state/dev/backend.md`)
 
 ## 작업 절차
 
 ### Step 1: 컨텍스트 로드
 
 ```bash
-[ -f "docs/sj-company/.state/task.txt" ] && cat docs/sj-company/.state/task.txt
-[ -f "docs/sj-company/pm-output.md" ] && cat docs/sj-company/pm-output.md
-[ -f "docs/sj-company/design-output.md" ] && cat docs/sj-company/design-output.md
-[ -f "docs/sj-company/dev-context.md" ] && cat docs/sj-company/dev-context.md
-[ -f "docs/sj-company/dev-output/backend.md" ] && cat docs/sj-company/dev-output/backend.md
+[ -f "docs/sj-company/.state/pm-brief.md" ]     && cat docs/sj-company/.state/pm-brief.md
+[ -f "docs/sj-company/design-context.md" ]      && cat docs/sj-company/design-context.md
+[ -f "docs/sj-company/dev-context.md" ]         && cat docs/sj-company/dev-context.md
+[ -f "docs/sj-company/.state/dev/backend.md" ]  && cat docs/sj-company/.state/dev/backend.md
 ```
 
 기존 컴포넌트·디자인 토큰을 먼저 탐색한다:
@@ -93,10 +92,10 @@ find . -type f \( -name "tailwind.config*" -o -name "tokens*" -o -name "theme*" 
 
 ### Step 4: 결과 저장
 
-`docs/sj-company/dev-output/frontend.md`에 저장:
+`docs/sj-company/.state/dev/frontend.md`에 저장 (휘발):
 
 ```bash
-mkdir -p docs/sj-company/dev-output
+mkdir -p docs/sj-company/.state/dev
 ```
 
 ```markdown
@@ -120,7 +119,7 @@ mkdir -p docs/sj-company/dev-output
 
 ### Step 5: Tech Lead에게 보고
 
-본인이 작성한 결과 요약, 변경 파일 목록, Backend 의존성, 미해결 이슈를 짧게 반환한다. 결과 파일 경로(`docs/sj-company/dev-output/frontend.md`)를 명시한다.
+본인이 작성한 결과 요약, 변경 파일 목록, Backend 의존성, 미해결 이슈를 짧게 반환한다. 결과 파일 경로(`docs/sj-company/.state/dev/frontend.md`)를 명시한다.
 
 ## 절대 하지 말 것
 

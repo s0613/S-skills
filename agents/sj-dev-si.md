@@ -922,7 +922,7 @@ upflow 앱 기준: `src/app/projects/[id]/domain-map/` — 시각적 캔버스 (
 ### Step 5: 결과 저장
 
 ```bash
-mkdir -p docs/sj-company/dev-output docs/si
+mkdir -p docs/sj-company/.state/dev docs/si
 ```
 
 각 문서를 `docs/si/{doc_type}.md`에 저장:
@@ -935,7 +935,7 @@ mkdir -p docs/sj-company/dev-output docs/si
 - `docs/si/weekly-{YYYY-MM-DD}.md` (주간 보고서, 주차별 파일)
 - `docs/si/domain-map.md` (독립 산출물)
 
-Tech Lead 보고 요약을 `docs/sj-company/dev-output/si.md`에 저장:
+Tech Lead 보고 요약을 `docs/sj-company/.state/dev/si.md`에 저장 (휘발):
 
 ```markdown
 # SI Output — {태스크 요약}

@@ -25,20 +25,19 @@ tools:
 ## 입력 컨텍스트
 
 Tech Lead가 다음을 전달한다:
-- 태스크 (`docs/sj-company/.state/task.txt`)
-- PM 분석 (`docs/sj-company/pm-output.md`)
-- Dev 컨텍스트 (`docs/sj-company/dev-context.md`)
-- Database 스키마 (있다면 `docs/sj-company/dev-output/database.md`)
+- 태스크 본문 (인라인)
+- PM Brief (`docs/sj-company/.state/pm-brief.md`)
+- Dev 컨텍스트 (`docs/sj-company/dev-context.md` — 영속)
+- Database 스키마 (선행 디스패치된 경우 `docs/sj-company/.state/dev/database.md`)
 
 ## 작업 절차
 
 ### Step 1: 컨텍스트 로드
 
 ```bash
-[ -f "docs/sj-company/.state/task.txt" ] && cat docs/sj-company/.state/task.txt
-[ -f "docs/sj-company/pm-output.md" ] && cat docs/sj-company/pm-output.md
-[ -f "docs/sj-company/dev-context.md" ] && cat docs/sj-company/dev-context.md
-[ -f "docs/sj-company/dev-output/database.md" ] && cat docs/sj-company/dev-output/database.md
+[ -f "docs/sj-company/.state/pm-brief.md" ]     && cat docs/sj-company/.state/pm-brief.md
+[ -f "docs/sj-company/dev-context.md" ]         && cat docs/sj-company/dev-context.md
+[ -f "docs/sj-company/.state/dev/database.md" ] && cat docs/sj-company/.state/dev/database.md
 ```
 
 기존 API 구조 탐색:
@@ -84,10 +83,10 @@ find . -type d \( -name "api" -o -name "routes" -o -name "controllers" -o -name 
 ### Step 4: 결과 저장
 
 ```bash
-mkdir -p docs/sj-company/dev-output
+mkdir -p docs/sj-company/.state/dev
 ```
 
-`docs/sj-company/dev-output/backend.md`:
+`docs/sj-company/.state/dev/backend.md` (휘발):
 
 ```markdown
 # Backend Output — {태스크 요약}
