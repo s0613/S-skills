@@ -400,7 +400,21 @@ open(path, "w", encoding="utf-8").write(text)
 
 ## 중요 규칙
 
-- `pm-output.md`, `design-output.md`, `dev-output.md`, `qa-output.md`, `report.md` 생성 금지
-- `stage.txt` 업데이트 금지
-- 모든 상태는 PROJECT.md에만 기록
-- Design 단계 없음 (PM이 충분히 커버)
+### 산출물 이중화 정책
+
+| 종류 | 위치 | 수명 | 목적 |
+|------|------|------|------|
+| 사이클 단위 휘발 | `.state/pm-brief.md`, `.state/design-review.md`, `.state/dev/{role}.md`, `.state/dev-summary.md`, `.state/qa-verdict.md` | 이번 태스크 한정. 다음 사이클이 시작되면 덮어쓰기 | 단계 간 데이터 패스 |
+| 영속 학습 | `pm-context.md`, `design-context.md`, `dev-context.md`, `qa-context.md` | 영구 누적 | 다음 사이클이 이 프로젝트를 더 잘 이해하기 위한 brain |
+| 현재 상태 | `PROJECT.md` | 영구 | `goal`/`next`/`last_session`/`blockers`/`status` 단일 사실 |
+
+### 금지
+
+- `pm-output.md`, `design-output.md`, `dev-output.md`, `qa-output.md`, `report.md` 생성 금지 (이주 완료)
+- `docs/sj-company/dev-output/` 디렉토리 생성 금지 (→ `.state/dev/`로 통일)
+- `.state/stage.txt` 업데이트 금지 (단계 추적은 PROJECT.md `last_session`으로)
+- Design 명세 단계 없음 (PM이 커버). Design 리뷰는 Tech Lead가 sentinel 파일로 트리거.
+
+### 학습 누적 의무
+
+각 역할 스킬(`sj-pm`/`sj-design`/`sj-tech-lead`/`sj-qa`)은 사이클을 마칠 때 **이번 사이클에서 새로 알게 된 인사이트 1~3줄**을 자기 `*-context.md`의 `## 히스토리` 섹션에 날짜와 함께 append 한다. 사이클 산출이 모두 휘발해도 학습은 영속.
