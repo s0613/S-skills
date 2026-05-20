@@ -120,7 +120,7 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 
 ## Step 3: 필요 specialist 식별
 
-PM/Design output과 task.txt를 읽고 **어떤 영역이 실제로 필요한지** 판단한다. 판단 기준:
+`.state/pm-brief.md`과 task.txt를 읽고 **어떤 영역이 실제로 필요한지** 판단한다. 판단 기준:
 
 | 단서 | 호출 specialist |
 |------|----------------|

@@ -32,7 +32,8 @@ upflow 앱의 SI 문서 6종 — 작업 개요(overview), 제안서(proposal), �
 ## 입력 컨텍스트
 
 Tech Lead가 다음 정보를 프롬프트로 전달한다:
-- 태스크 설명 + PM 분석 (`docs/sj-company/.state/task.txt`)
+- 태스크 본문 (인라인)
+- PM Brief (`docs/sj-company/.state/pm-brief.md`)
 - 프로젝트 컨텍스트 (`docs/sj-company/pm-context.md`)
 - 프로젝트 목표 (`docs/sj-company/PROJECT.md`)
 
@@ -41,9 +42,9 @@ Tech Lead가 다음 정보를 프롬프트로 전달한다:
 ### Step 1: 컨텍스트 로드
 
 ```bash
-[ -f "docs/sj-company/.state/task.txt" ] && cat docs/sj-company/.state/task.txt
-[ -f "docs/sj-company/pm-context.md" ] && cat docs/sj-company/pm-context.md
-[ -f "docs/sj-company/PROJECT.md" ] && cat docs/sj-company/PROJECT.md
+[ -f "docs/sj-company/.state/pm-brief.md" ] && cat docs/sj-company/.state/pm-brief.md
+[ -f "docs/sj-company/pm-context.md" ]     && cat docs/sj-company/pm-context.md
+[ -f "docs/sj-company/PROJECT.md" ]        && cat docs/sj-company/PROJECT.md
 ```
 
 프로젝트 기존 문서 탐색:
