@@ -178,6 +178,7 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 태스크 본문: {_TASK_CLEAN — HINT 라인 제거된 본문, 최대 2KB}
 
 PM Brief 경로: docs/sj-company/.state/pm-brief.md (있는 경우 — 본인이 직접 cat해서 본인 영역 부분 참고)
+- Medium 경로에선 pm-brief.md가 없고 PM 브리핑 내용이 위 "태스크 본문"에 인라인 포함됨
 영속 컨텍스트: docs/sj-company/dev-context.md
 선행 산출: docs/sj-company/.state/dev/{database,backend}.md (의존 관계가 있다면)
 
