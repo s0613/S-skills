@@ -358,8 +358,15 @@ echo $((_ITER + 1)) > docs/sj-company/.state/review-iterations.txt
 
 ### 9b. PROJECT.md 갱신 (사용자에게 보이는 영속 상태)
 
+Tech Lead가 Medium 경로 PROJECT.md 최종 갱신을 책임진다 — `last_session`/`next`/`blockers`/`status` 모두 여기서 결정. sj-company Medium 경로는 PROJECT.md를 직접 건드리지 않는다(중복 갱신 방지). Large 경로에선 sj-qa Step 7이 한 번 더 덮어쓴다.
+
+`last_session` prefix는 이번 사이클의 실제 참여 역할로 결정:
+- 단일 역할(`.state/dev/*.md`가 1개): 그 역할 이름(`si`, `frontend`, …)
+- 다중 역할: `dev`
+- 역할 0건(예외): `dev`
+
 ```python
-import re, datetime, os
+import re, datetime, os, glob
 
 path = "docs/sj-company/PROJECT.md"
 if not os.path.exists(path):
@@ -369,15 +376,21 @@ if not os.path.exists(path):
 today = datetime.date.today().strftime("%Y-%m-%d")
 summary = "{이번 태스크 한 줄 요약}"
 
+# 참여 역할 추정 — .state/dev/*.md 파일명에서 추출 (security review-only도 포함됨)
+dev_files = sorted(glob.glob("docs/sj-company/.state/dev/*.md"))
+roles = [os.path.basename(f)[:-3] for f in dev_files]
+prefix = roles[0] if len(roles) == 1 else "dev"
+
 text = open(path, encoding="utf-8").read()
 def upd(key, val, t):
     return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
 
-text = upd("last_session", f"{today} — Dev: {summary}", text)
+text = upd("last_session", f"{today} — {prefix}: {summary}", text)
+text = upd("next", "없음", text)
+text = upd("blockers", "없음", text)
+text = upd("status", "active", text)
 open(path, "w", encoding="utf-8").write(text)
 ```
-
-(QA가 뒤이어 실행되는 Large 경로에선 QA가 `last_session`을 한 번 더 덮어쓰므로 여기 갱신은 Medium 경로에서 의미가 큼.)
 
 ### 9c. dev-context.md 학습 누적
 

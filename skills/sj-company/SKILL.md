@@ -364,21 +364,7 @@ _PW_TARGET=$(python3 -c "import re; text=open('docs/sj-company/PROJECT.md').read
 `_HAS_PW=yes`이면: `Skill("s-skills:pw-loop")` 호출 (목표: `$_PW_TARGET`%)
 `_HAS_PW=no`이면: 빌드 확인으로 대체
 
-6. PROJECT.md 업데이트:
-```python
-import re, datetime, os
-path = "docs/sj-company/PROJECT.md"
-text = open(path, encoding="utf-8").read()
-today = datetime.date.today().strftime("%Y-%m-%d")
-summary = "{완료한 작업 한 줄 요약}"
-def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
-text = upd("last_session", f"{today} — {summary}", text)
-text = upd("next", "없음", text)
-text = upd("blockers", "없음", text)
-text = upd("status", "active", text)
-open(path, "w", encoding="utf-8").write(text)
-```
+6. PROJECT.md 갱신: **건드리지 않는다**. Medium 경로의 PROJECT.md 최종 갱신(`last_session`/`next`/`blockers`/`status`)은 Tech Lead Step 9b가 책임진다. 역할-aware prefix(`si:` / `frontend:` / `dev:` …)도 거기서 결정됨. 여기서 다시 쓰면 prefix가 덮어써져 어떤 role이 참여했는지 추적할 수 없게 된다.
 
 ---
 
