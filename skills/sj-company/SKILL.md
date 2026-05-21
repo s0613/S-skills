@@ -157,8 +157,8 @@ NEXT가 "없음"이면:
 ```
 
 AskUserQuestion으로 사용자 입력 받기:
-- A) 바로 시작 (NEXT 태스크로) → NEXT 값을 태스크로 두고 **이 시점부터 Case B Step 1(태스크 크기 판정)부터 실행**
-- B) 새 태스크 입력 → 입력값을 태스크로 두고 **이 시점부터 Case B Step 1부터 실행**
+- A) 바로 시작 (NEXT 태스크로) → NEXT 값을 태스크로 두고 **이 시점부터 Case B Step 0(리뷰 감지)부터 실행**
+- B) 새 태스크 입력 → 입력값을 태스크로 두고 **이 시점부터 Case B Step 0부터 실행**
 
 PROJECT.md가 없는 경우 (신규 프로젝트):
 1. AskUserQuestion으로 프로젝트 목표 입력 받기
@@ -195,11 +195,104 @@ open("docs/sj-company/PROJECT.md", "w").write(content)
 print("PROJECT.md 생성 완료")
 ```
 
-생성 직후, 사용자에게 "프로젝트가 등록됐습니다. 다음 태스크를 입력하세요"를 출력하고 새 태스크 입력을 받아 **Case B Step 1(태스크 크기 판정)부터 실행**한다.
+생성 직후, 사용자에게 "프로젝트가 등록됐습니다. 다음 태스크를 입력하세요"를 출력하고 새 태스크 입력을 받아 **Case B Step 0(리뷰 감지)부터 실행**한다.
 
 ---
 
 ## Case B: 인자와 함께 호출 (`/sj-company <태스크>`) — 실행
+
+### Step 0: 리뷰 요청 감지 (크기 판정 전 먼저 체크)
+
+```python
+REVIEW_KW = ["리뷰", "review", "검토", "점검", "확인해", "리뷰해", "리뷰하", "검수"]
+task = "{전달된 태스크 텍스트}"
+t = task.lower()
+is_review = any(k in t for k in REVIEW_KW)
+print(f"IS_REVIEW={'yes' if is_review else 'no'}")
+```
+
+**IS_REVIEW=yes이면** → 아래 리뷰 경로를 실행하고 Case B 종료 (Step 1 크기 판정으로 넘어가지 않는다).
+
+#### 리뷰 경로
+
+1. 리뷰 대상 자동 감지:
+
+```bash
+mkdir -p docs/sj-company/.state
+
+# 코드 변경 파일 수 (md 제외)
+_CODE_CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -vE '\.md$' | wc -l | tr -d ' ')
+# 문서 변경 파일 수
+_DOC_CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep '\.md$' | wc -l | tr -d ' ')
+# design-context 존재 여부
+_HAS_DESIGN=$([ -f "docs/sj-company/design-context.md" ] && echo "1" || echo "0")
+
+echo "CODE=$_CODE_CHANGED DOC=$_DOC_CHANGED DESIGN=$_HAS_DESIGN"
+```
+
+2. 디스패치 대상 결정:
+
+```python
+code_changed = int("{_CODE_CHANGED}")
+doc_changed  = int("{_DOC_CHANGED}")
+has_design   = int("{_HAS_DESIGN}")
+
+task = "{태스크}".lower()
+force_code   = any(k in task for k in ["코드", "code", "구현", "소스"])
+force_doc    = any(k in task for k in ["문서", "doc", "prd", "요구사항", "명세"])
+force_design = any(k in task for k in ["디자인", "design", "ui", "ux", "화면"])
+
+run_code   = force_code   or (not force_doc and not force_design and code_changed > 0)
+run_doc    = force_doc    or (not force_code and not force_design and doc_changed  > 0)
+run_design = force_design or (not force_code and not force_doc   and has_design   == 1)
+
+# 아무것도 감지 안 되면 전부 실행
+if not run_code and not run_doc and not run_design:
+    run_code = run_doc = run_design = True
+
+agents = []
+if run_code:   agents.append("sj-reviewer-code")
+if run_doc:    agents.append("sj-reviewer-doc")
+if run_design: agents.append("sj-reviewer-design")
+
+print("AGENTS=" + ",".join(agents))
+```
+
+3. 디스패치 알림:
+
+```
+[리뷰 시작] 다음 리뷰어를 디스패치합니다: {AGENTS}
+```
+
+Agent 툴로 `AGENTS` 목록의 에이전트를 **병렬** 디스패치. 각 에이전트 프롬프트에 포함:
+- 현재 태스크 텍스트
+- `docs/sj-company/PROJECT.md` 경로
+- `docs/sj-company/.state/pm-brief.md` 경로 (파일이 있는 경우)
+
+4. 모든 에이전트 완료 후 결과 집계:
+
+```bash
+for f in review-code review-doc review-design; do
+  fp="docs/sj-company/.state/${f}.md"
+  [ -f "$fp" ] && echo "=== $f ===" && head -6 "$fp" && echo ""
+done
+```
+
+사용자에게 요약:
+
+```
+[리뷰 완료]
+{실행된 리뷰어별 판정 한 줄 요약}
+
+상세 보고서:
+- docs/sj-company/.state/review-code.md   (코드, 있는 경우)
+- docs/sj-company/.state/review-doc.md    (문서, 있는 경우)
+- docs/sj-company/.state/review-design.md (디자인, 있는 경우)
+```
+
+**IS_REVIEW=no이면** → 기존 Step 1(태스크 크기 판정)으로 진행.
+
+---
 
 ### Step 1: 태스크 크기 판정
 
