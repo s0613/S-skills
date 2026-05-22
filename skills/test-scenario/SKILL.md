@@ -1,6 +1,6 @@
 ---
 name: test-scenario
-version: 2.1.0
+version: 2.2.0
 description: |
   기능별 테스트 시나리오 프롬프트를 생성하고, Claude Chrome 확장으로 실행한
   결과를 받아 기대 결과와 비교한다. 사이클 기반으로 반복하며 목표 통과율
@@ -121,41 +121,41 @@ D) 목표 통과율 변경 (현재: {THRESHOLD}%)
 
 ## Generate 모드
 
-### Step 1: 이전 사이클 아카이브 (Cycle ≥ 1인 경우)
+### Step 1: 기존 시나리오 아카이브 (파일이 있으면 항상)
 
-`_CYCLE` ≥ 1이면 현재 `scenarios.md`를 아카이브한 뒤 새 사이클 시작.
+기존 `scenarios.md`가 있으면 **사이클 번호에 관계없이 항상 아카이브로 이동(mv)**.  
+이후 Step 3에서 새 파일을 완전히 새로 작성한다.
 
 ```bash
 _NEXT_CYCLE=$(( _CYCLE + 1 ))
 _ARCHIVE_DIR="docs/test-scenarios/scenarios/archive"
 mkdir -p "$_ARCHIVE_DIR"
 
-# 이전 사이클 시나리오 아카이브
-if [ -f "docs/test-scenarios/scenarios/scenarios.md" ] && [ "$_CYCLE" -gt 0 ]; then
-  _ARCHIVE_FILE="$_ARCHIVE_DIR/cycle-${_CYCLE}-scenarios.md"
-  cp "docs/test-scenarios/scenarios/scenarios.md" "$_ARCHIVE_FILE"
-  echo "ARCHIVED: $_ARCHIVE_FILE"
+# 기존 시나리오 파일이 있으면 항상 아카이브로 이동 — cp 금지, mv 사용
+if [ -f "docs/test-scenarios/scenarios/scenarios.md" ]; then
+  _ARCHIVE_LABEL=$([ "$_CYCLE" -gt 0 ] && echo "cycle-${_CYCLE}" || echo "cycle-0-pre")
+  _ARCHIVE_FILE="$_ARCHIVE_DIR/${_ARCHIVE_LABEL}-$(date +%Y%m%d)-scenarios.md"
+  mv "docs/test-scenarios/scenarios/scenarios.md" "$_ARCHIVE_FILE"
+  echo "MOVED TO ARCHIVE: $_ARCHIVE_FILE"
 fi
 
 echo "$_NEXT_CYCLE" > docs/test-scenarios/.state/cycle.txt
 echo "Cycle $_NEXT_CYCLE 시작"
 ```
 
-아카이브 후 `scenarios.md` 상단에 이전 사이클 요약 섹션을 축약 형태로 기록:
+아카이브 이동 후 새 `scenarios.md` 상단에 이전 사이클 요약 섹션을 기록:
 
 ```markdown
 # 이전 사이클 요약
 
 | Cycle | 날짜 | PASS | FAIL | PARTIAL | 통과율 | 아카이브 |
 |-------|------|------|------|---------|--------|----------|
-| {N}   | {날짜} | {pass수} | {fail수} | {partial수} | {rate}% | [보기](archive/cycle-{N}-scenarios.md) |
+| {N}   | {날짜} | {pass수} | {fail수} | {partial수} | {rate}% | [보기](archive/cycle-{N}-...-scenarios.md) |
 
 ---
 ```
 
-이 요약은 매 사이클 축적(append)되어 이력을 볼 수 있게 한다. 아카이브 링크로 이전 상세 시나리오에 접근 가능.
-
-`_CYCLE` = 0이면 첫 사이클이므로 아카이브 없이 바로 다음 단계.
+이 요약은 매 사이클 새 파일에 누적 기록되어 이력을 볼 수 있게 한다.
 
 ### Step 2: 기능 목록 수집
 
@@ -188,14 +188,15 @@ Cycle N — 테스트 대상 기능 목록
 
 ### Step 3: 시나리오 프롬프트 생성 (단일 파일 강제)
 
-신규 + 재테스트 대상만 생성 또는 업데이트. 안정 기능은 스킵.
+신규 + 재테스트 대상만 생성. 안정 기능은 스킵.
 
 **절대 규칙 — 반드시 지킬 것:**
 - 파일은 **오직 하나**: `docs/test-scenarios/scenarios/scenarios.md`
-- 이 파일 외의 `.md` 파일을 `scenarios/` 디렉터리에 **절대 생성하지 않는다**
-- 새 사이클이어도 새 파일 생성 금지 — 반드시 기존 `scenarios.md` 를 수정한다
+- 이 파일 외의 `.md` 파일을 `scenarios/` 디렉터리에 **절대 생성하지 않는다** (archive/ 제외)
+- Step 1에서 기존 파일을 아카이브로 이동했으므로, 이 시점에 `scenarios.md`는 존재하지 않는다
+- **항상 새 파일로 완전히 새로 작성한다** — 기존 파일 수정/덧붙이기 금지
 
-파일이 없으면 새로 생성하고, 있으면 재테스트 섹션만 교체 + 신규 섹션 추가.
+`scenarios.md`를 새로 Write한다. (Edit 툴로 기존 내용 수정 금지)
 
 **파일 포맷 (`docs/test-scenarios/scenarios/scenarios.md`):**
 
