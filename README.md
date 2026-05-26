@@ -398,6 +398,64 @@ triggers:
 
 ---
 
+## 자동 학습 (Auto-Learn)
+
+하네스는 세션이 끝날 때마다 자동으로 패턴을 추출해 `~/.claude/skills/learned/`에 저장한다.
+
+### 동작 방식
+
+```
+세션 종료 (Stop)
+    ↓
+asyncRewake 훅 발동
+    ↓
+Claude 자동 재기동 (컨텍스트 유지)
+    ↓
+판단: 이 세션에서 배울 게 있는가?
+  ├─ 있음 → ~/.claude/skills/learned/패턴명.md 자동 저장
+  └─ 없음 → 조용히 종료
+```
+
+재기동된 Claude가 세션 내용을 직접 검토해 재사용 가치 있는 패턴만 골라 저장한다. 사소한 수정이나 단순 작업은 저장하지 않는다.
+
+### 설정 방법
+
+`~/.claude/settings.json`의 `hooks.Stop` 배열 맨 앞에 추가:
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'FLAG=~/.claude/.learning-rewake-flag; if [ -f \"$FLAG\" ]; then rm \"$FLAG\"; exit 0; else touch \"$FLAG\"; exit 2; fi'",
+            "asyncRewake": true,
+            "rewakeMessage": "세션이 종료되었습니다. 이 세션에서 재사용 가능한 비자명한 패턴(에러 해결, 디버깅 기법, 프로젝트별 발견)이 있었다면 ~/.claude/skills/learned/[pattern-name].md 파일을 직접 Write 툴로 저장해주세요. 사소한 수정이나 단순한 작업은 저장하지 마세요. 저장할 게 없으면 아무것도 하지 마세요.",
+            "rewakeSummary": "세션 패턴 자동 학습",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+플래그 파일(`~/.claude/.learning-rewake-flag`)로 무한 루프를 방지한다. 일반 세션 → 재기동 → 종료의 2회 사이클로 끝난다.
+
+### 쌓인 패턴 클러스터링
+
+`~/.claude/skills/learned/`에 패턴이 쌓이면 `/evolve`로 한 번에 클러스터링해 스킬/커맨드로 승격할 수 있다.
+
+```
+/evolve           # 분석만
+/evolve --generate  # 파일까지 생성
+```
+
+---
+
 ## 업데이트
 
 ```bash
