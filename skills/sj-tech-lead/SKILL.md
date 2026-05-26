@@ -412,7 +412,39 @@ text += f"- {today}: {insight}\n"
 open(ctx_path, "w", encoding="utf-8").write(text)
 ```
 
-### 9d. 반복 카운터 초기화
+### 9d. 크로스 프로젝트 패턴 학습 (선택적)
+
+이번 사이클에서 **다른 프로젝트에서도 재사용할 수 있는 비자명한 패턴**이 발견됐다면 저장한다.
+
+판단 기준 (하나라도 해당하면 저장):
+- 에러 해결 방법 중 공식 문서에 없는 것
+- 디버깅 기법 중 특정 도구/프레임워크의 비직관적 동작
+- 설정 패턴 중 여러 프로젝트에서 반복될 것 같은 것
+
+저장 기준을 충족하지 않으면 **이 단계는 건너뛴다** (아무것도 하지 않음).
+
+저장할 때는 Write 툴로 직접 작성:
+```
+파일: ~/.claude/skills/learned/[kebab-case-pattern-name].md
+내용:
+---
+name: [pattern-name]
+description: [한 줄 요약]
+discovered: [YYYY-MM-DD]
+project: [프로젝트명]
+---
+
+## 문제
+[어떤 상황에서 발생했는가]
+
+## 해결
+[어떻게 해결했는가]
+
+## 적용 조건
+[어떤 경우에 이 패턴을 쓰면 되는가]
+```
+
+### 9e. 반복 카운터 초기화
 
 ```bash
 rm -f docs/sj-company/.state/review-iterations.txt
