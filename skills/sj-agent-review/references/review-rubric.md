@@ -1,4 +1,4 @@
-# 에이전트 리뷰 루브릭 (7축 상세 기준)
+# 에이전트 리뷰 루브릭 (10축 상세 기준)
 
 각 축의 점수(0~10)와 PASS/WARN/FAIL 판정 기준을 상세히 정의한다.
 
@@ -242,6 +242,122 @@ grep -rn "log.*password\|log.*email\|log.*phone\|log.*ssn" .
 
 ---
 
+---
+
+## 축 8: Memory Layer (메모리 계층)
+
+**검사 목표**: Short-term과 Long-term 메모리가 분리되고, 민감정보 보호 정책이 있는가
+
+### 점수 기준
+
+| 점수 | 조건 |
+|------|------|
+| 9~10 | episodic/semantic/procedural 3종 분리 + 독립 Memory 모듈 + PII 마스킹 + expiry/eviction 정책 명시 |
+| 7~8 | Long-term memory 구현, 일부 타입 미분리 또는 expiry 미설정 |
+| 5~6 | 외부 저장소 연동은 있으나 memory 타입 구분 없음 |
+| 3~4 | 세션 간 상태를 DB에 저장하나 Memory 계층 개념 없이 raw dump |
+| 1~2 | 프롬프트에 이전 대화 전체를 직접 삽입 |
+| 0 | 세션 간 상태 유지 수단 전혀 없음 |
+
+**판정**:
+- PASS: 7점 이상
+- WARN: 4~6점
+- FAIL: 3점 이하 또는 PII 마스킹 없이 Long-term memory 저장
+
+**탐색 패턴**:
+```bash
+# Memory 모듈 확인
+grep -rn "class.*Memory\|memory_store\|long_term\|episodic\|semantic\|procedural" .
+
+# PII 마스킹 확인
+grep -rn "mask\|redact\|anonymize\|pii\|PII" .
+
+# expiry/eviction 정책 확인
+grep -rn "ttl\|TTL\|expire\|evict\|lru\|LRU" .
+
+# 위험: 프롬프트에 raw 이력 전체 삽입
+grep -rn "messages\s*=\s*history\|full_history\|all_messages" .
+```
+
+---
+
+## 축 9: Evaluation & Self-reflection (평가·자기반성)
+
+**검사 목표**: 독립 Judge/Critic 에이전트가 출력을 평가하고, 품질 임계값이 코드 레벨에서 설정되는가
+
+### 점수 기준
+
+| 점수 | 조건 |
+|------|------|
+| 9~10 | Judge 에이전트 독립 모듈 + 평가 rubric 명시 + score threshold + max_reflections + reflection 로그 기록 |
+| 7~8 | Judge 분리되어 있고 threshold 있으나 max_reflections 미설정 |
+| 5~6 | 자기검토 로직은 있으나 생성 에이전트와 같은 context 내에서 실행 |
+| 3~4 | 출력 후 단순 재생성 재시도만 있음 |
+| 1~2 | 평가 로직 거의 없음 |
+| 0 | 생성한 출력을 아무 검증 없이 즉시 반환 |
+
+**판정**:
+- PASS: 7점 이상
+- WARN: 4~6점
+- FAIL: 3점 이하 또는 Judge가 생성 에이전트와 동일 system prompt 공유
+
+**탐색 패턴**:
+```bash
+# Judge/Critic 에이전트 확인
+grep -rn "class.*Judge\|class.*Critic\|class.*Evaluator\|def.*evaluate\|def.*judge" .
+
+# score threshold 확인
+grep -rn "score_threshold\|quality_threshold\|min_score\|pass_score" .
+
+# max_reflections 확인
+grep -rn "max_reflections\|max_iterations\|reflection_count" .
+
+# 위험: 생성 에이전트가 자기 출력 직접 검토
+grep -rn "self.evaluate\|self.check\|self.review" . | grep -v "test"
+```
+
+---
+
+## 축 10: Graph Topology (그래프 토폴로지)
+
+**검사 목표**: 에이전트 실행 흐름이 명시적 그래프로 설계되고, loopback 예산과 병렬 패턴이 관리되는가
+
+### 점수 기준
+
+| 점수 | 조건 |
+|------|------|
+| 9~10 | 실행 그래프 명시적 정의 + conditional routing 타입화 + parallel fan-out/in 구현 + loopback에 max_cycles 설정 + 상태 스키마 정의 |
+| 7~8 | 그래프 구조 있고 loopback 예산 있으나 parallel 또는 conditional routing 미구현 |
+| 5~6 | 일부 분기·병렬 있으나 그래프로 명시되지 않고 코드 내 if/else로만 존재 |
+| 3~4 | 순차 파이프라인만 있음, 분기 없음 |
+| 1~2 | 실행 흐름이 단일 함수 내 암묵적 순서 |
+| 0 | 토폴로지 개념 없음 |
+
+**판정**:
+- PASS: 7점 이상
+- WARN: 4~6점
+- FAIL: 3점 이하 또는 loopback 존재하나 max_cycles 미설정
+
+**탐색 패턴**:
+```bash
+# 그래프 정의 확인 (LangGraph, NetworkX 등)
+grep -rn "StateGraph\|add_node\|add_edge\|Graph()\|DiGraph" .
+
+# conditional routing 확인
+grep -rn "add_conditional_edges\|route_to\|conditional\|routing" .
+
+# parallel fan-out 확인
+grep -rn "parallel\|asyncio.gather\|concurrent\|fan_out\|fan_in" .
+
+# loopback 예산 확인
+grep -rn "max_cycles\|max_loops\|cycle_limit\|loopback_limit" .
+
+# 위험: 그래프 없이 if/else 분기만 존재
+grep -rn "if.*specialist\|if.*agent.*==\|elif.*route" . | head -10
+```
+
+---
+
 ## 폴더 구조 품질 기준
 
 좋은 에이전트 프로젝트의 폴더 구조:
@@ -251,11 +367,20 @@ project/
 ├── agents/
 │   ├── manager.py          # Manager Agent
 │   ├── retrieval.py        # Retrieval Specialist
-│   └── answering.py        # Answering Specialist
+│   ├── answering.py        # Answering Specialist
+│   └── judge.py            # Judge/Critic Agent (독립)
 ├── tools/
 │   ├── read_tools.py       # Level 1-2: 읽기 전용
 │   ├── write_tools.py      # Level 3: 쓰기
 │   └── exec_tools.py       # Level 4-5: 실행/파괴적
+├── memory/
+│   ├── episodic.py         # 과거 사건·대화 이력
+│   ├── semantic.py         # 도메인 지식·규칙
+│   ├── procedural.py       # 반복 작업 패턴·SOP
+│   └── pii_filter.py       # PII 마스킹
+├── graph/
+│   ├── topology.py         # StateGraph 정의
+│   └── routing.py          # conditional edge 조건
 ├── schemas/
 │   ├── work_card.py        # Specialist 간 전달 스키마
 │   └── tool_schemas.py     # Tool 입출력 스키마
@@ -263,12 +388,12 @@ project/
 │   ├── circuit_breaker.py
 │   └── approval.py
 ├── observability/
-│   ├── logger.py           # 구조화 로그
+│   ├── logger.py           # 구조화 로그 + trace span
 │   └── metrics.py
 ├── tests/
 │   ├── unit/
 │   └── integration/
-└── config.py               # max_turns, timeout 등
+└── config.py               # max_turns, timeout, max_reflections, max_cycles 등
 ```
 
 나쁜 구조 신호:

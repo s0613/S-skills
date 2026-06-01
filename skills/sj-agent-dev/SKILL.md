@@ -1,10 +1,11 @@
 ---
 name: sj-agent-dev
-version: 1.0.0
+version: 1.1.0
 description: |
   비즈니스 에이전트 개발 전문가. 실제 회사 업무에 투입할 AI 에이전트를
   설계·구현할 때 사용한다. 런타임 루프, 오케스트레이션, 역할 분리,
-  도구 계층화, 컨텍스트 관리, 가드레일, 옵저버빌리티의 7가지 축을 기준으로
+  도구 계층화, 컨텍스트 관리, 가드레일, 옵저버빌리티, 메모리 계층,
+  평가·자기반성, 그래프 토폴로지의 10가지 축을 기준으로
   구체적인 아키텍처 설계와 코드 구현을 안내한다.
   에이전트 아키텍처 설계, 비즈니스 자동화 에이전트 구현, 멀티에이전트 오케스트레이션,
   에이전트 운영 안전성 강화가 필요할 때 이 스킬을 활성화한다.
@@ -39,7 +40,7 @@ triggers:
 
 ---
 
-## 7가지 설계 축
+## 10가지 설계 축
 
 ### 1. Runtime Loop (반복 실행 구조)
 - 단일 답변이 아닌 **Tool call → 결과 수신 → 다음 행동 결정** 순환
@@ -87,6 +88,33 @@ triggers:
 - 사후 재현 가능성 확보
 - 운영 메트릭 도구 연동 (Sentry, Datadog 등)
 
+### 8. Memory Layer (메모리 계층)
+- Short-term(컨텍스트 윈도우)과 Long-term(영속 저장소)을 **명확히 분리**
+- Long-term memory 3종을 구분해 설계:
+  - `episodic` — 과거 사건·대화 이력 (무슨 일이 있었나)
+  - `semantic` — 도메인 지식·규칙 (무엇을 아는가)
+  - `procedural` — 반복 작업 패턴·SOP (어떻게 하는가)
+- Memory read/write 인터페이스를 Specialist와 분리해 독립 모듈로 구성
+- PII·민감정보는 메모리 저장 전 마스킹 필수
+- Expiry/eviction 정책 명시 (TTL, LRU 등)
+
+### 9. Evaluation & Self-reflection (평가·자기반성)
+- 에이전트 출력을 **별도 Judge/Critic 에이전트**가 평가하는 구조
+- 평가 루프: Generate → Evaluate → Refine → (threshold 충족 시 종료)
+- Judge는 생성 에이전트와 **독립된 system prompt·context** 보유
+- 품질 임계값(score threshold)과 최대 반성 횟수(max_reflections)를 코드 레벨에서 설정
+- LLM-as-judge 패턴 적용 시 판단 기준(rubric)을 명시적 프롬프트로 주입
+
+### 10. Graph Topology (그래프 토폴로지)
+- 에이전트 실행 흐름을 **방향 그래프(DAG 또는 cyclic graph)**로 명시적 설계
+- 지원해야 할 토폴로지 패턴:
+  - `sequential` — 직렬 파이프라인
+  - `parallel fan-out/fan-in` — 병렬 실행 후 결과 통합
+  - `conditional routing` — 조건 기반 분기 (typed edge conditions)
+  - `loopback` — 품질 미달 시 이전 노드로 복귀
+- Cycle 발생 시 무한루프 방지: loopback에도 max_cycles 예산 설정
+- LangGraph, CrewAI 등 그래프 기반 프레임워크 사용 시 상태 스키마(StateGraph) 명시
+
 ---
 
 ## 업무 진행 방식
@@ -97,7 +125,7 @@ triggers:
 
 | 요청 유형 | 진행 방식 |
 |----------|----------|
-| 아키텍처 설계 | 7가지 축 체크 → 구조도 제안 → 코드 스캐폴딩 |
+| 아키텍처 설계 | 10가지 축 체크 → 구조도 제안 → 코드 스캐폴딩 |
 | 기존 에이전트 개선 | 약점 진단 → 개선 포인트 제안 → 구현 |
 | 특정 도메인 자동화 | 도메인 분석 → Manager+Specialist 분리 → 구현 |
 | 운영 안전성 강화 | 가드레일·옵저버빌리티 집중 진단 |
@@ -110,8 +138,11 @@ triggers:
 3. **Tool 계층 설계** — 위험도별 분류 및 승인 정책 결정
 4. **Loop 구조 설계** — max_turns, 실패 조건, human handoff 조건 명시
 5. **Work Card 설계** — Specialist 간 전달 스키마 정의
-6. **Observability 설계** — run_id, 로그 항목, 메트릭 정의
-7. **구현** — 언어/프레임워크에 맞는 코드 생성
+6. **Memory 설계** — episodic/semantic/procedural 분리, PII 마스킹 정책
+7. **Graph Topology 설계** — 노드·엣지·분기 조건·loopback 예산 정의
+8. **Judge/Critic 설계** — 평가 rubric, score threshold, max_reflections 정의
+9. **Observability 설계** — run_id, 로그 항목, 메트릭, trace span 정의
+10. **구현** — 언어/프레임워크에 맞는 코드 생성
 
 ### 참조 자료
 
@@ -129,7 +160,7 @@ triggers:
 - **TypeScript/Node** — Vercel AI SDK, LangChain.js, Anthropic SDK 직접
 - **기타** — Claude API(Anthropic SDK) 기반 직접 구현
 
-프레임워크는 편의도구일 뿐, 7가지 축의 구조 원칙은 동일하게 적용된다.
+프레임워크는 편의도구일 뿐, 10가지 축의 구조 원칙은 동일하게 적용된다.
 
 ---
 
@@ -141,3 +172,6 @@ triggers:
 - Loop 예산 없는 무한 재시도 → max_turns/max_failures 강제
 - 로깅 없는 배포 → run_id + structured log 필수
 - "일단 만들고 나중에 안전장치" → 가드레일은 설계 단계부터 포함
+- Long-term memory 없이 세션 간 상태 유지 → Memory Layer 설계 필수
+- 생성 에이전트가 자기 출력을 스스로 검증 → 독립 Judge 에이전트 분리
+- 선형 파이프라인에 조건 분기 if/else 하드코딩 → Graph Topology로 명시적 설계

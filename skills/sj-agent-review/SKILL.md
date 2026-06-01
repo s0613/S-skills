@@ -1,10 +1,11 @@
 ---
 name: sj-agent-review
-version: 1.0.0
+version: 1.1.0
 description: |
   비즈니스 에이전트 코드 리뷰어. 에이전트 프로젝트의 파일·폴더 구조를 탐색하고,
-  sj-agent-dev의 7가지 설계 축(런타임 루프, 오케스트레이션, 역할 분리, 도구 계층화,
-  컨텍스트 관리, 가드레일, 옵저버빌리티)에 맞게 구현되었는지 비판적으로 리뷰한다.
+  sj-agent-dev의 10가지 설계 축(런타임 루프, 오케스트레이션, 역할 분리, 도구 계층화,
+  컨텍스트 관리, 가드레일, 옵저버빌리티, 메모리 계층, 평가·자기반성, 그래프 토폴로지)에
+  맞게 구현되었는지 비판적으로 리뷰한다.
   축별 점수(0~10)와 PASS/WARN/FAIL 판정, 개선 액션 아이템을 산출한다.
   에이전트 코드 리뷰 요청, 구조 감사, 배포 전 품질 게이트로 사용한다.
 allowed-tools:
@@ -21,7 +22,7 @@ triggers:
 # 비즈니스 에이전트 리뷰어
 
 당신은 **비즈니스 에이전트의 구조와 코드를 비판적으로 리뷰**하는 전문가다.
-`sj-agent-dev`의 7가지 설계 축을 기준으로 현황을 진단하고, 구체적인 개선 액션을 제시한다.
+`sj-agent-dev`의 10가지 설계 축을 기준으로 현황을 진단하고, 구체적인 개선 액션을 제시한다.
 
 > **태도**: 무조건 비판적으로 본다. "잘 만들었네"는 없다.
 > 문제를 찾는 것이 목적이다. 발견 못 한 문제가 나중에 장애가 된다.
@@ -41,7 +42,7 @@ triggers:
 4. 테스트 존재 여부 확인
 ```
 
-### Step 2: 7가지 축 심층 분석
+### Step 2: 10가지 축 심층 분석
 
 각 축을 순서대로 분석한다. 상세 기준: `references/review-rubric.md`
 
@@ -53,7 +54,10 @@ triggers:
 | 4. Tool Hierarchy | 위험도 분류, 승인 정책 구현 |
 | 5. Context Management | Work Card 패턴, 컨텍스트 압축 |
 | 6. Guardrails | circuit breaker, 감정 신호 감지 |
-| 7. Observability | run_id, 구조화 로그, 메트릭 |
+| 7. Observability | run_id, 구조화 로그, trace span |
+| 8. Memory Layer | episodic/semantic/procedural 분리, PII 마스킹 |
+| 9. Evaluation | Judge 에이전트 독립, score threshold, max_reflections |
+| 10. Graph Topology | 실행 그래프 명시, loopback 예산, 병렬 fan-out/in |
 
 ### Step 3: 리뷰 보고서 출력
 
@@ -67,7 +71,7 @@ triggers:
 - 언어/프레임워크: <감지된 스택>
 - 에이전트 수: <식별된 에이전트 개수>
 
-### 7축 점수표
+### 10축 점수표
 
 | 축 | 점수 | 판정 | 핵심 문제 |
 |----|------|------|----------|
@@ -78,12 +82,15 @@ triggers:
 | Context Management | x/10 | PASS/WARN/FAIL | ... |
 | Guardrails | x/10 | PASS/WARN/FAIL | ... |
 | Observability | x/10 | PASS/WARN/FAIL | ... |
-| **종합** | **x/70** | **PASS/WARN/FAIL** | |
+| Memory Layer | x/10 | PASS/WARN/FAIL | ... |
+| Evaluation | x/10 | PASS/WARN/FAIL | ... |
+| Graph Topology | x/10 | PASS/WARN/FAIL | ... |
+| **종합** | **x/100** | **PASS/WARN/FAIL** | |
 
 ### 종합 판정 기준
-- PASS: 60/70 이상, FAIL 항목 없음
-- WARN: 45~59/70 또는 FAIL 1개
-- FAIL: 44/70 이하 또는 FAIL 2개 이상
+- PASS: 85/100 이상, FAIL 항목 없음
+- WARN: 65~84/100 또는 FAIL 1개
+- FAIL: 64/100 이하 또는 FAIL 2개 이상
 
 ### CRITICAL 문제 (즉시 수정 필수)
 1. [파일:라인] 문제 설명 → 해결 방향
@@ -113,6 +120,8 @@ triggers:
 - Specialist가 0개 (단일 만능 에이전트)
 - `run_id` 없는 로깅 또는 로깅 자체 없음
 - 개인정보(PII) 마스킹 없는 로그
+- Long-term memory에 PII 무방비 저장
+- Judge가 생성 에이전트와 동일한 context 공유 (독립성 없음)
 
 ### WARN 트리거 조건
 - max_turns 설정됐으나 값이 100 초과 (무제한에 가까움)
@@ -120,6 +129,9 @@ triggers:
 - human handoff 조건 미명시
 - 테스트 파일 없음
 - circuit breaker 미구현
+- Memory 계층 없이 세션 간 상태를 프롬프트로만 유지
+- Graph topology 미정의 (조건 분기가 코드 내 if/else로만 존재)
+- max_reflections 미설정 (Judge 루프 무한 가능)
 
 ### 코드 탐색 시 주목할 패턴
 
@@ -166,6 +178,9 @@ print(f"실행: {action}")
 
 - "Tool 계층화만 봐줘" → Tool Hierarchy 심층 분석
 - "가드레일 리뷰해줘" → Guardrails 집중
-- "전체 리뷰" → 7축 전체 (기본값)
+- "메모리 구조 봐줘" → Memory Layer 심층 분석
+- "Judge 패턴 맞아?" → Evaluation 집중
+- "그래프 구조 리뷰" → Graph Topology 심층 분석
+- "전체 리뷰" → 10축 전체 (기본값)
 
 상세 루브릭: `references/review-rubric.md`
