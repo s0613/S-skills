@@ -246,14 +246,19 @@ run_code   = force_code   or (not force_doc and not force_design and code_change
 run_doc    = force_doc    or (not force_code and not force_design and doc_changed  > 0)
 run_design = force_design or (not force_code and not force_doc   and has_design   == 1)
 
+# 에이전트 구조 리뷰 감지
+force_agent = any(k in task.lower() for k in ["에이전트", "agent", "멀티에이전트"])
+run_agent  = force_agent
+
 # 아무것도 감지 안 되면 전부 실행
-if not run_code and not run_doc and not run_design:
+if not run_code and not run_doc and not run_design and not run_agent:
     run_code = run_doc = run_design = True
 
 agents = []
 if run_code:   agents.append("sj-reviewer-code")
 if run_doc:    agents.append("sj-reviewer-doc")
 if run_design: agents.append("sj-reviewer-design")
+if run_agent:  agents.append("sj-agent-review")
 
 print("AGENTS=" + ",".join(agents))
 ```
@@ -264,7 +269,11 @@ print("AGENTS=" + ",".join(agents))
 [리뷰 시작] 다음 리뷰어를 디스패치합니다: {AGENTS}
 ```
 
-Agent 툴로 `AGENTS` 목록의 에이전트를 **병렬** 디스패치. 각 에이전트 프롬프트에 포함:
+`AGENTS` 목록을 처리:
+- `sj-agent-review` 포함 시 → `Skill("s-skills:sj-agent-review")` 먼저 단독 호출 (에이전트 구조 전체 탐색 필요)
+- 나머지(`sj-reviewer-code`, `sj-reviewer-doc`, `sj-reviewer-design`) → Agent 툴로 **병렬** 디스패치
+
+Agent 툴 병렬 디스패치 시 각 에이전트 프롬프트에 포함:
 - 현재 태스크 텍스트
 - `docs/sj-company/PROJECT.md` 경로
 - `docs/sj-company/.state/pm-brief.md` 경로 (파일이 있는 경우)
@@ -421,6 +430,8 @@ PM 브리핑:
 task_lower = "{태스크}".lower()
 if any(k in task_lower for k in ["작업 개요", "제안서 작성", "요구사항 명세서", "요구사항 정의서", "wbs", "데모 보고서", "결과보고서", "주간 보고서", "도메인 맵", "견적서", "si 문서", "srs"]):
     hint = "si"
+elif any(k in task_lower for k in ["에이전트 만들", "에이전트 개발", "에이전트 설계", "에이전트 구현", "agent 개발", "agent 설계", "멀티에이전트", "multi-agent", "오케스트레이션", "orchestration", "specialist 분리", "runtime loop", "guardrail"]):
+    hint = "agent_dev"
 elif any(k in task_lower for k in ["ui", "컴포넌트", "화면", "페이지", "css", "스타일"]):
     hint = "frontend"
 elif any(k in task_lower for k in ["api", "서버", "백엔드", "db", "데이터베이스"]):
@@ -446,7 +457,9 @@ PM 브리핑:
 - 리스크: {1에서 생성한 리스크}
 ```
 
-4. Tech Lead 실행: `Skill("s-skills:sj-tech-lead")`
+4. 실행 분기:
+   - **HINT=agent_dev** → `Skill("s-skills:sj-agent-dev")` 직접 호출 (Tech Lead 우회. 에이전트 아키텍처 설계·구현 전담)
+   - **그 외** → `Skill("s-skills:sj-tech-lead")` 호출
 
 5. pw-loop 실행:
 ```bash
