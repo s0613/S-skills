@@ -119,6 +119,26 @@ _SJ_STAGE=$(cat "docs/sj-company/.state/stage.txt" 2>/dev/null | tr -d '[:space:
 _SJ_STAGE="${_SJ_STAGE:-none}"
 _SJ_TASK=$(cat "docs/sj-company/.state/task.txt" 2>/dev/null)
 
+# ── Phase 0: 에이전트/스킬 생태계 감사 ──
+_AGENT_COUNT=0
+_AGENT_LIST=""
+_LOCAL_SKILL_COUNT=0
+_AGENT_MODE="INIT"
+
+if [ -d ".claude/agents" ]; then
+  _AGENT_COUNT=$(find ".claude/agents" -maxdepth 1 -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+  _AGENT_LIST=$(find ".claude/agents" -maxdepth 1 -name "*.md" 2>/dev/null \
+    | xargs -I{} basename {} .md 2>/dev/null | sort | tr '\n' ', ' | sed 's/, $//')
+fi
+
+if [ -d ".claude/skills" ]; then
+  _LOCAL_SKILL_COUNT=$(find ".claude/skills" -maxdepth 2 -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+fi
+
+if [ "$_AGENT_COUNT" -gt 0 ] || [ "$_LOCAL_SKILL_COUNT" -gt 0 ]; then
+  _AGENT_MODE="EXISTS"
+fi
+
 echo "HAS_DOCS: $_HAS_DOCS"
 echo "DOC_SCORE: $_DOC_SCORE"
 echo "HAS_SCENARIOS: $_HAS_SCENARIOS"
@@ -131,6 +151,10 @@ echo "PW_PASS_RATE: $_PW_RATE%"
 echo "PW_STATUS: $_PW_STATUS"
 echo "SJ_STAGE: $_SJ_STAGE"
 echo "SJ_TASK: ${_SJ_TASK:-없음}"
+echo "AGENT_MODE: $_AGENT_MODE"
+echo "AGENT_COUNT: $_AGENT_COUNT"
+echo "LOCAL_SKILL_COUNT: $_LOCAL_SKILL_COUNT"
+[ -n "$_AGENT_LIST" ] && echo "AGENTS: $_AGENT_LIST"
 
 # ── 버전 확인 (best-effort, 3초 제한) ──
 _SS_LOCAL_VER=$(find ~/.claude/plugins/cache/s-skills -name "VERSION" -maxdepth 6 2>/dev/null \
@@ -155,7 +179,7 @@ fi
 
 Preamble 결과를 바탕으로 아래 순서로 판단한다.
 
-> **판단 우선순위:** Case 0 → Case 5 → Case 6 → Case 1 → Case 2 → Case 3 → Case 4
+> **판단 우선순위:** Case 0 → Case 7 → Case 5 → Case 6 → Case 1 → Case 2 → Case 3 → Case 4
 
 ### Case 0: 업그레이드 가능 (`UPGRADE_AVAILABLE` 감지 시)
 
@@ -178,6 +202,25 @@ git -C /Users/songseungju/S-skills pull origin main
 실행 완료 후: "업그레이드 완료. `/s-skills`를 다시 호출하면 새 버전으로 시작됩니다."
 
 B 선택 시: 바로 Case 1 판단으로 이동.
+
+---
+
+### Case 7: 에이전트 팀 감지 (`AGENT_MODE=EXISTS`)
+
+Case 0 직후 체크. `.claude/agents/` 또는 `.claude/skills/`에 파일이 있으면 감사 옵션을 제시한다.
+
+AskUserQuestion:
+
+```
+이 프로젝트에 에이전트 생태계가 감지되었습니다. (Phase 0 감사)
+- 에이전트: {AGENT_COUNT}개  {AGENT_LIST}
+- 로컬 스킬: {LOCAL_SKILL_COUNT}개
+```
+
+옵션:
+- A) 에이전트 리뷰 → `Skill("s-skills:sj-agent-review")` 호출 (7가지 설계 축 기준 심사, PASS/WARN/FAIL 판정)
+- B) 에이전트 확장 → `Skill("s-skills:sj-agent-dev")` 호출 (새 에이전트/스킬 추가 설계)
+- C) 무시하고 계속 → Case 5 판단으로 이동
 
 ---
 
@@ -358,5 +401,6 @@ S-skills 상태 요약
 test-scenario: {TS_STATUS} (사이클: {TS_CYCLE}, 통과율: {TS_PASS_RATE}%)
 pw-loop     : {PW_STATUS} (사이클: {PW_CYCLE}, 통과율: {PW_RATE}%)
 SJ Company  : {SJ_STAGE}  (태스크: {SJ_TASK})
+에이전트    : {AGENT_MODE} (에이전트 {AGENT_COUNT}개 / 로컬 스킬 {LOCAL_SKILL_COUNT}개)
 다음 추천   : {다음 액션 한 줄}
 ```
