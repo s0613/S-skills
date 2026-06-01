@@ -73,9 +73,16 @@ _HAS_DEV_CTX=$([ -s "docs/sj-company/dev-context.md" ] && echo "yes" || echo "no
 _MODEL_POLICY=$(cat docs/sj-company/.state/model-policy.txt 2>/dev/null | tr -d '[:space:]')
 _MODEL_POLICY="${_MODEL_POLICY:-auto}"
 
+# 프로젝트 신원 — 서브에이전트 Dispatch Card에 포함할 고정값
+_PROJECT_NAME=$(grep "^name:" docs/sj-company/PROJECT.md 2>/dev/null | head -1 | cut -d: -f2- | xargs)
+_PROJECT_NAME="${_PROJECT_NAME:-$(basename "$(pwd)")}"
+_PROJECT_GOAL=$(grep "^goal:" docs/sj-company/PROJECT.md 2>/dev/null | head -1 | cut -d: -f2- | xargs)
+_PROJECT_DIR=$(pwd)
+
 # [HINT:single={role}] 파싱 — pm-brief.md 첫 줄 또는 task.txt 본문에서
 _HINT_SINGLE=$(echo "$_TASK" | grep -oE 'HINT:single=[a-z]+' | head -1 | cut -d= -f2 || echo "")
 _TASK_CLEAN=$(echo "$_TASK" | sed 's/\[HINT:[^]]*\]//g' | python3 -c "import sys; sys.stdout.write(sys.stdin.read()[:2000])")
+echo "PROJECT: $_PROJECT_NAME ($_PROJECT_DIR)"
 echo "SOURCE: $_SOURCE | HAS_PM: $_HAS_PM | HINT: ${_HINT_SINGLE:-없음} | MODEL: $_MODEL_POLICY"
 ```
 
@@ -179,6 +186,7 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 mkdir -p docs/sj-company/.state/dev
 cat > docs/sj-company/.state/dev/_channel.md <<EOF
 # Team Channel — {태스크 한 줄 요약}
+> 프로젝트: $_PROJECT_NAME  |  경로: $_PROJECT_DIR
 > 시작: $(date +%Y-%m-%d)
 
 EOF
@@ -190,6 +198,12 @@ EOF
 
 ```
 당신은 sj-dev-{role} 서브에이전트입니다.
+
+[PROJECT]
+프로젝트: {_PROJECT_NAME}
+디렉토리: {_PROJECT_DIR}
+목표: {_PROJECT_GOAL}
+⚠️ 위 디렉토리 외 경로는 절대 수정하지 마세요.
 
 [TASK]
 {_TASK_CLEAN}           ← HINT 라인 제거, 최대 2KB

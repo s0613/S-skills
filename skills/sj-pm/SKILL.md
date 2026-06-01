@@ -28,10 +28,17 @@ triggers:
 3. **Surgical Changes** — 꼭 필요한 것만 건드린다. 변경된 모든 줄은 요청으로 추적 가능해야 한다.
 4. **Goal-Driven Execution** — 성공 기준을 정의하고 검증될 때까지 루프한다.
 
-## Step 1: 프로젝트 뇌(Brain) 로드
+## Step 1: 프로젝트 신원 확인 + 뇌(Brain) 로드
 
 ```bash
 mkdir -p docs/sj-company/.state
+
+# 프로젝트 신원 — 항상 먼저 출력해 어떤 프로젝트인지 명시
+_PM_PROJECT_NAME=$(grep "^name:" docs/sj-company/PROJECT.md 2>/dev/null | head -1 | cut -d: -f2- | xargs)
+_PM_PROJECT_NAME="${_PM_PROJECT_NAME:-$(grep "^#" docs/sj-company/PROJECT.md 2>/dev/null | head -1 | sed 's/^# //')}"
+_PM_PROJECT_NAME="${_PM_PROJECT_NAME:-$(basename "$(pwd)")}"
+echo "▶ 프로젝트: $_PM_PROJECT_NAME  ($(pwd))"
+
 [ -f "docs/sj-company/pm-context.md" ] && echo "EXISTS" || echo "NEW"
 ```
 
