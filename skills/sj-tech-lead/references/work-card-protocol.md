@@ -116,12 +116,60 @@ Database  →  Backend + Security(impl)  →  Frontend
 
 ---
 
-## 5. 파일 생명주기
+## 5. 팀 채널 (Team Channel)
+
+Tech Lead를 거치지 않는 에이전트 직접 조율 채널.
+`.state/dev/_channel.md`에 기록하고 후속 에이전트가 직접 읽는다.
+
+### 채널 게시 형식
+
+```markdown
+---
+## [{role}] ✅ DONE
+핵심 변경: {한 줄 요약}
+후속 에이전트 주의사항: {없으면 "없음"}
+블로커: {없으면 "없음"}
+---
+```
+
+### 사용 흐름
+
+```
+Tech Lead           Database            Backend             Frontend
+    │                   │                   │                   │
+    ├── 채널 초기화 ──▶│                   │                   │
+    │                   │                   │                   │
+    ├── Dispatch ──────▶│                   │                   │
+    │                   │ 작업 완료         │                   │
+    │                   ├── 채널 게시 ──────────────────────────▶ (읽기)
+    │                   │                   │                   │
+    ├── Dispatch ────────────────────────▶ │                   │
+    │                   │  채널 읽기       │                   │
+    │                   │◀─────────────────│                   │
+    │                   │ Database 주의사항 인지 후 작업       │
+    │                   │                   ├── 채널 게시 ──────▶ (읽기)
+    │                   │                   │                   │
+    ├── Dispatch ────────────────────────────────────────────▶ │
+    │                   │         채널 읽기 후 작업             │
+```
+
+### 규칙
+
+- **병렬 에이전트 간**: 채널을 쓰지만 실시간으로 읽지는 못함 (동시 실행). 주의사항은 다음 단계 에이전트가 소비
+- **순차 에이전트**: 시작 전 반드시 채널 전체를 cat하여 선행 주의사항 확인
+- **채널은 append-only**: 기존 내용 수정 금지, 끝에만 추가
+- **수명**: Step 5 시작 시 생성 → Step 9에서 `.archive.md`로 보존 후 삭제
+
+---
+
+## 6. 파일 생명주기
 
 | 파일 | 생성자 | 소비자 | 수명 |
 |------|--------|--------|------|
 | `.state/pm-brief.md` | sj-pm | Tech Lead, Sub-agents | 사이클 간 유지 |
 | `.state/dev/{role}.md` | 각 Sub-agent | Tech Lead, 후속 Sub-agents | 사이클마다 덮어쓰기 |
+| `.state/dev/_channel.md` | Tech Lead(초기화) + Sub-agents(append) | 후속 Sub-agents, Tech Lead | Step 9에서 archive 후 삭제 |
+| `.state/dev/_channel.archive.md` | Tech Lead(Step 9) | 감사·디버깅 | 영속 보존 |
 | `.state/dev-summary.md` | Tech Lead | sj-qa, sj-company | 사이클마다 덮어쓰기 |
 | `.state/design-review.req` | Tech Lead | sj-design | 소비 후 삭제 |
 | `.state/design-review.md` | sj-design | Tech Lead | 사이클마다 덮어쓰기 |

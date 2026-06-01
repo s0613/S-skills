@@ -171,6 +171,19 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 > 데이터 전달 규약 전체는 `references/work-card-protocol.md` 참고.
 > 아래는 필수 요약이다.
 
+### 5-0: 팀 채널 초기화
+
+디스패치 전 팀 채널 파일을 생성한다. 에이전트들이 Tech Lead를 거치지 않고 직접 조율하는 공유 게시판이다.
+
+```bash
+mkdir -p docs/sj-company/.state/dev
+cat > docs/sj-company/.state/dev/_channel.md <<EOF
+# Team Channel — {태스크 한 줄 요약}
+> 시작: $(date +%Y-%m-%d)
+
+EOF
+```
+
 ### Dispatch Card (Tech Lead → Sub-agent)
 
 각 서브에이전트에 다음 구조로 전달한다 (서브에이전트는 컨버세이션 컨텍스트를 보지 못한다):
@@ -185,6 +198,19 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 - PM Brief : docs/sj-company/.state/pm-brief.md   (있으면 직접 cat)
 - Dev Ctx  : docs/sj-company/dev-context.md        (항상 cat)
 - Prior    : docs/sj-company/.state/dev/{deps}.md  (의존 역할만 명시)
+
+[TEAM_CHANNEL]
+팀 채널을 직접 읽고 쓴다. Tech Lead에게 묻지 않아도 된다.
+1. 시작 전: cat docs/sj-company/.state/dev/_channel.md → 선행 에이전트 주의사항 확인
+2. 완료 후: 아래 형식으로 채널에 게시 (append)
+
+채널 게시 형식:
+---
+## [{role}] ✅ DONE
+핵심 변경: {한 줄 요약}
+후속 에이전트 주의사항: {후속이 알아야 할 것, 없으면 "없음"}
+블로커: {미해결 의존성, 없으면 "없음"}
+---
 
 [SCOPE]
 담당 영역: {role}
@@ -242,11 +268,17 @@ Agent(subagent_type="sj-dev-frontend", ...)
 
 ## Step 6: Tech Lead 기술 리뷰
 
-서브에이전트들의 결과 파일을 모두 읽는다(휘발성 위치):
+서브에이전트들의 결과 파일과 팀 채널을 읽는다:
 
 ```bash
+# 팀 채널 — 에이전트 간 직접 조율 내역 확인
+echo "=== Team Channel ==="
+cat docs/sj-company/.state/dev/_channel.md 2>/dev/null || echo "(채널 없음)"
+
+# 각 Result Card
 for f in docs/sj-company/.state/dev/*.md; do
   [ -f "$f" ] || continue
+  [[ "$f" == *"_channel.md" ]] && continue
   echo "=== $f ==="
   cat "$f"
 done
@@ -473,10 +505,17 @@ project: [프로젝트명]
 [어떤 경우에 이 패턴을 쓰면 되는가]
 ```
 
-### 9e. 반복 카운터 초기화
+### 9e. 반복 카운터 초기화 및 팀 채널 아카이브
 
 ```bash
 rm -f docs/sj-company/.state/review-iterations.txt
+
+# 채널을 dev-summary 옆에 아카이브 (사이클 추적용)
+if [ -f "docs/sj-company/.state/dev/_channel.md" ]; then
+  cp docs/sj-company/.state/dev/_channel.md \
+     docs/sj-company/.state/dev/_channel.archive.md 2>/dev/null || true
+  rm -f docs/sj-company/.state/dev/_channel.md
+fi
 ```
 
 ---
