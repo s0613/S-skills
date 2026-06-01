@@ -19,6 +19,11 @@
 - **s-skills:sj-secretary** (`/secretary`) — 비서. 총괄(sj-company)이 사이클 완료 시 작성한 report.md를 읽어 프로젝트별 현황·다음 명령·KPI를 요약 보고 (비서는 요약·전달만, 보고서 작성은 총괄 담당)
 - **s-skills:sj-dev-si** (`/sj-dev-si`) — SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 도메인 맵 직접 작성
 
+### Agent Development Expert
+
+- **s-skills:sj-agent-dev** (`/sj-agent-dev`, `/agent-dev`) — 비즈니스 에이전트 개발 전문가. 런타임 루프·오케스트레이션·역할 분리·도구 계층화·컨텍스트 관리·가드레일·옵저버빌리티 7가지 축으로 실무 AI 에이전트 설계 및 구현 안내
+- **s-skills:sj-agent-review** (`/sj-agent-review`, `/agent-review`) — 비즈니스 에이전트 리뷰어. 에이전트 파일·폴더 구조를 탐색하고 7가지 설계 축 준수 여부를 비판적으로 심사. 축별 점수(0~10)·PASS/WARN/FAIL 판정·개선 액션 아이템 산출
+
 ### Sub-agents (Tech Lead가 디스패치)
 
 - `sj-dev-frontend` — UI·컴포넌트·a11y·반응형 (sonnet)

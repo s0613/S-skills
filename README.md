@@ -7,9 +7,11 @@ Claude Code 커스텀 하네스 + 스킬 모음.
 
 ```
 skills/
-├── harness/        ← 오케스트레이터. /s-skills 하나로 전체 흐름 제어
-├── docs-organize/  ← 스킬. 문서 생성 + 건강 점수
-└── test-scenario/  ← 스킬. 사이클 기반 테스트 하네스
+├── harness/          ← 오케스트레이터. /s-skills 하나로 전체 흐름 제어
+├── docs-organize/    ← 스킬. 문서 생성 + 건강 점수
+├── test-scenario/    ← 스킬. 사이클 기반 테스트 하네스
+├── sj-agent-dev/     ← 스킬. 비즈니스 에이전트 설계·구현 전문가
+└── sj-agent-review/  ← 스킬. 비즈니스 에이전트 7축 리뷰어
 ```
 
 ---
@@ -45,6 +47,20 @@ ln -sf ~/S-skills/skills/test-scenario ~/.claude/skills/test-scenario
 | **하네스** | `/s-skills` | 프로젝트 상태 감지 → docs-organize / test-scenario 오케스트레이션 |
 | 스킬 | `/docs-organize` | 프로젝트 분석 → 표준 문서 생성 → 건강 점수 0–100 |
 | 스킬 | `/test-scenario` | 사이클 기반 테스트 — 프롬프트 생성 → 결과 평가 → 목표 통과율 달성까지 반복 |
+| 스킬 | `/sj-agent-dev` | 비즈니스 에이전트 개발 전문가 — 7가지 설계 축 기반 아키텍처 설계·구현 안내 |
+| 스킬 | `/sj-agent-review` | 비즈니스 에이전트 리뷰어 — 파일·폴더 구조 분석 + 7축 점수(0~70) + PASS/WARN/FAIL 판정 |
+
+### SJ Company (역할 기반 개발 워크플로우)
+
+| 스킬 | 트리거 | 설명 |
+|------|--------|------|
+| sj-company | `/sj-company` | PM → Design → Tech Lead → QA 자동 라우터 |
+| sj-pm | `/pm` | 요구사항·리스크·우선순위 분석 |
+| sj-design | `/design` | UI/UX 명세 작성 + Frontend 시각 리뷰 |
+| sj-tech-lead | `/tech-lead` | 전문 개발 서브에이전트 병렬 디스패치 및 통합 |
+| sj-qa | `/qa` | 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 |
+| sj-secretary | `/secretary` | 프로젝트별 현황·다음 명령·KPI 요약 보고 |
+| sj-dev-si | `/sj-dev-si` | SI 문서 전문가 (제안서·WBS·결과보고서 6종) |
 
 ---
 
