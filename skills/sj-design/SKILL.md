@@ -31,28 +31,20 @@ Tech Lead가 Frontend 구현 후 호출하면, design-context.md의 비주얼 �
 
 ```bash
 mkdir -p docs/sj-company/.state
-_REQ_FILE="docs/sj-company/.state/design-review.req"
-if [ -f "$_REQ_FILE" ]; then
-  _MODE=$(grep -E '^MODE=' "$_REQ_FILE" | cut -d= -f2)
-  _TARGET=$(grep -E '^TARGET=' "$_REQ_FILE" | cut -d= -f2)
-  rm -f "$_REQ_FILE"
-  echo "리뷰 요청 감지: MODE=$_MODE TARGET=$_TARGET"
-else
-  echo "sentinel 없음 — 단독 호출. AskUserQuestion으로 검토 대상을 물어본다."
-fi
 ```
 
-`_TARGET`이 비어 있으면 사용자에게 검토 대상 파일 경로를 묻고, 답이 없으면 종료.
+`docs/sj-company/.state/design-review.req`가 있으면 리뷰 모드다. 파일을 읽어 `MODE`와 `TARGET`을 파악한 뒤 파일을 삭제하고 리뷰를 진행해라.
+
+파일이 없으면 단독 호출이다. AskUserQuestion으로 검토 대상 파일 경로를 물어라. 답이 없으면 종료.
 
 ## Step R-1: 컨텍스트 로드
 
 ```bash
 # design-context.md — 이 프로젝트의 비주얼 방향(영속)
 [ -f "docs/sj-company/design-context.md" ] && cat docs/sj-company/design-context.md
-
-# 검토 대상 변경 파일 목록
-[ -f "$_TARGET" ] && cat "$_TARGET"
 ```
+
+Step 0에서 파악한 TARGET 경로의 파일을 Read 툴로 직접 읽어라.
 
 `design-context.md`가 없으면 design-context.md를 먼저 생성한다(아래 보조 절차):
 
@@ -92,11 +84,7 @@ ls /Users/songseungju/awesome-design-md/design-md/
 
 primary 브랜드 DESIGN.md를 읽어 색·타이포·컴포넌트 패턴을 리뷰 기준으로 삼는다.
 
-```bash
-PRIMARY_BRAND=$(grep "^- primary:" docs/sj-company/design-context.md | sed 's/^- primary:[[:space:]]*//' | awk '{print $1}')
-DESIGN_REF="/Users/songseungju/awesome-design-md/design-md/${PRIMARY_BRAND}/DESIGN.md"
-[ -f "$DESIGN_REF" ] && head -200 "$DESIGN_REF" || echo "DESIGN_REF not found: $DESIGN_REF"
-```
+`docs/sj-company/design-context.md`에서 `primary:` 필드를 읽어 브랜드명을 파악하고, `/Users/songseungju/awesome-design-md/design-md/{브랜드명}/DESIGN.md`를 읽어 리뷰 기준으로 삼아라.
 
 ## Step R-2: 시각·UX 리뷰 체크리스트
 
@@ -161,26 +149,9 @@ DESIGN_REF="/Users/songseungju/awesome-design-md/design-md/${PRIMARY_BRAND}/DESI
 
 이번 리뷰에서 **새로 정립된 비주얼 약속** 1~3줄을 design-context.md `## 히스토리` 끝에 append.
 
-```python
-import os, datetime
+이번 리뷰에서 **새로 정립된 비주얼 약속** 1~3줄을 Edit 툴로 `docs/sj-company/design-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {약속}` 형식으로 append해라.
 
-ctx_path = "docs/sj-company/design-context.md"
-if not os.path.exists(ctx_path):
-    print("design-context.md 없음, 스킵")
-    exit(0)
-
-today = datetime.date.today().strftime("%Y-%m-%d")
-insight = "{새 약속 — 예: '모달은 backdrop-blur-md 고정', '버튼 hover는 100ms ease-out'}"
-
-text = open(ctx_path, encoding="utf-8").read()
-if not text.endswith("\n"):
-    text += "\n"
-text += f"- {today}: {insight}\n"
-open(ctx_path, "w", encoding="utf-8").write(text)
-print(f"design-context.md 누적: {insight}")
-```
-
-리뷰가 단순 PASS이고 새 약속이 없으면 이 Step 스킵.
+단순 PASS이고 새 약속이 없으면 스킵.
 
 ## Step R-5: Tech Lead에게 보고
 

@@ -117,24 +117,14 @@ pm-context.md + 현재 요청을 바탕으로 PM 역할을 수행한다:
 
 ## Step 4: 역할 힌트 판단
 
-태스크 내용에서 단일 디스패치 힌트를 추출한다(Tech Lead가 이 힌트로 단일 specialist만 호출).
+태스크 성격을 파악해 단일 specialist로 명확히 귀결되면 힌트를 결정해라 (Tech Lead가 이 힌트로 불필요한 에이전트 호출을 스킵한다):
 
-```python
-task_lower = "{태스크}".lower()
-if any(k in task_lower for k in ["작업 개요", "제안서 작성", "요구사항 명세서", "요구사항 정의서", "wbs", "데모 보고서", "결과보고서", "주간 보고서", "도메인 맵", "견적서", "si 문서", "srs"]):
-    hint = "si"
-elif any(k in task_lower for k in ["ui", "컴포넌트", "화면", "페이지", "css", "스타일"]):
-    hint = "frontend"
-elif any(k in task_lower for k in ["api", "서버", "백엔드", "db", "데이터베이스"]):
-    hint = "backend"
-elif any(k in task_lower for k in ["스키마", "마이그레이션", "쿼리"]):
-    hint = "database"
-elif any(k in task_lower for k in ["인증", "권한", "암호화", "토큰"]):
-    hint = "security"
-else:
-    hint = ""  # Tech Lead가 Step 3에서 판단
-print(f"HINT={hint}")
-```
+- SI 문서 작성(작업 개요, 제안서, WBS, 결과보고서 등) → `si`
+- UI·컴포넌트·화면·스타일 전용 → `frontend`
+- API·서버·도메인 로직 전용 → `backend`
+- 스키마·마이그레이션·쿼리 전용 → `database`
+- 인증·권한·암호화 전용 → `security`
+- 여러 영역에 걸치면 → 힌트 없음 (빈 값, Tech Lead가 판단)
 
 ## Step 5: 결과 저장
 
@@ -161,58 +151,15 @@ print(f"HINT={hint}")
 ```
 
 PROJECT.md 업데이트:
-
-```bash
-python3 - <<'PY'
-import re, os
-
-path = "docs/sj-company/PROJECT.md"
-if not os.path.exists(path):
-    print("PROJECT.md 없음, 스킵")
-    exit(0)
-
-brief_path = "docs/sj-company/.state/pm-brief.md"
-brief_txt = open(brief_path, encoding="utf-8").read() if os.path.exists(brief_path) else ""
-first_task = ""
-m = re.search(r"^- \[ \] (.+)$", brief_txt, re.MULTILINE)
-if m: first_task = m.group(1).strip()
-
-text = open(path, encoding="utf-8").read()
-def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
-
-if first_task:
-    text = upd("next", first_task, text)
-open(path, "w", encoding="utf-8").write(text)
-print(f"PROJECT.md next 업데이트: {first_task or '(태스크 없음)'}")
-PY
-```
+pm-brief.md의 태스크 목록에서 첫 번째 항목을 읽어, Edit 툴로 `docs/sj-company/PROJECT.md`의 `next` 필드를 해당 값으로 업데이트해라. 태스크가 없으면 스킵.
 
 ## Step 6: pm-context.md 학습 누적
 
 이번 사이클에서 **새로 알게 된 인사이트** 1~3줄을 `docs/sj-company/pm-context.md`의 `## 히스토리` 섹션 끝에 추가한다. 단순한 작업 기록이 아니라 "다음 사이클이 알면 좋을 사실"만 기록.
 
-```python
-import os, datetime
+이번 사이클에서 **다음 사이클이 알면 좋을 사실** 1~3줄을 Edit 툴로 `docs/sj-company/pm-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
 
-ctx_path = "docs/sj-company/pm-context.md"
-if not os.path.exists(ctx_path):
-    print("pm-context.md 없음, 스킵 (Step 1에서 생성됐어야 함)")
-    exit(0)
-
-today = datetime.date.today().strftime("%Y-%m-%d")
-insight = "{이번 사이클에서 알게 된 사실 — 예: '결제 도메인은 idempotency key 패턴 사용', '디자인 시안은 모바일 우선'}"
-
-text = open(ctx_path, encoding="utf-8").read()
-# 마지막 줄이 빈 줄이면 보존하면서 append
-if not text.endswith("\n"):
-    text += "\n"
-text += f"- {today}: {insight}\n"
-open(ctx_path, "w", encoding="utf-8").write(text)
-print(f"pm-context.md 누적: {insight}")
-```
-
-인사이트가 정말로 없으면 이 Step은 스킵 가능 (단순 작업이었다면 누적 가치 없음).
+인사이트가 없으면 (단순 작업) 스킵.
 
 ## Step 7: 완료 보고
 

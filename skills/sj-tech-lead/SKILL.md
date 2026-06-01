@@ -51,48 +51,21 @@ triggers:
 ```bash
 mkdir -p docs/sj-company/.state docs/sj-company/.state/dev
 
-# 입력 우선순위: .state/pm-brief.md(PM 거친 경우) > .state/task.txt(Medium 인라인 브리핑) > PROJECT.md goal
-_BRIEF_FILE="docs/sj-company/.state/pm-brief.md"
-_TASK_FILE="docs/sj-company/.state/task.txt"
-
-if [ -s "$_BRIEF_FILE" ]; then
-  _SOURCE="pm-brief"
-  _TASK=$(cat "$_BRIEF_FILE")
-  _HAS_PM="yes"
-elif [ -s "$_TASK_FILE" ]; then
-  _SOURCE="task.txt"
-  _TASK=$(cat "$_TASK_FILE")
-  _HAS_PM="no"  # Medium 인라인 브리핑은 PM 단계 정식 통과는 아님
-else
-  _SOURCE="project"
-  _TASK=$(grep "^goal:" docs/sj-company/PROJECT.md 2>/dev/null | cut -d: -f2- | xargs)
-  _HAS_PM="no"
-fi
-
-_HAS_DEV_CTX=$([ -s "docs/sj-company/dev-context.md" ] && echo "yes" || echo "no")
 _MODEL_POLICY=$(cat docs/sj-company/.state/model-policy.txt 2>/dev/null | tr -d '[:space:]')
 _MODEL_POLICY="${_MODEL_POLICY:-auto}"
-
-# 프로젝트 신원 — 서브에이전트 Dispatch Card에 포함할 고정값
-_PROJECT_NAME=$(grep "^name:" docs/sj-company/PROJECT.md 2>/dev/null | head -1 | cut -d: -f2- | xargs)
-_PROJECT_NAME="${_PROJECT_NAME:-$(basename "$(pwd)")}"
-_PROJECT_GOAL=$(grep "^goal:" docs/sj-company/PROJECT.md 2>/dev/null | head -1 | cut -d: -f2- | xargs)
 _PROJECT_DIR=$(pwd)
-
-# [HINT:single={role}] 파싱 — pm-brief.md 첫 줄 또는 task.txt 본문에서
-_HINT_SINGLE=$(echo "$_TASK" | grep -oE 'HINT:single=[a-z]+' | head -1 | cut -d= -f2 || echo "")
-_TASK_CLEAN=$(echo "$_TASK" | sed 's/\[HINT:[^]]*\]//g' | python3 -c "import sys; sys.stdout.write(sys.stdin.read()[:2000])")
-echo "PROJECT: $_PROJECT_NAME ($_PROJECT_DIR)"
-echo "SOURCE: $_SOURCE | HAS_PM: $_HAS_PM | HINT: ${_HINT_SINGLE:-없음} | MODEL: $_MODEL_POLICY"
 ```
 
-`_HINT_SINGLE` 값에 따라 디스패치 범위를 결정한다:
-- `_HINT_SINGLE=frontend` → sj-dev-frontend 1개만 Agent 디스패치, 나머지 생략
-- `_HINT_SINGLE=backend`  → sj-dev-backend 1개만
-- `_HINT_SINGLE=database` → sj-dev-database 1개만
-- `_HINT_SINGLE=security` → sj-dev-security 1개만
-- `_HINT_SINGLE=si`       → sj-dev-si 1개만 (SI 문서 작성)
-- `_HINT_SINGLE=없음`     → Step 3에서 specialist 식별
+다음 순서로 태스크와 컨텍스트를 파악해라:
+1. `docs/sj-company/.state/pm-brief.md` (있으면 우선 사용)
+2. `docs/sj-company/.state/task.txt`
+3. `docs/sj-company/PROJECT.md` goal 필드
+
+`docs/sj-company/PROJECT.md`를 직접 읽어 프로젝트명과 goal을 파악해라. Dispatch Card에 포함할 고정값이다.
+
+태스크 첫 줄에 `[HINT:single={role}]`이 있으면 해당 specialist만 디스패치한다:
+- `frontend` / `backend` / `database` / `security` / `si` → 해당 1개만
+- 없으면 Step 3에서 직접 판단
 
 `docs/sj-company/dev-context.md`가 없으면 분석 후 생성한다:
 
@@ -159,13 +132,11 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 
 ## Step 4: 모델 오버라이드 결정 (auto 정책일 때)
 
-태스크 복잡도 신호로 모델을 조정한다 (모델 정책이 `auto`인 경우만):
+`_MODEL_POLICY`가 `auto`일 때, 각 specialist의 태스크 복잡도를 직접 평가해 모델을 결정해라:
 
-| 신호 | 오버라이드 |
-|------|-----------|
-| trivial (오타, 변수명, 단순 텍스트 변경) | 해당 specialist에 `model=haiku` |
-| architectural (스키마 변경, 인증, 마이그레이션 전략) | `model=opus` |
-| 그 외 | 오버라이드 없음 (에이전트 기본값 사용) |
+- 오타·변수명·단순 텍스트 수정 수준 → `model=haiku`
+- 스키마 신규 설계·인증 구현·마이그레이션 전략 등 아키텍처 수준 → `model=opus`
+- 그 외 → 에이전트 기본값 사용 (오버라이드 없음)
 
 정책이 `haiku`/`sonnet`/`opus`이면 모든 디스패치에 해당 모델을 강제한다.
 
@@ -184,6 +155,7 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 
 ```bash
 mkdir -p docs/sj-company/.state/dev
+_PROJECT_NAME=$(grep "^#" docs/sj-company/PROJECT.md 2>/dev/null | head -1 | sed 's/^# //' || basename "$(pwd)")
 cat > docs/sj-company/.state/dev/_channel.md <<EOF
 # Team Channel — {태스크 한 줄 요약}
 > 프로젝트: $_PROJECT_NAME  |  경로: $_PROJECT_DIR
@@ -440,52 +412,20 @@ Tech Lead가 Medium 경로 PROJECT.md 최종 갱신을 책임진다 — `last_se
 - 다중 역할: `dev`
 - 역할 0건(예외): `dev`
 
-```python
-import re, datetime, os, glob
+`.state/dev/` 디렉토리에 생성된 `.md` 파일명을 확인해 참여 역할을 파악해라 (1개면 해당 역할명, 여러 개면 `dev`). 이후 Edit 툴로 `docs/sj-company/PROJECT.md`를 업데이트해라:
 
-path = "docs/sj-company/PROJECT.md"
-if not os.path.exists(path):
-    print("PROJECT.md 없음, 스킵")
-    exit(0)
-
-today = datetime.date.today().strftime("%Y-%m-%d")
-summary = "{이번 태스크 한 줄 요약}"
-
-# 참여 역할 추정 — .state/dev/*.md 파일명에서 추출 (security review-only도 포함됨)
-dev_files = sorted(glob.glob("docs/sj-company/.state/dev/*.md"))
-roles = [os.path.basename(f)[:-3] for f in dev_files]
-prefix = roles[0] if len(roles) == 1 else "dev"
-
-text = open(path, encoding="utf-8").read()
-def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
-
-text = upd("last_session", f"{today} — {prefix}: {summary}", text)
-text = upd("next", "없음", text)
-text = upd("blockers", "없음", text)
-text = upd("status", "active", text)
-open(path, "w", encoding="utf-8").write(text)
+```bash
+ls docs/sj-company/.state/dev/*.md 2>/dev/null | grep -v _channel
 ```
+
+- `last_session`: `{오늘날짜} — {prefix}: {이번 태스크 한 줄 요약}`
+- `next`: `없음`
+- `blockers`: `없음`
+- `status`: `active`
 
 ### 9c. dev-context.md 학습 누적
 
-```python
-import os, datetime
-
-ctx_path = "docs/sj-company/dev-context.md"
-if not os.path.exists(ctx_path):
-    print("dev-context.md 없음, 스킵")
-    exit(0)
-
-today = datetime.date.today().strftime("%Y-%m-%d")
-insight = "{새로 알게 된 코드 컨벤션·계약 — 예: 'API 응답은 envelope 형식', 'DB는 SERIAL 대신 IDENTITY 사용'}"
-
-text = open(ctx_path, encoding="utf-8").read()
-if not text.endswith("\n"):
-    text += "\n"
-text += f"- {today}: {insight}\n"
-open(ctx_path, "w", encoding="utf-8").write(text)
-```
+이번 사이클에서 알게 된 **코드 컨벤션·API 계약·기술 결정** 1~3줄을 Edit 툴로 `docs/sj-company/dev-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
 
 ### 9d. 크로스 프로젝트 패턴 학습 (선택적)
 

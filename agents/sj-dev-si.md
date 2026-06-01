@@ -22,24 +22,7 @@ upflow 앱의 SI 문서 6종 — 작업 개요(overview), 제안서(proposal), �
 
 > **참고**: 도메인 맵은 6종 문서와 별개의 독립 산출물(DDD 캔버스)이다.
 
-## Base Guidelines (Karpathy)
-
-1. **Think Before Writing** — 불확실한 항목은 가정을 명시한다. 조용히 채워 넣지 않는다.
-2. **Simplicity First** — 요청된 문서만 작성한다. 불필요한 섹션 추가 금지.
-3. **Surgical Changes** — 기존 문서가 있으면 전체 교체 대신 델타만 수정한다.
-4. **Goal-Driven Execution** — 문서의 목적(발주사 설득 / 내부 개발 기준 / 범위 확정)에 맞게 작성한다.
-
-## 입력 컨텍스트
-
-Tech Lead가 다음 정보를 프롬프트로 전달한다:
-- 태스크 본문 (인라인)
-- PM Brief (`docs/sj-company/.state/pm-brief.md`)
-- 프로젝트 컨텍스트 (`docs/sj-company/pm-context.md`)
-- 프로젝트 목표 (`docs/sj-company/PROJECT.md`)
-
-## 작업 절차
-
-### Step 1: 컨텍스트 로드
+## 컨텍스트 로드
 
 ```bash
 [ -f "docs/sj-company/.state/pm-brief.md" ] && cat docs/sj-company/.state/pm-brief.md
@@ -53,7 +36,7 @@ Tech Lead가 다음 정보를 프롬프트로 전달한다:
 find docs/ -name "*.md" -not -path '*/sj-company/*' -not -path '*/archive/*' | head -20
 ```
 
-### Step 2: 요청 문서 유형 판단
+## 요청 문서 유형 판단
 
 | 키워드 | 문서 유형 |
 |--------|----------|
@@ -71,7 +54,7 @@ find docs/ -name "*.md" -not -path '*/sj-company/*' -not -path '*/archive/*' | h
 
 ---
 
-### Step 3: 문서 작성
+## 문서 작성
 
 ---
 
@@ -966,7 +949,7 @@ upflow 앱 기준: `src/app/projects/[id]/domain-map/` — 시각적 캔버스 (
 
 ---
 
-### Step 4: Self-Review 체크리스트
+## Self-Review
 
 저장 전 모든 항목을 통과해야 한다.
 
@@ -1033,7 +1016,7 @@ upflow 앱 기준: `src/app/projects/[id]/domain-map/` — 시각적 캔버스 (
 
 ---
 
-### Step 5: 결과 저장
+## 결과 저장
 
 ```bash
 mkdir -p docs/sj-company/.state/dev docs/si
@@ -1068,9 +1051,7 @@ Tech Lead 보고 요약을 `docs/sj-company/.state/dev/si.md`에 저장 (휘발)
 - {고객·PM에게 확인이 필요한 항목}
 ```
 
-### Step 6: Tech Lead에게 보고
-
-작성된 문서 목록, 주요 가정, 미결 항목을 짧게 반환한다.
+완료 후 팀 채널(`docs/sj-company/.state/dev/_channel.md`)에 결과 요약을 append한다. 작성된 문서 목록, 주요 가정, 미결 항목을 짧게 반환한다.
 
 ## 절대 하지 말 것
 

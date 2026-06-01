@@ -130,91 +130,26 @@ qa-context.md + `.state/dev-summary.md` + `.state/pm-brief.md`를 바탕으로 Q
 
 ```bash
 if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW="yes"; else _HAS_PW="no"; fi
-_PW_TARGET=$(python3 -c "
-import re, sys
-try:
-    text = open('docs/sj-company/PROJECT.md', encoding='utf-8').read()
-    m = re.search(r'^pw_target:(.+)$', text, re.MULTILINE)
-    print(m.group(1).strip() if m else '80')
-except:
-    print('80')
-" 2>/dev/null || echo "80")
-echo "Playwright: $_HAS_PW | 목표: $_PW_TARGET%"
+echo "Playwright: $_HAS_PW"
 ```
 
-`_HAS_PW=yes`이면: `Skill("s-skills:pw-loop")` 호출 (목표: `$_PW_TARGET`%)
-`_HAS_PW=no`이면: 빌드 확인으로 대체
+`_HAS_PW=yes`이면: `docs/sj-company/PROJECT.md`의 `pw_target` 필드를 읽어 목표 수치를 파악하고 (없으면 80) `Skill("s-skills:pw-loop")` 호출.
+`_HAS_PW=no`이면: 빌드 확인으로 대체.
 
 ## Step 7: PROJECT.md 업데이트
 
-QA 완료 후:
+`docs/sj-company/.state/qa-verdict.md`에서 `## 판정:` 헤더를 읽어 PASS/FAIL/CONDITIONAL을 파악한 뒤, Edit 툴로 `docs/sj-company/PROJECT.md`를 업데이트해라:
 
-```python
-import re, datetime, os
-
-path = "docs/sj-company/PROJECT.md"
-if not os.path.exists(path):
-    print("PROJECT.md 없음, 스킵")
-    exit(0)
-
-text = open(path, encoding="utf-8").read()
-today = datetime.date.today().strftime("%Y-%m-%d")
-
-# QA 판정 — 헤더 정규식으로 강건하게 추출
-verdict = "확인필요"
-qa_file = "docs/sj-company/.state/qa-verdict.md"
-if os.path.exists(qa_file):
-    content = open(qa_file, encoding="utf-8").read()
-    m = re.search(r"^## 판정:\s*(PASS|FAIL|CONDITIONAL)\b", content, re.MULTILINE)
-    if m:
-        verdict = m.group(1)
-    else:
-        print("경고: qa-verdict.md에 '## 판정: <PASS|FAIL|CONDITIONAL>' 헤더가 없음. 본문 fallback 시도")
-        # Fallback: 본문 첫 매칭 — 헤더가 누락된 경우만
-        for v in ("CONDITIONAL", "FAIL", "PASS"):
-            if v in content:
-                verdict = v
-                break
-
-def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
-
-text = upd("last_session", f"{today} — QA {verdict}", text)
-if verdict == "FAIL":
-    text = upd("status", "blocked", text)
-    text = upd("blockers", "QA FAIL — 재구현 필요", text)
-elif verdict == "CONDITIONAL":
-    text = upd("status", "active", text)
-    text = upd("blockers", "QA CONDITIONAL — 조건부 통과, 후속 수정 필요", text)
-elif verdict == "PASS":
-    text = upd("status", "active", text)
-    text = upd("blockers", "없음", text)
-
-open(path, "w", encoding="utf-8").write(text)
-print(f"PROJECT.md 업데이트: QA {verdict}")
-```
+- `last_session`: `{오늘날짜} — QA {판정}`
+- 판정이 FAIL → `status: blocked`, `blockers: QA FAIL — 재구현 필요`
+- 판정이 CONDITIONAL → `status: active`, `blockers: QA CONDITIONAL — 조건부 통과, 후속 수정 필요`
+- 판정이 PASS → `status: active`, `blockers: 없음`
 
 ## Step 8: qa-context.md 학습 누적
 
 이번 사이클에서 **새로 알게 된 검증 포인트·취약 영역** 1~3줄을 `docs/sj-company/qa-context.md`의 `## 히스토리`에 append.
 
-```python
-import os, datetime
-
-ctx_path = "docs/sj-company/qa-context.md"
-if not os.path.exists(ctx_path):
-    print("qa-context.md 없음, 스킵")
-    exit(0)
-
-today = datetime.date.today().strftime("%Y-%m-%d")
-insight = "{새로 알게 된 사실 — 예: '결제 플로우는 idempotency 키 누락 시 무한 재시도', 'mobile safari에서 sticky 깨짐'}"
-
-text = open(ctx_path, encoding="utf-8").read()
-if not text.endswith("\n"):
-    text += "\n"
-text += f"- {today}: {insight}\n"
-open(ctx_path, "w", encoding="utf-8").write(text)
-```
+이번 사이클에서 발견한 **새 취약 영역·검증 포인트** 1~3줄을 Edit 툴로 `docs/sj-company/qa-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
 
 ## Step 9: 완료 보고
 

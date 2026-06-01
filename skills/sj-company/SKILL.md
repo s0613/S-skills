@@ -108,29 +108,7 @@ goal과 next를 확인하세요: docs/sj-company/PROJECT.md
 
 **이후 정상 Preamble 계속:**
 
-```bash
-PROJECT_MD="docs/sj-company/PROJECT.md"
-
-python3 - <<'PY'
-import re, sys, os
-if not os.path.exists("docs/sj-company/PROJECT.md"):
-    for k in ("GOAL","STACK","LAST","NEXT","BLOCKERS","STATUS","NAME"):
-        print(f"{k}=")
-else:
-    text = open("docs/sj-company/PROJECT.md", encoding="utf-8").read()
-    def get(key):
-        m = re.search(rf"^{key}:(.+)$", text, re.MULTILINE)
-        return m.group(1).strip() if m else ""
-    print("GOAL=" + get("goal"))
-    print("STACK=" + get("stack"))
-    print("LAST=" + get("last_session"))
-    print("NEXT=" + get("next"))
-    print("BLOCKERS=" + get("blockers"))
-    print("STATUS=" + get("status"))
-    name_m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
-    print("NAME=" + (name_m.group(1).strip() if name_m else ""))
-PY
-```
+`docs/sj-company/PROJECT.md`를 직접 읽어 goal, stack, last_session, next, blockers, status, 프로젝트명(첫 줄 `#` 헤더)을 파악해라. 파일이 없으면 신규 프로젝트로 처리한다.
 
 ---
 
@@ -203,15 +181,7 @@ print("PROJECT.md 생성 완료")
 
 ### Step 0: 리뷰 요청 감지 (크기 판정 전 먼저 체크)
 
-```python
-REVIEW_KW = ["리뷰", "review", "검토", "점검", "확인해", "리뷰해", "리뷰하", "검수"]
-task = "{전달된 태스크 텍스트}"
-t = task.lower()
-is_review = any(k in t for k in REVIEW_KW)
-print(f"IS_REVIEW={'yes' if is_review else 'no'}")
-```
-
-**IS_REVIEW=yes이면** → 아래 리뷰 경로를 실행하고 Case B 종료 (Step 1 크기 판정으로 넘어가지 않는다).
+태스크 텍스트가 리뷰/검토/점검/검수 성격인지 판단해라. 그렇다면 아래 리뷰 경로를 실행하고 Case B 종료 (Step 1로 넘어가지 않는다).
 
 #### 리뷰 경로
 
@@ -232,36 +202,13 @@ echo "CODE=$_CODE_CHANGED DOC=$_DOC_CHANGED DESIGN=$_HAS_DESIGN"
 
 2. 디스패치 대상 결정:
 
-```python
-code_changed = int("{_CODE_CHANGED}")
-doc_changed  = int("{_DOC_CHANGED}")
-has_design   = int("{_HAS_DESIGN}")
+태스크 텍스트와 git diff 결과를 보고 필요한 리뷰어를 판단해라:
+- 코드 변경 → `sj-reviewer-code`
+- 문서/명세 변경 → `sj-reviewer-doc`
+- UI/디자인 변경 → `sj-reviewer-design`
+- 에이전트 구조 리뷰 → `sj-agent-review`
 
-task = "{태스크}".lower()
-force_code   = any(k in task for k in ["코드", "code", "구현", "소스"])
-force_doc    = any(k in task for k in ["문서", "doc", "prd", "요구사항", "명세"])
-force_design = any(k in task for k in ["디자인", "design", "ui", "ux", "화면"])
-
-run_code   = force_code   or (not force_doc and not force_design and code_changed > 0)
-run_doc    = force_doc    or (not force_code and not force_design and doc_changed  > 0)
-run_design = force_design or (not force_code and not force_doc   and has_design   == 1)
-
-# 에이전트 구조 리뷰 감지
-force_agent = any(k in task.lower() for k in ["에이전트", "agent", "멀티에이전트"])
-run_agent  = force_agent
-
-# 아무것도 감지 안 되면 전부 실행
-if not run_code and not run_doc and not run_design and not run_agent:
-    run_code = run_doc = run_design = True
-
-agents = []
-if run_code:   agents.append("sj-reviewer-code")
-if run_doc:    agents.append("sj-reviewer-doc")
-if run_design: agents.append("sj-reviewer-design")
-if run_agent:  agents.append("sj-agent-review")
-
-print("AGENTS=" + ",".join(agents))
-```
+아무것도 명확히 감지 안 되면 세 리뷰어 모두 실행한다.
 
 3. 디스패치 알림:
 
@@ -305,27 +252,14 @@ done
 
 ### Step 1: 태스크 크기 판정
 
-```python
-import sys
-task = "{전달된 태스크 텍스트}"
+태스크 범위와 복잡도를 판단해 크기를 결정해라:
 
-TINY_KW  = ["수정", "변경", "텍스트", "스타일", "색상", "오타", "문구", "설정값", "상수", "fix typo", "rename", "이름 변경"]
-SMALL_KW = ["컴포넌트", "버튼", "api", "엔드포인트", "훅", "hook", "함수", "util", "추가", "페이지"]
-LARGE_KW = ["리팩토링", "refactor", "새 섹션", "모듈", "migration", "마이그레이션", "아키텍처", "전체", "재설계"]
+- **Tiny**: 1파일, 단순 값·텍스트 변경, 구조 변경 없음
+- **Small**: 1~2파일, 단일 기능 추가·수정
+- **Medium**: 여러 파일, PM 분석이 도움되는 복잡도
+- **Large**: 아키텍처 변경, 다단계 실행 필요
 
-t = task.lower()
-
-if any(k in t for k in TINY_KW) and len(task) < 50:
-    size = "Tiny"
-elif any(k in t for k in LARGE_KW) or len(task) > 100:
-    size = "Large"
-elif any(k in t for k in SMALL_KW):
-    size = "Small"
-else:
-    size = "Medium"
-
-print(f"SIZE={size}")
-```
+확신이 없으면 Medium.
 
 판정 결과를 한 줄로 출력:
 ```
@@ -366,18 +300,7 @@ eval "$BUILD_CMD"
 4. 빌드 실패 → 에러 분석 후 수정 → 재빌드
 
 PROJECT.md 업데이트 (Tiny 완료 후):
-```python
-import re, datetime, os
-path = "docs/sj-company/PROJECT.md"
-text = open(path, encoding="utf-8").read()
-today = datetime.date.today().strftime("%Y-%m-%d")
-summary = "{완료한 작업 한 줄 요약}"
-def upd(key, val, t):
-    return re.sub(rf"^{key}:.*$", lambda m: f"{key}: {val}", t, flags=re.MULTILINE)
-text = upd("last_session", f"{today} — {summary}", text)
-text = upd("next", "없음", text)
-open(path, "w", encoding="utf-8").write(text)
-```
+Edit 툴로 `docs/sj-company/PROJECT.md`의 `last_session` 필드를 `{오늘날짜} — {완료 작업 한 줄 요약}`으로, `next` 필드를 `없음`으로 업데이트해라.
 
 ---
 
@@ -406,7 +329,7 @@ if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW=
 - Y → `Skill("s-skills:pw-loop")` 호출
 - N → 완료
 
-5. PROJECT.md 업데이트 (Tiny와 동일 패턴)
+5. PROJECT.md 업데이트: Edit 툴로 `last_session`과 `next` 필드를 갱신해라 (Tiny와 동일 패턴).
 
 ---
 
@@ -426,24 +349,14 @@ PM 브리핑:
 
 2. 역할 힌트 판단 (태스크 내용 기반):
 
-```python
-task_lower = "{태스크}".lower()
-if any(k in task_lower for k in ["작업 개요", "제안서 작성", "요구사항 명세서", "요구사항 정의서", "wbs", "데모 보고서", "결과보고서", "주간 보고서", "도메인 맵", "견적서", "si 문서", "srs"]):
-    hint = "si"
-elif any(k in task_lower for k in ["에이전트 만들", "에이전트 개발", "에이전트 설계", "에이전트 구현", "agent 개발", "agent 설계", "멀티에이전트", "multi-agent", "오케스트레이션", "orchestration", "specialist 분리", "runtime loop", "guardrail"]):
-    hint = "agent_dev"
-elif any(k in task_lower for k in ["ui", "컴포넌트", "화면", "페이지", "css", "스타일"]):
-    hint = "frontend"
-elif any(k in task_lower for k in ["api", "서버", "백엔드", "db", "데이터베이스"]):
-    hint = "backend"
-elif any(k in task_lower for k in ["스키마", "마이그레이션", "쿼리"]):
-    hint = "database"
-elif any(k in task_lower for k in ["인증", "권한", "암호화", "토큰"]):
-    hint = "security"
-else:
-    hint = ""  # Tech Lead가 Step 3에서 판단
-print(f"HINT={hint}")
-```
+태스크 성격을 파악해 단일 specialist로 귀결되면 힌트를 결정해라:
+- SI 문서(작업 개요·제안서·WBS·결과보고서 등) → `si`
+- 에이전트 설계·구현·오케스트레이션 → `agent_dev`
+- UI·컴포넌트·화면·스타일 전용 → `frontend`
+- API·서버·도메인 로직 전용 → `backend`
+- 스키마·마이그레이션·쿼리 전용 → `database`
+- 인증·권한·암호화 전용 → `security`
+- 여러 영역에 걸치면 → 힌트 없음 (Tech Lead가 판단)
 
 3. HINT와 PM 브리핑을 task.txt에 함께 기록 (Tech Lead가 서브에이전트에 전달):
 
@@ -464,11 +377,10 @@ PM 브리핑:
 5. pw-loop 실행:
 ```bash
 if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW="yes"; else _HAS_PW="no"; fi
-_PW_TARGET=$(python3 -c "import re; text=open('docs/sj-company/PROJECT.md').read(); m=re.search(r'^pw_target:(.+)$', text, re.MULTILINE); print(m.group(1).strip() if m else '80')" 2>/dev/null || echo "80")
 ```
 
-`_HAS_PW=yes`이면: `Skill("s-skills:pw-loop")` 호출 (목표: `$_PW_TARGET`%)
-`_HAS_PW=no`이면: 빌드 확인으로 대체
+`_HAS_PW=yes`이면: `docs/sj-company/PROJECT.md`의 `pw_target` 필드를 읽어 목표 수치를 파악하고 (없으면 80) `Skill("s-skills:pw-loop")` 호출.
+`_HAS_PW=no`이면: 빌드 확인으로 대체.
 
 6. PROJECT.md 갱신: **건드리지 않는다**. Medium 경로의 PROJECT.md 최종 갱신(`last_session`/`next`/`blockers`/`status`)은 Tech Lead Step 9b가 책임진다. 역할-aware prefix(`si:` / `frontend:` / `dev:` …)도 거기서 결정됨. 여기서 다시 쓰면 prefix가 덮어써져 어떤 role이 참여했는지 추적할 수 없게 된다.
 
