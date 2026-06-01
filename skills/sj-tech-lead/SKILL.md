@@ -168,30 +168,59 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 
 의존 단계별로 호출한다. **같은 단계 내에서는 단일 메시지에서 Agent 도구를 multi-call하여 병렬 실행**한다.
 
-### 디스패치 프롬프트 템플릿
+> 데이터 전달 규약 전체는 `references/work-card-protocol.md` 참고.
+> 아래는 필수 요약이다.
 
-각 서브에이전트에 다음 정보를 자체 완결적으로 전달한다 (서브에이전트는 컨버세이션 컨텍스트를 보지 못한다):
+### Dispatch Card (Tech Lead → Sub-agent)
+
+각 서브에이전트에 다음 구조로 전달한다 (서브에이전트는 컨버세이션 컨텍스트를 보지 못한다):
 
 ```
 당신은 sj-dev-{role} 서브에이전트입니다.
 
-태스크 본문: {_TASK_CLEAN — HINT 라인 제거된 본문, 최대 2KB}
+[TASK]
+{_TASK_CLEAN}           ← HINT 라인 제거, 최대 2KB
 
-PM Brief 경로: docs/sj-company/.state/pm-brief.md (있는 경우 — 본인이 직접 cat해서 본인 영역 부분 참고)
-- Medium 경로에선 pm-brief.md가 없고 PM 브리핑 내용이 위 "태스크 본문"에 인라인 포함됨
-영속 컨텍스트: docs/sj-company/dev-context.md
-선행 산출: docs/sj-company/.state/dev/{database,backend}.md (의존 관계가 있다면)
+[CONTEXT_PATHS]
+- PM Brief : docs/sj-company/.state/pm-brief.md   (있으면 직접 cat)
+- Dev Ctx  : docs/sj-company/dev-context.md        (항상 cat)
+- Prior    : docs/sj-company/.state/dev/{deps}.md  (의존 역할만 명시)
 
-본인 SKILL 파일(`agents/sj-dev-{role}.md`)의 작업 절차를 따라:
-1. 컨텍스트 로드 (위 경로들 cat)
-2. 구현
-3. Self-Review 체크리스트 통과
-4. **결과를 `docs/sj-company/.state/dev/{role}.md`에 저장** (휘발 — 다음 사이클에서 덮어쓰기)
-5. 변경 파일·미해결 이슈를 보고
+[SCOPE]
+담당 영역: {role}
+수정 가능 경로: {허용 경로 패턴}
+금지 경로: docs/sj-company/{pm,design,dev,qa}-output.md, report.md, stage.txt
 
-본인 영역 외 파일은 절대 수정하지 마세요.
-중요: `docs/sj-company/{pm,design,dev,qa}-output.md` / `report.md` / `stage.txt` / `dev-output/` 절대 생성·수정 금지 (v3 룰).
+[OUTPUT]
+결과를 docs/sj-company/.state/dev/{role}.md 에 저장 (Result Card 형식 준수)
 ```
+
+### Result Card (Sub-agent 출력 스키마)
+
+서브에이전트는 `.state/dev/{role}.md`를 아래 형식으로 저장한다:
+
+```markdown
+# {role} Result — {태스크 한 줄 요약}
+> {YYYY-MM-DD}
+
+## 변경 파일
+- `경로/파일.ext` — 변경 내용 한 줄
+
+## API 계약 (Backend/Database만)
+| Method | Path | Request | Response |
+
+## 스키마 변경 (Database만)
+
+## 미해결 이슈
+- [ ] 이슈 설명
+
+## Self-Review
+- [ ] 본인 영역 외 파일 수정 없음
+- [ ] 컨벤션 준수 (dev-context.md 기준)
+- [ ] 요구사항 항목 모두 처리
+```
+
+Self-Review 체크박스가 하나라도 미체크이면 Tech Lead가 즉시 재디스패치 트리거.
 
 Security를 리뷰어 모드로 호출할 때는 프롬프트에 `MODE=review`를 명시하고 검토 대상으로 `docs/sj-company/.state/dev/*.md`를 지정한다.
 
