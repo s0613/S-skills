@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.0.0
+version: 3.1.0
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
@@ -431,3 +431,32 @@ if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW=
 ### 학습 누적 의무
 
 각 역할 스킬(`sj-pm`/`sj-design`/`sj-tech-lead`/`sj-qa`)은 사이클을 마칠 때 **이번 사이클에서 새로 알게 된 인사이트 1~3줄**을 자기 `*-context.md`의 `## 히스토리` 섹션에 날짜와 함께 append 한다. 사이클 산출이 모두 휘발해도 학습은 영속.
+
+### archive-only 불변식 (영속 파일 보호)
+
+`PROJECT.md`·`*-context.md` 등 **영속 파일을 통째로 재생성(Write로 덮어쓰기)** 하기 직전에는, 반드시 직전 버전을 `docs/sj-company/archive/`로 보존한 뒤 덮어쓴다. 필드 단위 수정(Edit)은 해당 없음 — 통째 재작성·마이그레이션·리셋에만 적용.
+
+```bash
+# 영속 파일을 Write로 통째 덮어쓰기 직전 1회 실행
+mkdir -p docs/sj-company/archive
+_F="docs/sj-company/PROJECT.md"   # 또는 *-context.md
+[ -f "$_F" ] && cp "$_F" "docs/sj-company/archive/$(basename "$_F").$(date +%Y%m%d-%H%M%S).bak"
+```
+
+**절대 삭제하지 않는다 — archive만 한다.** 컨텍스트는 복구 가능해야 한다. (Hermes curator의 "never auto-delete, archive only" 불변식과 동일 철학.)
+
+### context.md 큐레이션 트리거 (지연 발동)
+
+영속 학습 파일은 무한 누적된다. **임계값을 넘기 전까지는 손대지 않는다.** Preamble에서 크기를 점검하고, 임계 초과 시에만 통합(consolidate)한다.
+
+```bash
+# Preamble 또는 사이클 종료 시 점검
+for _C in pm design dev qa; do
+  _CF="docs/sj-company/${_C}-context.md"
+  [ -f "$_CF" ] || continue
+  _N=$(wc -l < "$_CF" | tr -d ' ')
+  [ "$_N" -gt 200 ] && echo "CURATE_NEEDED=$_CF ($_N줄)"
+done
+```
+
+`CURATE_NEEDED`가 출력된 파일만: archive-only 불변식으로 백업한 뒤, `## 히스토리`의 오래된 항목을 **요약 1~3줄로 압축**하고 중복·낡은 인사이트를 통합한다. 200줄 이하 파일은 **건드리지 않는다**(오버엔지니어링 금지).
