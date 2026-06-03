@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 2.0.0
+version: 2.1.0
 description: |
   Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,
@@ -149,6 +149,24 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 > 데이터 전달 규약 전체는 `references/work-card-protocol.md` 참고.
 > 아래는 필수 요약이다.
 
+### 5-resume: 완료된 작업 스킵 (중단 후 재개)
+
+세션이 디스패치 중간에 죽었다 재진입한 경우일 수 있다. 디스패치 전, **이번 사이클에 이미 생성된 Result Card가 있는 역할은 건너뛴다**. 입력 컨텍스트(task.txt·pm-brief.md)보다 나중에 생성된 `.state/dev/{role}.md`는 이번 사이클 산출물로 간주한다.
+
+```bash
+_mtime() { stat -f %m "$1" 2>/dev/null || stat -c %m "$1" 2>/dev/null || echo 0; }
+_T1=$(_mtime docs/sj-company/.state/task.txt)
+_T2=$(_mtime docs/sj-company/.state/pm-brief.md)
+_INPUT_MTIME=$(( _T1 > _T2 ? _T1 : _T2 ))
+for f in docs/sj-company/.state/dev/*.md; do
+  [ -f "$f" ] || continue
+  case "$f" in *_channel*) continue;; esac
+  [ "$(_mtime "$f")" -ge "$_INPUT_MTIME" ] && echo "RESUME_SKIP=$(basename "$f" .md)"
+done
+```
+
+`RESUME_SKIP`으로 출력된 역할은 Step 3 식별 목록에서 **제외**하고, 남은 디스패치 대상이 0명이면 곧장 Step 6(리뷰)으로 넘어간다. 새 태스크면 task.txt/pm-brief가 방금 갱신돼 모든 Result Card가 stale이므로 정상적으로 전체 디스패치된다 (오작동 스킵 없음).
+
 ### 5-0: 팀 채널 초기화
 
 디스패치 전 팀 채널 파일을 생성한다. 에이전트들이 Tech Lead를 거치지 않고 직접 조율하는 공유 게시판이다.
@@ -294,6 +312,20 @@ Agent(subagent_type="sj-dev-security",
 
 판정 `FAIL`이면 → **Step 8 재디스패치**.
 
+### 7a-1. 다관점 적대 검증 (CRITICAL 영역 한정)
+
+변경이 **인증·권한·결제·암호화·개인정보(PII)** 중 하나라도 건드리면 단일 리뷰로 부족하다. 서로 다른 렌즈를 가진 리뷰어 3명을 **단일 메시지에서 병렬 호출**하고, 각자 독립적으로 결함을 *반박(refute) 시도*하게 한다:
+
+```
+Agent(subagent_type="sj-dev-security", prompt="MODE=review LENS=correctness. 논리·계약 정합성 관점에서 결함을 찾아라. 확신이 없으면 FAIL로 판정.")
+Agent(subagent_type="sj-dev-security", prompt="MODE=review LENS=security.    공격자 관점에서 우회·권한 상승·정보 누출을 찾아라. 확신이 없으면 FAIL로 판정.")
+Agent(subagent_type="sj-dev-security", prompt="MODE=review LENS=reproduce.   실제 재현 가능한 실패 경로(입력→결과)를 찾아라. 확신이 없으면 FAIL로 판정.")
+```
+
+**판정 규칙:** 3명 중 **2명 이상 FAIL → Step 8 재디스패치**. 1명만 FAIL이면 해당 이슈를 dev-summary에 HIGH로 기록하고 통과시킨다.
+
+CRITICAL 영역이 아니면 이 단계를 **건너뛴다** (7a 단일 리뷰만 수행 — 모든 태스크에 3배 비용을 쓰지 않는다).
+
 ### 7b. Design 시각 리뷰 (Frontend 포함 시에만)
 
 Frontend가 디스패치됐다면 `.state/design-review.req` sentinel을 작성한 후 sj-design을 호출한다:
@@ -392,6 +424,7 @@ echo $((_ITER + 1)) > docs/sj-company/.state/review-iterations.txt
 ## 리뷰 결과
 - Tech Lead 기술 리뷰: PASS (이슈 N건, 모두 해결)
 - Security cross-review: PASS / N CRITICAL, 모두 해결
+- 다관점 적대 검증: PASS (2/3 통과) / N/A (CRITICAL 영역 아님)
 - Design 시각 리뷰: PASS / N/A (Frontend 없음)
   - design-review.md 발견 시 HIGH 이슈 요약
 

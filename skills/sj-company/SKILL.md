@@ -1,10 +1,10 @@
 ---
 name: sj-company
-version: 3.1.0
+version: 3.2.0
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
-  Tiny/Small: 즉시 구현. Medium: PM브리핑+TechLead+pw-loop. Large: PM+계획+단계별실행.
+  Tiny/Small: 즉시 구현. Medium: PM브리핑+TechLead+pw-loop. Large: PM+계획+단계별실행. xLarge: ultracode 멀티에이전트 워크플로우.
 allowed-tools:
   - Bash
   - Read
@@ -258,13 +258,14 @@ done
 - **Small**: 1~2파일, 단일 기능 추가·수정
 - **Medium**: 여러 파일, PM 분석이 도움되는 복잡도
 - **Large**: 아키텍처 변경, 다단계 실행 필요
+- **xLarge**: 단일 세션·모델 주도 오케스트레이션으로는 한계인 대규모 작업 (대규모 마이그레이션, 코드베이스 전체 감사·리팩터, 수십 파일에 걸친 기능군). 멀티에이전트 워크플로우(ultracode) 필요.
 
-확신이 없으면 Medium.
+확신이 없으면 Medium. xLarge는 명백히 대규모일 때만 (남발 금지).
 
 판정 결과를 한 줄로 출력:
 ```
 [{SIZE}] "{태스크}"
-크기가 다르면 조정: Tiny / Small / Medium / Large (엔터: 그대로 진행)
+크기가 다르면 조정: Tiny / Small / Medium / Large / xLarge (엔터: 그대로 진행)
 ```
 
 AskUserQuestion으로 크기 확인 (기본값: 자동 판정).
@@ -408,6 +409,44 @@ if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW=
 5. QA 실행: `Skill("s-skills:sj-qa")` — 구현 전체 검증 + pw-loop 호출 + PROJECT.md 업데이트 포함
    (Large 경로의 pw-loop는 sj-qa Step 6에서 수행하므로 sj-company는 직접 호출하지 않는다.
     sj-qa가 PROJECT.md를 업데이트하므로 Large 경로는 별도 PROJECT.md 업데이트 불필요)
+
+---
+
+#### xLarge 실행 경로
+
+```
+[xLarge] 대규모 작업입니다. 멀티에이전트 워크플로우(ultracode)로 진행합니다.
+```
+
+xLarge는 모델 주도 단계 실행의 한계를 넘는 작업이다. SKILL.md 프로즈를 순서대로 따라가는 대신 **결정론적 Workflow 스크립트**로 fan-out·수렴·resume을 보장한다. (하다 글의 Bun Zig→Rust 75만 줄 포팅이 이 케이스다.)
+
+**1. ultracode opt-in 확인**
+
+Workflow 도구는 사용자의 명시적 opt-in이 있어야 켜진다. 현재 턴에 `ultracode`가 활성화돼 있지 않으면(시스템 리마인더로 확인) 진행하지 않고 요청한다:
+
+```
+이 태스크는 xLarge라 멀티에이전트 워크플로우가 필요합니다.
+프롬프트에 `ultracode`를 붙여 다시 요청해 주세요:
+  /sj-company ultracode {태스크}
+```
+
+여기서 Case B를 종료한다. (사용자가 ultracode 붙여 재요청하면 2부터 진행.)
+
+**2. PM 분석 선행**
+
+`Skill("s-skills:sj-pm")` 호출 — goal/next 갱신, 요구사항·리스크 도출. PM 브리핑을 워크플로우 입력으로 쓴다.
+
+**3. Workflow 작성·실행**
+
+Workflow 도구로 다음 구조의 스크립트를 작성해 실행한다:
+- **Phase 1 (분해):** 태스크를 독립 작업 단위로 분해 (파일군·모듈·도메인 경계 기준)
+- **Phase 2 (구현):** 각 단위를 `agentType: 'sj-dev-{role}'` 에이전트로 `pipeline` 실행. 파일 충돌 위험이 있으면 `isolation: 'worktree'`
+- **Phase 3 (적대 검증):** 각 결과를 서로 다른 렌즈(correctness/security/contract)의 검증 에이전트로 다관점 검증, 2/3 이상 통과해야 채택 (Tech Lead Step 7a-1과 동일 철학)
+- **Phase 4 (종합):** 통과한 변경을 `.state/dev-summary.md`로 집계
+
+`.state/` 산출물을 체크포인트로 사용하고, 중단 시 `resumeFromRunId`로 재개한다.
+
+**4. QA 실행:** `Skill("s-skills:sj-qa")` — 전체 검증 + PROJECT.md 갱신.
 
 ---
 
