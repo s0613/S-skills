@@ -11,7 +11,7 @@
 
 ### SJ Company (역할 기반 개발 워크플로우)
 
-- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터. PM → Design → Tech Lead → QA
+- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터. Obsidian 문서화 → 리뷰 → PM → Design → Tech Lead → QA
 - **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석
 - **s-skills:sj-design** (`/design`) — UI/UX 명세 작성 + Frontend 시각 리뷰
 - **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰

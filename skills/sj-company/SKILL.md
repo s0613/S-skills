@@ -179,7 +179,21 @@ print("PROJECT.md 생성 완료")
 
 ## Case B: 인자와 함께 호출 (`/sj-company <태스크>`) — 실행
 
-### Step 0: 리뷰 요청 감지 (크기 판정 전 먼저 체크)
+### Step 0: Obsidian 문서 요청 감지 (최우선 체크)
+
+태스크 텍스트가 Obsidian 문서화 요청인지 판단해라. 아래 키워드 중 하나라도 포함되면 Obsidian 경로를 실행하고 Case B 종료 (Step 0a로 넘어가지 않는다).
+
+**감지 키워드:** 옵시디언, obsidian, 문서화, 노트로, 볼트, vault, 정리해줘 (문서/기능/프로젝트 앞에 붙은 경우), 기록해줘, obs
+
+**Obsidian 경로:**
+```
+[Obsidian] 문서 작성 요청을 감지했습니다. obsidian-writer를 실행합니다.
+```
+`Skill("s-skills:obsidian-writer")` 호출 — 볼트 탐지·저장 위치 선택·문서 작성까지 obsidian-writer가 전담한다.
+
+---
+
+### Step 0a: 리뷰 요청 감지 (크기 판정 전 먼저 체크)
 
 태스크 텍스트가 리뷰/검토/점검/검수 성격인지 판단해라. 그렇다면 아래 리뷰 경로를 실행하고 Case B 종료 (Step 1로 넘어가지 않는다).
 
@@ -246,7 +260,7 @@ done
 - docs/sj-company/.state/review-design.md (디자인, 있는 경우)
 ```
 
-**IS_REVIEW=no이면** → 기존 Step 1(태스크 크기 판정)으로 진행.
+**IS_REVIEW=no이면** → Step 1(태스크 크기 판정)으로 진행.
 
 ---
 
