@@ -224,13 +224,13 @@ print("PROJECT.md 생성 완료")
 태스크 텍스트가 SNS 마케팅·카피라이팅·캠페인 관련 요청인지 판단해라. 해당하면 아래 경로를 실행하고 Case B 종료.
 
 **기술적 SEO 감지 키워드** (색인·Search Console·검색 노출 등록):
-색인 등록, 검색 노출 안 돼, Search Console, 서치어드바이저, sitemap 제출, 구글 색인, 네이버 색인, 검색에 안 나와, 검색 노출 도와줘, totaro-seo
+색인 등록, 검색 노출 안 돼, Search Console, 서치어드바이저, sitemap 제출, 구글 색인, 네이버 색인, 검색에 안 나와, 검색 노출 도와줘
 
 → 감지 시:
 ```
-[SEO 색인] 기술적 SEO 요청을 감지했습니다. totaro-seo를 실행합니다.
+[SEO 색인] 기술적 SEO 요청을 감지했습니다. sj-seo를 실행합니다.
 ```
-`Skill("totaro-seo")` 호출
+`Skill("s-skills:sj-seo")` 호출
 
 ---
 

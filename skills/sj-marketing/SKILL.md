@@ -35,9 +35,9 @@ triggers:
 
 → 감지 시:
 ```
-[SEO 색인] 기술적 SEO 요청을 감지했습니다. totaro-seo를 실행합니다.
+[SEO 색인] 기술적 SEO 요청을 감지했습니다. sj-seo를 실행합니다.
 ```
-`Skill("totaro-seo")` 호출 후 종료.
+`Skill("s-skills:sj-seo")` 호출 후 종료.
 
 **콘텐츠 SEO** (블로그 글쓰기, AEO 최적화, 네이버 블로그 상위노출)는 아래 Step 3C에서 처리.
 

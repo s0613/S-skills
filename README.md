@@ -24,7 +24,7 @@
 > | "매일 파일 정리 자동화" | PC 자동화 전문가 (launchd·shell) |
 > | "인스타 포스팅 만들어줘" | SNS 마케팅 전문가 (카피·브랜드 검수) |
 > | "네이버 블로그 SEO 글 써줘" | SNS 마케팅 전문가 (블로그·AEO·RCON) |
-> | "구글 색인 등록해줘" | totaro-seo (Search Console 자동화) |
+> | "구글 색인 등록해줘" | sj-seo (Search Console 브라우저 자동화) |
 > | "코드 리뷰해줘" | 코드·문서·디자인 리뷰어 자동 선택 |
 > | "에이전트 설계 도와줘" | 에이전트 개발 전문가 |
 > | "에이전트 구조 점검해줘" | 에이전트 리뷰어 7축 심사 |
@@ -66,8 +66,9 @@ skills/
 │   ├── sj-automation/    ← PC 시스템 자동화 (launchd·shell·Python·AppleScript)
 │   └── sj-ui-auto/       ← 화면 UI 조작 자동화 (Playwright·PyAutoGUI·cliclick)
 │
-├── [마케팅]
-│   └── sj-marketing/     ← SNS 캠페인·카피·브랜드 검수 (marketing_agent 연동)
+├── [마케팅·SEO]
+│   ├── sj-marketing/     ← SNS·블로그 캠페인·카피·브랜드 검수 (marketing_agent 연동)
+│   └── sj-seo/           ← Google Search Console + Naver 색인 자동화 (브라우저 직접 제어)
 │
 ├── [에이전트 개발]
 │   ├── sj-agent-dev/     ← 비즈니스 에이전트 설계·구현 전문가
@@ -95,6 +96,7 @@ skills/
 | `/ui-auto` | 클릭, 버튼, 화면, 이미지 인식, 웹 자동화 | 화면 UI 조작 자동화 |
 | `/auto` | 자동화, 매일, 스케줄, 단축키, 파일 이동 | PC 시스템 자동화 |
 | `/sns` | 마케팅, SNS, 캠페인, 카피, 인스타, 게시글, 블로그 글 | SNS·블로그 마케팅 전문가 |
+| `/seo` | 색인 등록, Search Console, 구글 색인, 검색에 안 나와 | 검색 색인 자동화 (브라우저 직접 제어) |
 | `/docs-organize` | — | 코드 분석 → 표준 문서 생성 → 건강 점수 |
 | `/test-scenario` | — | 시나리오 생성 → 목표 통과율 달성까지 반복 |
 | `/pw-loop` | — | Playwright 기반 자동화 테스트 루프 |
