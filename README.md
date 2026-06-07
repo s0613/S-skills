@@ -5,7 +5,26 @@
 [![license](https://img.shields.io/badge/license-MIT-gray)](LICENSE)
 
 > **Claude Code용 역할 기반 개발 오케스트레이터.**  
-> `/s-skills` 하나로 프로젝트 상태를 감지하고, PM → Design → Tech Lead → QA 파이프라인을 자동 라우팅한다.
+> `/sj-company <태스크>` 하나로 모든 스킬이 자동 라우팅된다.  
+> 문서화·리뷰·개발·QA·자동화·에이전트 설계까지 — 태스크를 설명하면 알아서 간다.
+
+---
+
+> ### 시작은 항상 하나
+>
+> ```
+> /sj-company <원하는 것을 말로 설명>
+> ```
+>
+> | 말하면 | 자동으로 |
+> |--------|---------|
+> | "로그인 기능 만들어줘" | PM → Tech Lead → QA 전체 파이프라인 |
+> | "옵시디언에 정리해줘" | Obsidian Writer |
+> | "화면 클릭 자동화 만들어줘" | UI 자동화 전문가 (Playwright·PyAutoGUI) |
+> | "매일 파일 정리 자동화" | PC 자동화 전문가 (launchd·shell) |
+> | "코드 리뷰해줘" | 코드·문서·디자인 리뷰어 자동 선택 |
+> | "에이전트 설계 도와줘" | 에이전트 개발 전문가 |
+> | "에이전트 구조 점검해줘" | 에이전트 리뷰어 7축 심사 |
 
 ---
 
@@ -30,34 +49,50 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 
 ```
 skills/
-├── harness/          ← 오케스트레이터. /s-skills 하나로 전체 흐름 제어
-├── docs-organize/    ← 문서 생성 + 건강 점수 (0–100)
-├── test-scenario/    ← 사이클 기반 테스트 하네스
-├── pw-loop/          ← Playwright 반복 테스트 루프
-├── sj-company/       ← PM → Design → Tech Lead → QA 라우터
-├── sj-pm/            ← 요구사항·리스크·우선순위 분석
-├── sj-design/        ← UI/UX 명세 + 시각 리뷰
-├── sj-tech-lead/     ← 전문 서브에이전트 병렬 디스패치 + 통합
-├── sj-qa/            ← 기능 검증 및 PASS/FAIL/CONDITIONAL 판정
-├── sj-secretary/     ← 프로젝트별 현황·KPI 요약 보고
-├── sj-dev-si/        ← SI 문서 전문가 (제안서·WBS·결과보고서 6종)
-├── sj-agent-dev/     ← 비즈니스 에이전트 설계·구현 전문가
-└── sj-agent-review/  ← 비즈니스 에이전트 7축 리뷰어
+├── harness/          ← 프로젝트 상태 감지 오케스트레이터
+├── sj-company/       ← ★ 모든 스킬의 진입점. 태스크 → 자동 라우팅
+│
+├── [개발 파이프라인]
+│   ├── sj-pm/            ← 요구사항·리스크·우선순위 분석
+│   ├── sj-design/        ← UI/UX 시각 리뷰 (AI 티 제거 체크 포함)
+│   ├── sj-tech-lead/     ← 전문 서브에이전트 병렬 디스패치 + 통합
+│   ├── sj-qa/            ← 기능 검증 및 PASS/FAIL/CONDITIONAL 판정
+│   └── sj-secretary/     ← 프로젝트별 현황·KPI 요약 보고
+│
+├── [자동화]
+│   ├── sj-automation/    ← PC 시스템 자동화 (launchd·shell·Python·AppleScript)
+│   └── sj-ui-auto/       ← 화면 UI 조작 자동화 (Playwright·PyAutoGUI·cliclick)
+│
+├── [에이전트 개발]
+│   ├── sj-agent-dev/     ← 비즈니스 에이전트 설계·구현 전문가
+│   └── sj-agent-review/  ← 비즈니스 에이전트 7축 리뷰어
+│
+├── [문서·테스트]
+│   ├── docs-organize/    ← 문서 생성 + 건강 점수 (0–100)
+│   ├── test-scenario/    ← 사이클 기반 테스트 하네스
+│   ├── pw-loop/          ← Playwright 반복 테스트 루프
+│   ├── obsidian-writer/  ← Obsidian 볼트 문서 작성
+│   └── sj-dev-si/        ← SI 문서 전문가 (제안서·WBS·결과보고서 6종)
 ```
 
 ---
 
 ## 스킬 목록
 
-| 트리거 | 역할 |
-|--------|------|
-| `/s-skills` | 프로젝트 상태 감지 → 적절한 스킬 오케스트레이션 |
-| `/docs-organize` | 코드 분석 → 표준 문서 생성 → 건강 점수 |
-| `/test-scenario` | 시나리오 생성 → 결과 평가 → 목표 통과율 달성까지 반복 |
-| `/pw-loop` | Playwright 기반 자동화 테스트 루프 |
-| `/sj-company` | PM → Design → Tech Lead → QA 자동 라우팅 |
-| `/sj-agent-dev` | 7축 기반 비즈니스 에이전트 아키텍처 설계·구현 |
-| `/sj-agent-review` | 에이전트 파일·폴더 구조 7축 심사 (점수 + PASS/WARN/FAIL) |
+> 모든 스킬은 `/sj-company <태스크>` 로 자동 진입 가능. 직접 트리거도 지원.
+
+| 트리거 | sj-company 자동 감지 키워드 | 역할 |
+|--------|----------------------------|------|
+| `/sj-company` | — | **전체 스킬 라우터** (항상 여기서 시작) |
+| `/s-skills` | — | 프로젝트 상태 감지 → 오케스트레이션 추천 |
+| `/obsidian` | 옵시디언, 문서화, 볼트, 노트로 | Obsidian 볼트 문서 작성 |
+| `/ui-auto` | 클릭, 버튼, 화면, 이미지 인식, 웹 자동화 | 화면 UI 조작 자동화 |
+| `/auto` | 자동화, 매일, 스케줄, 단축키, 파일 이동 | PC 시스템 자동화 |
+| `/docs-organize` | — | 코드 분석 → 표준 문서 생성 → 건강 점수 |
+| `/test-scenario` | — | 시나리오 생성 → 목표 통과율 달성까지 반복 |
+| `/pw-loop` | — | Playwright 기반 자동화 테스트 루프 |
+| `/sj-agent-dev` | 에이전트 설계, 에이전트 만들어 | 7축 기반 에이전트 아키텍처 설계·구현 |
+| `/sj-agent-review` | 에이전트 점검, 에이전트 리뷰 | 에이전트 7축 심사 (점수 + PASS/WARN/FAIL) |
 
 ---
 
