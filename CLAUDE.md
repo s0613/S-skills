@@ -26,6 +26,7 @@
 ### PC Automation Expert
 
 - **s-skills:sj-automation** (`/sj-automation`, `/automation`, `/auto`) — PC 자동화 전문가. 원하는 자동화를 설명하면 도구 선택(launchd·Hammerspoon·Python·AppleScript·shell)부터 구현·배포·검증까지 완전 자동화로 구축
+- **s-skills:sj-ui-auto** (`/sj-ui-auto`, `/ui-auto`, `/ui`) — 화면 UI 조작 자동화 전문가. 버튼 클릭·텍스트 입력·화면 인식 등 GUI 자동화 프로그램을 Playwright·PyAutoGUI·AppleScript·cliclick으로 즉시 구현
 
 ### Agent Development Expert
 
