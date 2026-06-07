@@ -23,6 +23,10 @@
 
 - **s-skills:obsidian-writer** (`/obsidian`, `/obsidian-writer`) — Obsidian 문서 작성 전문가. 기능·작업·프로젝트 전체를 아름다운 .md로 정리. iCloud/로컬 볼트 자동 탐지, 매 실행마다 저장 위치 선택 (iCloud·로컬·둘 다)
 
+### Marketing Expert
+
+- **s-skills:sj-marketing** (`/sj-marketing`, `/marketing`, `/sns`) — SNS 마케팅 캠페인 전문가. 채널별 카피라이팅·브랜드 검수·카드뉴스 기획. marketing_agent 하네스 자동 연동, 없으면 독립 실행
+
 ### PC Automation Expert
 
 - **s-skills:sj-automation** (`/sj-automation`, `/automation`, `/auto`) — PC 자동화 전문가. 원하는 자동화를 설명하면 도구 선택(launchd·Hammerspoon·Python·AppleScript·shell)부터 구현·배포·검증까지 완전 자동화로 구축

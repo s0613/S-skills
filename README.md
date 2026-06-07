@@ -22,6 +22,7 @@
 > | "옵시디언에 정리해줘" | Obsidian Writer |
 > | "화면 클릭 자동화 만들어줘" | UI 자동화 전문가 (Playwright·PyAutoGUI) |
 > | "매일 파일 정리 자동화" | PC 자동화 전문가 (launchd·shell) |
+> | "인스타 포스팅 만들어줘" | SNS 마케팅 전문가 (카피·브랜드 검수) |
 > | "코드 리뷰해줘" | 코드·문서·디자인 리뷰어 자동 선택 |
 > | "에이전트 설계 도와줘" | 에이전트 개발 전문가 |
 > | "에이전트 구조 점검해줘" | 에이전트 리뷰어 7축 심사 |
@@ -63,6 +64,9 @@ skills/
 │   ├── sj-automation/    ← PC 시스템 자동화 (launchd·shell·Python·AppleScript)
 │   └── sj-ui-auto/       ← 화면 UI 조작 자동화 (Playwright·PyAutoGUI·cliclick)
 │
+├── [마케팅]
+│   └── sj-marketing/     ← SNS 캠페인·카피·브랜드 검수 (marketing_agent 연동)
+│
 ├── [에이전트 개발]
 │   ├── sj-agent-dev/     ← 비즈니스 에이전트 설계·구현 전문가
 │   └── sj-agent-review/  ← 비즈니스 에이전트 7축 리뷰어
@@ -88,6 +92,7 @@ skills/
 | `/obsidian` | 옵시디언, 문서화, 볼트, 노트로 | Obsidian 볼트 문서 작성 |
 | `/ui-auto` | 클릭, 버튼, 화면, 이미지 인식, 웹 자동화 | 화면 UI 조작 자동화 |
 | `/auto` | 자동화, 매일, 스케줄, 단축키, 파일 이동 | PC 시스템 자동화 |
+| `/sns` | 마케팅, SNS, 캠페인, 카피, 인스타, 게시글 | SNS 마케팅 캠페인 전문가 |
 | `/docs-organize` | — | 코드 분석 → 표준 문서 생성 → 건강 점수 |
 | `/test-scenario` | — | 시나리오 생성 → 목표 통과율 달성까지 반복 |
 | `/pw-loop` | — | Playwright 기반 자동화 테스트 루프 |
