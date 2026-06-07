@@ -23,6 +23,10 @@
 
 - **s-skills:obsidian-writer** (`/obsidian`, `/obsidian-writer`) — Obsidian 문서 작성 전문가. 기능·작업·프로젝트 전체를 아름다운 .md로 정리. iCloud/로컬 볼트 자동 탐지, 매 실행마다 저장 위치 선택 (iCloud·로컬·둘 다)
 
+### PC Automation Expert
+
+- **s-skills:sj-automation** (`/sj-automation`, `/automation`, `/auto`) — PC 자동화 전문가. 원하는 자동화를 설명하면 도구 선택(launchd·Hammerspoon·Python·AppleScript·shell)부터 구현·배포·검증까지 완전 자동화로 구축
+
 ### Agent Development Expert
 
 - **s-skills:sj-agent-dev** (`/sj-agent-dev`, `/agent-dev`) — 비즈니스 에이전트 개발 전문가. 런타임 루프·오케스트레이션·역할 분리·도구 계층화·컨텍스트 관리·가드레일·옵저버빌리티 7가지 축으로 실무 AI 에이전트 설계 및 구현 안내
