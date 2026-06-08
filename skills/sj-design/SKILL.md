@@ -75,7 +75,7 @@ triggers:
 
 ```bash
 # 사용 가능한 브랜드 목록 확인
-ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/null
+BRANDS=$(ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/null)
 
 # 이전 취향 기록 확인 (있으면 반영)
 [ -f "docs/sj-company/design-taste.md" ] && cat docs/sj-company/design-taste.md
@@ -84,12 +84,16 @@ ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/nul
 [ -f "docs/sj-company/design-banned.md" ] && cat docs/sj-company/design-banned.md
 ```
 
-만들려는 페이지·컴포넌트의 **느낌**과 가장 가까운 브랜드 1~2개를 선정한다.
+**레퍼런스 확보 분기:**
+- 브랜드 목록이 있으면 → 느낌에 맞는 브랜드 1~2개 선정
+- 브랜드 목록이 비어 있거나, 사용자가 특정 브랜드를 지목했으면 → **웹 검색으로 해당 브랜드 디자인 시스템·비주얼 레퍼런스를 찾고 hex·font·spacing 값을 직접 추출**
+- 사용자가 URL·이미지를 줬으면 → 그것을 레퍼런스로 사용
+
 선정 기준: "이 브랜드로 디자인하면 AI 느낌이 안 날까?" — YES인 브랜드만 선정.
 
 ```bash
-# 선정한 브랜드 DESIGN.md 읽기 (반드시 실행)
-cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{선정브랜드}/DESIGN.md
+# 선정한 브랜드 DESIGN.md 읽기 (로컬 파일 있을 때만)
+[ -n "$BRANDS" ] && cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{선정브랜드}/DESIGN.md
 ```
 
 DESIGN.md에서 아래 값을 **구체적으로** 추출한다 (추상적 표현 금지):
@@ -113,30 +117,11 @@ DESIGN.md에서 아래 값을 **구체적으로** 추출한다 (추상적 표현
 레퍼런스 DNA를 추출한 뒤, 코드를 작성하기 **전에** 반드시 아래 형식으로 선언한다:
 
 ```
-[디자인 커밋 선언]
-
-레퍼런스: {브랜드명}
-방향: {구체적 방향 — "미니멀"이 아닌 "세로 타이포 중심 + 넓은 여백 + 모노스페이스 강조"}
-
-컬러:
-  배경: #{hex}
-  주텍스트: #{hex}
-  포인트: #{hex}
-  보조: #{hex}
-
-타이포:
-  제목: {폰트명} {weight}, letter-spacing: {값}em, line-height: {값}
-  본문: {폰트명} {weight}, line-height: {값}
-
-레이아웃:
-  패턴: {구체적 — "비대칭 2-column, 좌측 큰 타이포 우측 미디어"}
-  강조 요소: {딱 1가지}
-
-금지 패턴 회피 확인:
-  ✓ 균등 카드 그리드 없음
-  ✓ 원색 없음
-  ✓ 가운데 정렬 hero 없음
-  ✓ 폰트명 지정됨
+[디자인 커밋 선언] {브랜드명}
+방향: {구체적 방향 — "세로 타이포 중심 + 넓은 여백 + 모노스페이스 강조"}
+컬러: bg #{hex} · text #{hex} · accent #{hex}
+타이포: {제목폰트} / {본문폰트}, ls {값}em, lh {제목}/{본문}
+레이아웃: {구체적 패턴} — 강조 {딱 1가지}
 ```
 
 사용자가 이 방향을 **승인하면** 코드를 작성한다.
@@ -196,7 +181,16 @@ HTML을 열었으면 **반드시 사용자 승인을 받아야** 다음 단계�
 
 **승인 없이 구현 코드를 작성하지 않는다. 이것은 예외 없는 규칙이다.**
 
-### Step G-4: 취향 기록
+### Step G-4: 구현 연결
+
+승인된 HTML 목업을 기반으로 실제 프로젝트 코드 작성.
+
+- **sj-company 파이프라인 내**: Tech Lead에게 `docs/sj-company/shotgun/design-{타임스탬프}.html` 경로와 커밋 선언 값(hex·font·layout)을 그대로 전달. Frontend 서브에이전트가 이 값을 CSS 변수로 이식.
+- **단독 호출**: 직접 React/Next.js 컴포넌트로 변환. HTML의 `:root` 변수 → CSS Modules 또는 Tailwind 토큰으로 매핑.
+
+**변환 원칙**: HTML 목업의 컬러·폰트·spacing 값은 한 글자도 바꾸지 않는다.
+
+### Step G-5: 취향 기록
 
 ```bash
 mkdir -p docs/sj-company
@@ -263,49 +257,51 @@ ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/nul
 - 몇 개 변형 (4/5/6)?
 - 특별히 원하는 분위기가 있는가? (없으면 대비되는 방향들로 자동 구성)
 
-### Step DS-2: 6개 방향 선정 + 각각 레퍼런스 읽기
+### Step DS-2: 텍스트 방향 카드 먼저 출력 (HTML 생성 전)
 
 각 변형은 **다른 브랜드, 다른 레이아웃 패턴**을 사용한다.
 같은 브랜드 2번 사용 금지. 같은 레이아웃 패턴 2번 사용 금지.
 
-방향 예시 (실제 브랜드로 대체):
-- A: 에디토리얼/잡지 (세로 타이포, 큰 폰트 대비)
-- B: 다크 럭셔리 (어두운 배경, 골드 포인트, 레이어드)
-- C: 네오 브루탈리즘 (경계선 굵음, 오프셋 배치, 고대비)
-- D: 미니멀 스위스 (그리드 기반, 기하학적, 색 절제)
-- E: 글로시/하이엔드 (유리 질감, depth, 섬세한 블러)
-- F: 레트로 에디토리얼 (복고 타이포, 채도 낮은 톤)
+레퍼런스 목록을 확인하고, **HTML을 만들기 전에** 텍스트 방향 카드를 출력한다:
 
-각 방향마다 해당 브랜드 DESIGN.md를 읽고 DNA 추출 후 HTML 생성.
+```
+[Design Shotgun] {N}개 방향 제안 — 만들 변형을 골라주세요
 
-### Step DS-3: 생성 + 브라우저 오픈 + 비교 출력
+A ({브랜드A}) — {방향 한줄}: bg #{hex} · accent #{hex} · {폰트} · {레이아웃 패턴}
+B ({브랜드B}) — {방향 한줄}: bg #{hex} · accent #{hex} · {폰트} · {레이아웃 패턴}
+C ({브랜드C}) — {방향 한줄}: bg #{hex} · accent #{hex} · {폰트} · {레이아웃 패턴}
+D ({브랜드D}) — {방향 한줄}: bg #{hex} · accent #{hex} · {폰트} · {레이아웃 패턴}
+E ({브랜드E}) — {방향 한줄}: bg #{hex} · accent #{hex} · {폰트} · {레이아웃 패턴}
+F ({브랜드F}) — {방향 한줄}: bg #{hex} · accent #{hex} · {폰트} · {레이아웃 패턴}
 
-생성 완료 즉시 모든 변형을 브라우저에서 연다:
+만들 변형을 골라주세요 (예: "A C E" 또는 "전부" 또는 "다시"):
+```
+
+**사용자가 선택하기 전까지 HTML을 생성하지 않는다.**
+
+### Step DS-3: 선택된 변형만 생성 + 브라우저 오픈
+
+선택된 변형의 DESIGN.md를 읽고 DNA 추출 후 HTML 생성.
 
 ```bash
-# 모든 변형 파일을 브라우저에서 열기
-for f in docs/sj-company/shotgun/variant-*.html; do
-  open "$f"
+mkdir -p docs/sj-company/shotgun
+# 선택된 변형만 생성 후 열기
+for variant in {선택된 변형들}; do
+  open "docs/sj-company/shotgun/variant-${variant}.html"
   sleep 0.3
 done
 ```
 
 ```
-[Design Shotgun] {N}개 변형 생성 완료 — 브라우저에서 열렸습니다
+[Design Shotgun] {선택된 N}개 변형 생성 완료 — 브라우저에서 열렸습니다
 
-A ({브랜드A} 기반 — {방향 한줄}): docs/sj-company/shotgun/variant-A.html
-B ({브랜드B} 기반 — {방향 한줄}): docs/sj-company/shotgun/variant-B.html
-...
-
-브라우저 탭에서 직접 비교해보세요.
+{선택된 변형 목록과 경로}
 
 어느 방향이 마음에 드나요?
-- 선택: A~F 중 하나 (또는 조합: "A의 컬러 + D의 레이아웃")
-- 모두 싫으면: "다시" → 6개 전부 새 방향으로 재생성
+- 선택: 변형 하나 (또는 조합: "A의 컬러 + D의 레이아웃")
+- 모두 싫으면: "다시" → 새 방향으로 재생성
 - 수정: "A인데 {구체적 변경}"
 ```
-
-**사용자가 방향을 선택하기 전까지 구현 코드를 작성하지 않는다.**
 
 ### Step DS-4: 반응별 처리
 
