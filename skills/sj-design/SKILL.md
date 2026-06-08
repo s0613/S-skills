@@ -177,8 +177,24 @@ DESIGN.md에서 아래 값을 **구체적으로** 추출한다 (추상적 표현
 저장: `docs/sj-company/shotgun/design-{타임스탬프}.html`
 
 ```bash
+mkdir -p docs/sj-company/shotgun
 open docs/sj-company/shotgun/design-{타임스탬프}.html
 ```
+
+### Step G-3b: 시각적 승인 게이트 (코드 이관 전 필수)
+
+HTML을 열었으면 **반드시 사용자 승인을 받아야** 다음 단계로 진행한다.
+
+```
+[디자인 목업 확인 요청]
+브라우저에서 확인해주세요: docs/sj-company/shotgun/design-{타임스탬프}.html
+
+✅ 승인 → 이 방향으로 React/Next.js 구현 진행
+❌ 거부 → [거부 프로토콜] 진입 (방향 완전 폐기 후 재설계)
+🔧 수정 → 구체적으로 어떤 점을 바꿀지 알려주세요
+```
+
+**승인 없이 구현 코드를 작성하지 않는다. 이것은 예외 없는 규칙이다.**
 
 ### Step G-4: 취향 기록
 
@@ -262,22 +278,34 @@ ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/nul
 
 각 방향마다 해당 브랜드 DESIGN.md를 읽고 DNA 추출 후 HTML 생성.
 
-### Step DS-3: 생성 + 비교 출력
+### Step DS-3: 생성 + 브라우저 오픈 + 비교 출력
+
+생성 완료 즉시 모든 변형을 브라우저에서 연다:
+
+```bash
+# 모든 변형 파일을 브라우저에서 열기
+for f in docs/sj-company/shotgun/variant-*.html; do
+  open "$f"
+  sleep 0.3
+done
+```
 
 ```
-[Design Shotgun] {N}개 변형 생성 완료
+[Design Shotgun] {N}개 변형 생성 완료 — 브라우저에서 열렸습니다
 
 A ({브랜드A} 기반 — {방향 한줄}): docs/sj-company/shotgun/variant-A.html
 B ({브랜드B} 기반 — {방향 한줄}): docs/sj-company/shotgun/variant-B.html
 ...
 
-open docs/sj-company/shotgun/variant-A.html
+브라우저 탭에서 직접 비교해보세요.
 
 어느 방향이 마음에 드나요?
 - 선택: A~F 중 하나 (또는 조합: "A의 컬러 + D의 레이아웃")
 - 모두 싫으면: "다시" → 6개 전부 새 방향으로 재생성
 - 수정: "A인데 {구체적 변경}"
 ```
+
+**사용자가 방향을 선택하기 전까지 구현 코드를 작성하지 않는다.**
 
 ### Step DS-4: 반응별 처리
 

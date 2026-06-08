@@ -43,6 +43,58 @@ find . -type f \( -name "tailwind.config*" -o -name "tokens*" -o -name "theme*" 
 - 상태는 적절한 레이어에 (서버 상태 ≠ 클라이언트 상태 ≠ URL 상태).
 - 애니메이션은 compositor-friendly 속성(`transform`, `opacity`)만.
 
+## 시각적 검증 (구현 완료 직후 필수)
+
+코드를 저장한 뒤 **반드시** 아래 순서로 실행한다. 눈으로 확인하지 않은 구현은 완성이 아니다.
+
+### Step V-1: 개발 서버 확인
+
+```bash
+# 이미 실행 중인지 확인
+PORT=$(cat .next/dev/lock 2>/dev/null | grep -o '"port":[0-9]*' | grep -o '[0-9]*' || echo "3000")
+HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${PORT:-3000}/${TARGET_PATH:-}" 2>/dev/null)
+echo "서버 상태: $HTTP_STATUS (포트: ${PORT:-3000})"
+```
+
+서버가 응답하지 않으면 (`000` 또는 `5xx`) 다음을 실행:
+```bash
+npm run dev > /tmp/dev-frontend.log 2>&1 &
+sleep 5
+curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
+```
+
+### Step V-2: 스크린샷 캡처
+
+```bash
+# 대상 URL 설정 (구현한 페이지 경로로 교체)
+TARGET_URL="http://localhost:${PORT:-3000}/${TARGET_PATH}"
+SCREENSHOT_PATH="/tmp/frontend-verify-$(date +%s).png"
+
+# Playwright로 스크린샷 (없으면 설치)
+npx --yes playwright screenshot "$TARGET_URL" "$SCREENSHOT_PATH" \
+  --wait-for-timeout=3000 \
+  --viewport-size="1440,900" 2>/dev/null && \
+  open "$SCREENSHOT_PATH" && \
+  echo "스크린샷 저장: $SCREENSHOT_PATH" || \
+  echo "Playwright 실패 — 브라우저에서 직접 확인: $TARGET_URL"
+```
+
+### Step V-3: 디자인 목업과 비교
+
+```bash
+# 디자인 목업 파일이 있으면 나란히 열기
+MOCKUP=$(ls docs/sj-company/shotgun/design-*.html 2>/dev/null | tail -1)
+[ -n "$MOCKUP" ] && open "$MOCKUP"
+```
+
+결과를 보고 다음을 판단:
+- **목업과 일치** → 완성. 결과 저장으로 진행.
+- **색상·폰트 차이** → 즉시 수정 후 V-2 재실행.
+- **레이아웃 차이** → 사용자에게 diff 보고 후 지시 대기.
+- **서버 에러** → 에러 원인 수정 후 재시도.
+
+**스크린샷 확인 없이 "완성"을 선언하지 않는다.**
+
 ## Self-Review
 
 저장 전 모두 통과해야 한다. 통과 못 하면 수정 후 재확인.
