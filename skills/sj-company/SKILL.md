@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.2.0
+version: 3.3.0
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
@@ -377,6 +377,51 @@ office hours, 아이디어 검증, 이게 맞아?, 코딩 전 확인, 이 기능
 [Design Shotgun] 디자인 변형 탐색 요청을 감지했습니다. sj-design shotgun 모드를 실행합니다.
 ```
 `Skill("s-skills:sj-design")` 호출 (shotgun 모드)
+
+---
+
+### Step 0-secretary: 비서 보고 요청 감지
+
+태스크 텍스트가 비서 보고·현황 요약 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+비서, secretary, 현황 보고, 요약 보고, 보고서 봐줘, 진행 상황 알려줘, 지금 어때, 프로젝트 현황, 뭐가 완료됐어
+
+→ 감지 시:
+```
+[비서] 현황 보고 요청을 감지했습니다. sj-secretary를 실행합니다.
+```
+`Skill("s-skills:sj-secretary")` 호출
+
+---
+
+### Step 0-test-scenario: 테스트 시나리오 요청 감지
+
+태스크 텍스트가 테스트 시나리오 생성·검증 시나리오 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+테스트 시나리오, 검증 시나리오, test scenario, 기능 검증 목록, 테스트 케이스 만들어줘, 시나리오 작성, 통과율 추적
+
+→ 감지 시:
+```
+[테스트 시나리오] 시나리오 생성 요청을 감지했습니다. test-scenario를 실행합니다.
+```
+`Skill("s-skills:test-scenario")` 호출
+
+---
+
+### Step 0-docs-organize: 문서 정리 요청 감지
+
+태스크 텍스트가 문서 구조 정리·docs 생성·health score 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize
+
+→ 감지 시:
+```
+[문서 정리] 문서 구조 정리 요청을 감지했습니다. docs-organize를 실행합니다.
+```
+`Skill("s-skills:docs-organize")` 호출
 
 ---
 
