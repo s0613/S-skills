@@ -1,39 +1,50 @@
 <svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="S-skills logo">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#6366f1"/>
-      <stop offset="0.55" stop-color="#8b5cf6"/>
-      <stop offset="1" stop-color="#d946ef"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="0.5" cy="0.32" r="0.7">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    <radialGradient id="paper" cx="0.5" cy="0.42" r="0.75">
+      <stop offset="0" stop-color="#f3ecda"/>
+      <stop offset="1" stop-color="#e6dcc4"/>
     </radialGradient>
   </defs>
 
-  <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#bg)"/>
-  <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#glow)"/>
+  <rect x="0" y="0" width="256" height="256" rx="20" fill="url(#paper)"/>
 
-  <g stroke="#ffffff" stroke-width="9" stroke-linecap="round" fill="none">
-    <!-- left wing -->
-    <path d="M116 92 Q 92 80 74 58" opacity="0.95"/>
-    <path d="M116 104 Q 86 98 64 82" opacity="0.85"/>
-    <path d="M116 116 Q 84 116 58 106" opacity="0.7"/>
-    <!-- right wing -->
-    <path d="M140 92 Q 164 80 182 58" opacity="0.95"/>
-    <path d="M140 104 Q 170 98 192 82" opacity="0.85"/>
-    <path d="M140 116 Q 172 116 198 106" opacity="0.7"/>
+  <g stroke="#23211b" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- classical double frame -->
+    <circle cx="128" cy="128" r="116" stroke-width="2.5"/>
+    <circle cx="128" cy="128" r="108" stroke-width="1"/>
+
+    <!-- wings: fine engraved feathers -->
+    <g stroke-width="2.2">
+      <path d="M122 94 Q 100 86 78 68"/>
+      <path d="M122 100 Q 97 96 74 82"/>
+      <path d="M122 106 Q 96 106 70 99"/>
+      <path d="M122 112 Q 99 116 77 117"/>
+      <path d="M134 94 Q 156 86 178 68"/>
+      <path d="M134 100 Q 159 96 182 82"/>
+      <path d="M134 106 Q 160 106 186 99"/>
+      <path d="M134 112 Q 157 116 179 117"/>
+    </g>
+
     <!-- staff -->
-    <path d="M128 108 L 128 200"/>
-  </g>
+    <path d="M128 90 L 128 206" stroke-width="3"/>
+    <path d="M118 206 L 138 206" stroke-width="2.4"/>
 
-  <!-- caduceus snakes -->
-  <g stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.9">
-    <path d="M128 116 C 150 126 150 146 128 156 C 106 166 106 186 128 196"/>
-    <path d="M128 116 C 106 126 106 146 128 156 C 150 166 150 186 128 196"/>
-  </g>
+    <!-- entwined serpents -->
+    <g stroke-width="2.2">
+      <path d="M128 202 C 112 192 112 172 128 162 C 144 152 144 132 128 122 C 117 115 117 106 125 100"/>
+      <path d="M128 202 C 144 192 144 172 128 162 C 112 152 112 132 128 122 C 139 115 139 106 131 100"/>
+    </g>
 
-  <!-- orb -->
-  <circle cx="128" cy="96" r="14" fill="#ffffff"/>
-  <circle cx="128" cy="96" r="22" stroke="#ffffff" stroke-width="4" fill="none" opacity="0.55"/>
+    <!-- serpent heads -->
+    <g stroke-width="2">
+      <circle cx="121" cy="97" r="3.4" fill="#23211b"/>
+      <circle cx="135" cy="97" r="3.4" fill="#23211b"/>
+      <path d="M119 95 L 114 92"/>
+      <path d="M137 95 L 142 92"/>
+    </g>
+
+    <!-- winged finial orb -->
+    <circle cx="128" cy="80" r="7" fill="#23211b"/>
+    <path d="M128 73 L 128 66" stroke-width="2"/>
+  </g>
 </svg>
