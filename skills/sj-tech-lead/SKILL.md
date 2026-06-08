@@ -214,9 +214,13 @@ EOF
 {_TASK_CLEAN}           ← HINT 라인 제거, 최대 2KB
 
 [CONTEXT_PATHS]
-- PM Brief : docs/sj-company/.state/pm-brief.md   (있으면 직접 cat)
-- Dev Ctx  : docs/sj-company/dev-context.md        (항상 cat)
-- Prior    : docs/sj-company/.state/dev/{deps}.md  (의존 역할만 명시)
+- PM Brief    : docs/sj-company/.state/pm-brief.md    (있으면 직접 cat)
+- Dev Ctx     : docs/sj-company/dev-context.md         (항상 cat)
+- Design Ctx  : docs/sj-company/design-context.md      (있으면 직접 cat — 컬러·폰트·레이아웃 명세 포함. frontend는 여기 값을 그대로 사용)
+- Prior       : docs/sj-company/.state/dev/{deps}.md   (의존 역할만 명시)
+
+[LANGUAGE]
+콘텐츠 언어: 한국어 (design-context.md 또는 pm-brief.md에 다른 언어 명시 시 그것을 따름)
 
 [TEAM_CHANNEL]
 팀 채널을 직접 읽고 쓴다. Tech Lead에게 묻지 않아도 된다.
