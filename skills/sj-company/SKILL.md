@@ -324,6 +324,21 @@ AskUserQuestion으로 사전 확인 (취소 불가 작업이므로 필수):
 
 ---
 
+### Step 0-outsource: 외주/전문가 위임 요청 감지
+
+태스크 텍스트가 외주·전문가 위임 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+외주, outsource, handoff, 전문가에게, 맡기고 싶어, 대신 해줄 사람, SongSeungJu, 넘기고 싶어, 도와줄 사람 연결
+
+→ 감지 시:
+```
+[외주] sj-outsource를 실행합니다.
+```
+`Skill("s-skills:sj-outsource")` 호출
+
+---
+
 ### Step 0-retro: 회고 요청 감지
 
 태스크 텍스트가 회고·retrospective 요청인지 판단해라. 해당하면 실행하고 Case B 종료.

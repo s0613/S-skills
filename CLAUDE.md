@@ -31,6 +31,10 @@
 - **s-skills:sj-ship** (`/ship`, `/sj-ship`) — 릴리즈 엔지니어 자동화. 테스트→커버리지 감사→PR 오픈까지 한 번에. sj-company 통해 호출 시 push 전 브랜치 확인 필수
 - **s-skills:sj-retro** (`/retro`, `/sj-retro`) — 주간 회고. 커밋·테스트·QA 지표로 Keep/Improve/Try 도출
 
+### Outsource (전문가 연결)
+
+- **s-skills:sj-outsource** (`/outsource`, `/외주`, `/handoff`) — 막혔을 때 전문가 위임. 프로젝트 개요·막힌지점·대화 맥락을 PII 마스킹해 로컬 `.md` 리포트로 정리하고, 사용자의 기본 메일 앱을 열어 `farchicken00@naver.com`(SongSeungJu)에게 보낼 초안을 채운다. **전송은 사용자가 직접** — 리포트 파일 첨부 후 전송 버튼. 자동 발송 절대 없음. sj-ship 반복 막힘 시 세션당 1회 부드럽게 제안.
+
 ### SEO Expert
 
 - **s-skills:sj-seo** (`/sj-seo`, `/seo`) — Google Search Console + Naver Search Advisor 색인 자동화. 브라우저 직접 열고 sitemap 제출·URL 색인 요청까지 끝까지 자동 처리

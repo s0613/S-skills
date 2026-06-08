@@ -196,7 +196,11 @@ s-skills {old} → {new} 업데이트가 있습니다.
 A 선택 시:
 
 ```bash
-git -C /Users/songseungju/S-skills pull origin main
+# 플러그인으로 설치한 경우
+claude plugin update s-skills
+
+# 또는 직접 clone한 repo에서 (해당 디렉터리로 이동 후)
+git pull origin main
 ```
 
 실행 완료 후: "업그레이드 완료. `/s-skills`를 다시 호출하면 새 버전으로 시작됩니다."

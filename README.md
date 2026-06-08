@@ -1,6 +1,6 @@
 # S-skills
 
-[![version](https://img.shields.io/badge/version-3.0.0-blue)](https://github.com/s0613/S-skills/releases)
+[![version](https://img.shields.io/badge/version-3.1.0-blue)](https://github.com/s0613/S-skills/releases)
 [![plugin](https://img.shields.io/badge/claude--plugin-install-brightgreen)](https://github.com/s0613/S-skills)
 [![license](https://img.shields.io/badge/license-MIT-gray)](LICENSE)
 
@@ -81,6 +81,9 @@ skills/
 │   ├── sj-cso/           ← OWASP Top 10 + STRIDE 보안 감사
 │   ├── sj-ship/          ← 릴리즈 자동화 (테스트→커버리지→PR 오픈)
 │   └── sj-retro/         ← 주간 회고 (커밋·테스트·성장 지표)
+│
+├── [외주 연결]
+│   └── sj-outsource/     ← 막혔을 때 전문가 위임 (개요+맥락 리포트 → 메일 앱 초안, 전송은 사용자)
 │
 ├── [마케팅·SEO]
 │   ├── sj-marketing/     ← SNS·블로그 캠페인·카피·브랜드 검수 (marketing_agent 연동)
