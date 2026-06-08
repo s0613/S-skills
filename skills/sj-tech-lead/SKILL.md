@@ -216,7 +216,8 @@ EOF
 [CONTEXT_PATHS]
 - PM Brief    : docs/sj-company/.state/pm-brief.md    (있으면 직접 cat)
 - Dev Ctx     : docs/sj-company/dev-context.md         (항상 cat)
-- Design Ctx  : docs/sj-company/design-context.md      (있으면 직접 cat — 컬러·폰트·레이아웃 명세 포함. frontend는 여기 값을 그대로 사용)
+- Design Ctx  : docs/sj-company/design-context.md      (있으면 직접 cat — 누적 히스토리)
+- Design Handoff: docs/sj-company/.state/design-handoff.md (있으면 직접 cat — 승인된 목업 경로 + 정확한 CSS 변수값. frontend는 이 파일의 값을 한 글자도 바꾸지 않고 그대로 사용)
 - Prior       : docs/sj-company/.state/dev/{deps}.md   (의존 역할만 명시)
 
 [LANGUAGE]

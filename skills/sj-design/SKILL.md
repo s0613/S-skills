@@ -185,7 +185,34 @@ HTML을 열었으면 **반드시 사용자 승인을 받아야** 다음 단계�
 
 승인된 HTML 목업을 기반으로 실제 프로젝트 코드 작성.
 
-- **sj-company 파이프라인 내**: Tech Lead에게 `docs/sj-company/shotgun/design-{타임스탬프}.html` 경로와 커밋 선언 값(hex·font·layout)을 그대로 전달. Frontend 서브에이전트가 이 값을 CSS 변수로 이식.
+- **sj-company 파이프라인 내**: 아래 handoff 파일을 Write한 뒤 Tech Lead에게 경로를 알린다. Frontend 서브에이전트가 이 파일을 읽어 CSS 변수로 이식한다.
+
+```bash
+mkdir -p docs/sj-company/.state
+```
+
+Write 툴로 `docs/sj-company/.state/design-handoff.md` 생성:
+
+```markdown
+# Design Handoff
+source: docs/sj-company/shotgun/design-{타임스탬프}.html
+brand: {브랜드명}
+
+## CSS 변수 (이 값을 한 글자도 바꾸지 말 것)
+--bg: #{hex}
+--text: #{hex}
+--accent: #{hex}
+--sub: #{hex}
+--font-title: '{제목폰트}'
+--font-body: '{본문폰트}'
+--ls-heading: {값}em
+--lh-heading: {값}
+--lh-body: {값}
+
+## 레이아웃 패턴
+{커밋 선언의 레이아웃 줄 그대로}
+```
+
 - **단독 호출**: 직접 React/Next.js 컴포넌트로 변환. HTML의 `:root` 변수 → CSS Modules 또는 Tailwind 토큰으로 매핑.
 
 **변환 원칙**: HTML 목업의 컬러·폰트·spacing 값은 한 글자도 바꾸지 않는다.
