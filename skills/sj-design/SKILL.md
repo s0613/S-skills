@@ -75,7 +75,7 @@ triggers:
 
 ```bash
 # 사용 가능한 브랜드 목록 확인
-ls /Users/songseungju/awesome-design-md/design-md/ 2>/dev/null
+ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/null
 
 # 이전 취향 기록 확인 (있으면 반영)
 [ -f "docs/sj-company/design-taste.md" ] && cat docs/sj-company/design-taste.md
@@ -89,7 +89,7 @@ ls /Users/songseungju/awesome-design-md/design-md/ 2>/dev/null
 
 ```bash
 # 선정한 브랜드 DESIGN.md 읽기 (반드시 실행)
-cat /Users/songseungju/awesome-design-md/design-md/{선정브랜드}/DESIGN.md
+cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{선정브랜드}/DESIGN.md
 ```
 
 DESIGN.md에서 아래 값을 **구체적으로** 추출한다 (추상적 표현 금지):
@@ -239,7 +239,7 @@ echo "## $(date +%Y-%m-%d) — 거부됨
 ```bash
 [ -f "docs/sj-company/design-taste.md" ] && cat docs/sj-company/design-taste.md
 [ -f "docs/sj-company/design-banned.md" ] && cat docs/sj-company/design-banned.md
-ls /Users/songseungju/awesome-design-md/design-md/ 2>/dev/null
+ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/null
 ```
 
 무엇을 만들지 명확하지 않으면 물어본다:
@@ -333,7 +333,7 @@ rm -f docs/sj-company/.state/design-review.req
 design-context.md의 `primary:` 브랜드 DESIGN.md를 읽어 리뷰 기준으로 삼는다.
 
 ```bash
-cat /Users/songseungju/awesome-design-md/design-md/{primary브랜드}/DESIGN.md
+cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{primary브랜드}/DESIGN.md
 ```
 
 ### Step R-2: 구현 파일 리뷰

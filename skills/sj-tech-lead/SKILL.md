@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 2.1.0
+version: 2.2.0
 description: |
   Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,
@@ -54,12 +54,27 @@ mkdir -p docs/sj-company/.state docs/sj-company/.state/dev
 _MODEL_POLICY=$(cat docs/sj-company/.state/model-policy.txt 2>/dev/null | tr -d '[:space:]')
 _MODEL_POLICY="${_MODEL_POLICY:-auto}"
 _PROJECT_DIR=$(pwd)
+
+# RUN_ID 연결 (sj-company Preamble에서 생성된 ID)
+_RUN_ID=$(cat docs/sj-company/.state/current-run.txt 2>/dev/null || date +%Y%m%d-%H%M%S)
+echo "RUN_ID: $_RUN_ID"
+
+# 크로스 프로젝트 학습 패턴 로드 (저장된 패턴 참조)
+if ls ~/.claude/skills/learned/*.md 2>/dev/null | head -1 >/dev/null; then
+  echo "=== 크로스 프로젝트 학습 패턴 ==="
+  ls ~/.claude/skills/learned/*.md 2>/dev/null | while read f; do
+    echo "--- $(basename $f) ---"
+    head -5 "$f"
+  done
+fi
 ```
 
 다음 순서로 태스크와 컨텍스트를 파악해라:
 1. `docs/sj-company/.state/pm-brief.md` (있으면 우선 사용)
 2. `docs/sj-company/.state/task.txt`
 3. `docs/sj-company/PROJECT.md` goal 필드
+
+task.txt 첫 줄에 `[SPEC: <경로>]`가 있으면 해당 스펙 파일을 Read하고 Dispatch Card `CONTEXT_PATHS`에 포함한다.
 
 `docs/sj-company/PROJECT.md`를 직접 읽어 프로젝트명과 goal을 파악해라. Dispatch Card에 포함할 고정값이다.
 
@@ -459,6 +474,8 @@ ls docs/sj-company/.state/dev/*.md 2>/dev/null | grep -v _channel
 ### 9c. dev-context.md 학습 누적
 
 이번 사이클에서 알게 된 **코드 컨벤션·API 계약·기술 결정** 1~3줄을 Edit 툴로 `docs/sj-company/dev-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
+
+append 전, 인사이트 텍스트에서 `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
 
 ### 9d. 크로스 프로젝트 패턴 학습 (선택적)
 

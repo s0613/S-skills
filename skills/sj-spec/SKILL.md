@@ -195,12 +195,27 @@ ls src/types 2>/dev/null || ls types 2>/dev/null || true
 {제외된 항목과 이유}
 ```
 
-저장 완료 후:
+저장 완료 후, task.txt에 스펙 경로를 기록해 Dispatch Card에 자동 포함되도록 한다:
+
+```bash
+mkdir -p docs/sj-company/.state
+SPEC_PATH="docs/sj-company/spec-{feature-name}.md"
+# 기존 task.txt가 있으면 spec 참조를 맨 앞에 추가
+if [ -f "docs/sj-company/.state/task.txt" ]; then
+  TMP=$(cat docs/sj-company/.state/task.txt)
+  echo "[SPEC: $SPEC_PATH]
+$TMP" > docs/sj-company/.state/task.txt
+else
+  echo "[SPEC: $SPEC_PATH]" > docs/sj-company/.state/task.txt
+fi
+echo "스펙 경로가 task.txt에 등록됐습니다."
+```
+
 ```
 ✅ 스펙 저장: docs/sj-company/spec-{feature-name}.md
 
 다음 단계:
-- 구현 시작: /sj-company {기능명} 구현해줘
+- 구현 시작: /sj-company {기능명} 구현해줘  (Tech Lead가 스펙 파일을 자동으로 참조)
 - 보안 검토: /cso
 - 에이전트 설계: /sj-agent-dev
 ```

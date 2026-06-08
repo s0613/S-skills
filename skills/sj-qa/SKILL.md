@@ -1,8 +1,9 @@
 ---
 name: sj-qa
-version: 2.1.0
+version: 2.2.0
 description: |
-  QA 역할 에이전트. .state/dev-summary.md + .state/pm-brief.md를 받아 검증하고 테스트 계획을 수립한다.
+  QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.
+  dev-summary.md(구현자 자기 평가) 참조 금지 — Judge 독립성 원칙.
   PASS / FAIL / CONDITIONAL 판정을 .state/qa-verdict.md에 저장하고 PROJECT.md를 갱신한다.
   qa-context.md에 학습된 검증 포인트를 누적한다.
   /canary: 배포 후 프로덕션 상태 모니터링.
@@ -82,22 +83,32 @@ cat package.json 2>/dev/null | grep -A5 '"scripts"'
 ## Step 2: 이전 단계 컨텍스트 로드
 
 ```bash
-[ -f "docs/sj-company/.state/pm-brief.md" ]   && echo "=== PM BRIEF ===" && cat "docs/sj-company/.state/pm-brief.md"
-[ -f "docs/sj-company/.state/dev-summary.md" ] && echo "=== DEV SUMMARY ===" && cat "docs/sj-company/.state/dev-summary.md"
-[ -f "docs/sj-company/.state/task.txt" ]      && echo "=== TASK (raw) ===" && cat "docs/sj-company/.state/task.txt"
-[ -f "docs/sj-company/PROJECT.md" ]           && echo "=== PROJECT ===" && cat "docs/sj-company/PROJECT.md"
+# Judge 독립성 원칙: pm-brief(요구사항 원본)과 실제 변경 파일만 읽는다.
+# dev-summary.md는 구현자 자기 평가이므로 Judge가 읽지 않는다.
+[ -f "docs/sj-company/.state/pm-brief.md" ] && echo "=== PM BRIEF ===" && cat "docs/sj-company/.state/pm-brief.md"
+[ -f "docs/sj-company/.state/task.txt" ]    && echo "=== TASK (raw) ===" && cat "docs/sj-company/.state/task.txt"
+[ -f "docs/sj-company/PROJECT.md" ]         && echo "=== PROJECT ===" && cat "docs/sj-company/PROJECT.md"
+
+# 실제 변경 파일 직접 탐색 (구현자 요약 없이 독립 검증)
+echo "=== 최근 변경 파일 (직접 탐색) ==="
+git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -vE '\.md$' | head -20
+# Result Card는 참조용으로만 (판정 근거로 쓰지 않음)
+for f in docs/sj-company/.state/dev/*.md; do
+  [ -f "$f" ] && [[ "$f" != *"_channel"* ]] && echo "=== Result Card: $(basename $f) ===" && grep "^## 변경 파일" -A 10 "$f"
+done
 ```
 
 ## Step 3: 태스크 수행
 
-qa-context.md + `.state/dev-summary.md` + `.state/pm-brief.md`를 바탕으로 QA 역할을 수행한다:
+qa-context.md + `.state/pm-brief.md` + **실제 변경 파일(직접 탐색)**을 바탕으로 QA 역할을 수행한다.
+dev-summary.md는 참조 금지 — 구현자의 자기 평가는 Judge의 독립성을 훼손한다.
 - 테스트 케이스 목록 작성
 - 엣지 케이스 식별
 - 최종 판정 (PASS / FAIL / CONDITIONAL)
 
 ## Step 4: 자체 검토
 
-결과 저장 전, 아래 체크리스트를 스스로 검토한다. 문제가 있으면 Step 3으로 돌아가 수정한다.
+결과 저장 전, 아래 체크리스트를 스스로 검토한다. 문제가 있으면 Step 3으로 돌아가 수정한다. **최대 2회 반복 후 미해결 항목은 CONDITIONAL 판정 사유로 기록하고 진행한다.**
 
 - [ ] PM 요구사항(`.state/pm-brief.md`의 태스크 목록)의 모든 항목에 대응하는 테스트 케이스가 있는가?
 - [ ] 엣지 케이스가 최소 1개 이상 식별됐는가?

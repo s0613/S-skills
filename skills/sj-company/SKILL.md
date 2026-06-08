@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.3.0
+version: 3.4.0
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
@@ -32,7 +32,12 @@ triggers:
 ## Preamble — 마이그레이션 감지 + 상태 읽기
 
 ```bash
-mkdir -p docs/sj-company
+mkdir -p docs/sj-company docs/sj-company/.state
+
+# RUN_ID — 이번 실행 식별자 (파이프라인 전체 추적용)
+_RUN_ID="$(date +%Y%m%d-%H%M%S)-$$"
+echo "$_RUN_ID" > docs/sj-company/.state/current-run.txt
+echo "RUN_ID: $_RUN_ID"
 
 # 마이그레이션 감지: PROJECT.md 없고 구파일 있으면 자동 마이그레이션
 _HAS_PROJECT=$([ -f "docs/sj-company/PROJECT.md" ] && echo "yes" || echo "no")
@@ -297,9 +302,23 @@ print("PROJECT.md 생성 완료")
 **감지 키워드:**
 배포해줘, PR 올려줘, 릴리즈, ship, 머지해줘, 배포 준비, PR 만들어, 커밋하고 push
 
+**충돌 방지:** "배포 후 확인", "배포 모니터링", "잘 올라갔어", "canary", "프로덕션 체크" 포함 시 → ship이 아닌 canary(Step 0-canary)로 라우팅. ship은 push/PR **생성** 요청에만 반응.
+
 → 감지 시:
+
+```bash
+_SHIP_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+echo "현재 브랜치: $_SHIP_BRANCH"
+git log origin/main..HEAD --oneline 2>/dev/null | head -5
 ```
-[릴리즈] 배포 요청을 감지했습니다. sj-ship을 실행합니다.
+
+AskUserQuestion으로 사전 확인 (취소 불가 작업이므로 필수):
+- "현재 브랜치: {브랜치명}. PR 생성 및 push를 진행할까요?"
+- "예 → sj-ship 실행 / 아니오 → 취소"
+
+확인 후:
+```
+[릴리즈] sj-ship을 실행합니다.
 ```
 `Skill("s-skills:sj-ship")` 호출
 

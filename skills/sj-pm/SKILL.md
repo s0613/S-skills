@@ -143,7 +143,7 @@ find . -maxdepth 3 \
 현재 요청을 분석한다. 입력 우선순위:
 1. 스킬 호출 시 전달된 메시지 (인자)
 2. sj-company에서 작성한 `docs/sj-company/.state/task.txt` (Large 경로의 raw 태스크 텍스트)
-3. PROJECT.md의 `next` 필드 (그것도 없으면 사용자에게 AskUserQuestion)
+3. PROJECT.md의 `next` 필드 (그것도 없으면 사용자에게 AskUserQuestion — 최대 1회, 답이 모호해도 Claude가 최선의 가정으로 진행)
 
 ```bash
 [ -f "docs/sj-company/.state/task.txt" ] && cat "docs/sj-company/.state/task.txt"
@@ -209,6 +209,9 @@ pm-brief.md의 태스크 목록에서 첫 번째 항목을 읽어, Edit 툴로 `
 이번 사이클에서 **새로 알게 된 인사이트** 1~3줄을 `docs/sj-company/pm-context.md`의 `## 히스토리` 섹션 끝에 추가한다. 단순한 작업 기록이 아니라 "다음 사이클이 알면 좋을 사실"만 기록.
 
 이번 사이클에서 **다음 사이클이 알면 좋을 사실** 1~3줄을 Edit 툴로 `docs/sj-company/pm-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
+
+append 전, 인사이트 텍스트에서 민감 정보를 제거한다:
+`password|token|secret|api.?key|Bearer|private.?key` 패턴에 해당하는 값은 `[REDACTED]`로 치환.
 
 인사이트가 없으면 (단순 작업) 스킵.
 
