@@ -19,6 +19,7 @@ triggers:
   - /auto
   - /sj-ui-auto
   - /ui-auto
+  - /ui
 ---
 
 # SJ Automation — 자동화 + UI + 네이티브 앱 통합 전문가
