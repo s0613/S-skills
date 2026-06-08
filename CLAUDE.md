@@ -45,7 +45,7 @@
 
 ### PC Automation Expert
 
-- **s-skills:sj-automation** (`/sj-automation`, `/automation`, `/auto`, `/sj-ui-auto`, `/ui-auto`, `/ui`) — 자동화 + UI 조작 + 네이티브 앱 제작 통합 전문가 v2.0.0. OS 자동 감지(macOS·Linux·Windows) 후 최적 도구 선택. 스크립트 자동화(launchd·systemd·Task Scheduler)·UI 조작(Playwright·PyAutoGUI·AppleScript·xdotool·AutoHotkey)·네이티브 앱 제작(SwiftUI·WinForms·GTK·Tauri·customtkinter) 통합 구현
+- **s-skills:sj-automation** (`/sj-automation`, `/automation`, `/auto`, `/sj-ui-auto`, `/ui-auto`) — 자동화 + UI 조작 + 네이티브 앱 제작 통합 전문가 v2.0.0. OS 자동 감지(macOS·Linux·Windows) 후 최적 도구 선택. 스크립트 자동화(launchd·systemd·Task Scheduler)·UI 조작(Playwright·PyAutoGUI·AppleScript·xdotool·AutoHotkey)·네이티브 앱 제작(SwiftUI·WinForms·GTK·Tauri·customtkinter) 통합 구현
 
 ### Agent Development Expert
 
