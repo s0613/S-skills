@@ -1,0 +1,39 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="S-skills logo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="0.55" stop-color="#8b5cf6"/>
+      <stop offset="1" stop-color="#d946ef"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.32" r="0.7">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#bg)"/>
+  <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#glow)"/>
+
+  <g stroke="#ffffff" stroke-width="9" stroke-linecap="round" fill="none">
+    <!-- left wing -->
+    <path d="M116 92 Q 92 80 74 58" opacity="0.95"/>
+    <path d="M116 104 Q 86 98 64 82" opacity="0.85"/>
+    <path d="M116 116 Q 84 116 58 106" opacity="0.7"/>
+    <!-- right wing -->
+    <path d="M140 92 Q 164 80 182 58" opacity="0.95"/>
+    <path d="M140 104 Q 170 98 192 82" opacity="0.85"/>
+    <path d="M140 116 Q 172 116 198 106" opacity="0.7"/>
+    <!-- staff -->
+    <path d="M128 108 L 128 200"/>
+  </g>
+
+  <!-- caduceus snakes -->
+  <g stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.9">
+    <path d="M128 116 C 150 126 150 146 128 156 C 106 166 106 186 128 196"/>
+    <path d="M128 116 C 106 126 106 146 128 156 C 150 166 150 186 128 196"/>
+  </g>
+
+  <!-- orb -->
+  <circle cx="128" cy="96" r="14" fill="#ffffff"/>
+  <circle cx="128" cy="96" r="22" stroke="#ffffff" stroke-width="4" fill="none" opacity="0.55"/>
+</svg>

@@ -1,8 +1,12 @@
-# S-skills
+<p align="center">
+  <img src="assets/banner.svg" alt="S-skills — 역할 기반 개발 오케스트레이터" width="720">
+</p>
 
-[![version](https://img.shields.io/badge/version-3.1.0-blue)](https://github.com/s0613/S-skills/releases)
-[![plugin](https://img.shields.io/badge/claude--plugin-install-brightgreen)](https://github.com/s0613/S-skills)
-[![license](https://img.shields.io/badge/license-MIT-gray)](LICENSE)
+<p align="center">
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.1.0-8b5cf6" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-6366f1" alt="plugin"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-gray" alt="license"></a>
+</p>
 
 > **Claude Code용 역할 기반 개발 오케스트레이터.**  
 > `/sj-company <태스크>` 하나로 모든 스킬이 자동 라우팅된다.  
