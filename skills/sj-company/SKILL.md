@@ -245,6 +245,141 @@ print("PROJECT.md 생성 완료")
 
 ---
 
+### Step 0-spec: 스펙/명세 작성 요청 감지
+
+태스크 텍스트가 스펙·명세·PRD 작성 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+스펙, 명세, PRD, 기능 정의, 요구사항 정리, 스펙 만들어줘, 뭘 만들지 정리, 설계 문서, spec
+
+→ 감지 시:
+```
+[스펙] 스펙 작성 요청을 감지했습니다. sj-spec을 실행합니다.
+```
+`Skill("s-skills:sj-spec")` 호출
+
+---
+
+### Step 0-investigate: 디버깅/원인 분석 요청 감지
+
+태스크 텍스트가 버그 원인 추적·디버깅 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+왜 이러지, 원인 파악, 디버깅, 에러 원인, 버그 추적, investigate, 어디서 나는지, 루트코즈, root cause
+
+→ 감지 시:
+```
+[조사] 원인 분석 요청을 감지했습니다. sj-investigate를 실행합니다.
+```
+`Skill("s-skills:sj-investigate")` 호출
+
+---
+
+### Step 0-cso: 보안 감사 요청 감지
+
+태스크 텍스트가 보안 점검·취약점 검사 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+보안 점검, 보안 감사, 취약점, OWASP, STRIDE, 보안 리뷰, 보안 검사, cso, security audit
+
+→ 감지 시:
+```
+[보안] 보안 감사 요청을 감지했습니다. sj-cso를 실행합니다.
+```
+`Skill("s-skills:sj-cso")` 호출
+
+---
+
+### Step 0-ship: 릴리즈/배포 요청 감지
+
+태스크 텍스트가 릴리즈·PR·배포 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+배포해줘, PR 올려줘, 릴리즈, ship, 머지해줘, 배포 준비, PR 만들어, 커밋하고 push
+
+→ 감지 시:
+```
+[릴리즈] 배포 요청을 감지했습니다. sj-ship을 실행합니다.
+```
+`Skill("s-skills:sj-ship")` 호출
+
+---
+
+### Step 0-retro: 회고 요청 감지
+
+태스크 텍스트가 회고·retrospective 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+회고, retro, retrospective, 이번 주 정리, 지난주 리뷰, 한 주 돌아보기, 회고해줘
+
+→ 감지 시:
+```
+[회고] 주간 회고 요청을 감지했습니다. sj-retro를 실행합니다.
+```
+`Skill("s-skills:sj-retro")` 호출
+
+---
+
+### Step 0-canary: 배포 모니터링 요청 감지
+
+태스크 텍스트가 배포 후 상태 확인·canary 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+canary, 배포 후 확인, 프로덕션 체크, 상태 확인, 배포 모니터링, 잘 올라갔어?
+
+→ 감지 시:
+```
+[Canary] 배포 후 모니터링 요청을 감지했습니다. sj-qa canary 모드를 실행합니다.
+```
+`Skill("s-skills:sj-qa")` 호출 (canary 모드)
+
+---
+
+### Step 0-benchmark: 성능 측정 요청 감지
+
+태스크 텍스트가 성능 측정·벤치마크 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+성능 측정, 벤치마크, benchmark, Core Web Vitals, lighthouse, 로드 타임, 느린 이유
+
+→ 감지 시:
+```
+[Benchmark] 성능 측정 요청을 감지했습니다. sj-qa benchmark 모드를 실행합니다.
+```
+`Skill("s-skills:sj-qa")` 호출 (benchmark 모드)
+
+---
+
+### Step 0-office-hours: 아이디어 검증 요청 감지
+
+태스크 텍스트가 코딩 전 아이디어 검증·office hours 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+office hours, 아이디어 검증, 이게 맞아?, 코딩 전 확인, 이 기능 만들어야 할까, 방향 맞아?
+
+→ 감지 시:
+```
+[Office Hours] 아이디어 검증 요청을 감지했습니다. sj-pm office hours 모드를 실행합니다.
+```
+`Skill("s-skills:sj-pm")` 호출 (office-hours 모드)
+
+---
+
+### Step 0-design-shotgun: 디자인 탐색 요청 감지
+
+태스크 텍스트가 다수 디자인 변형 생성 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+목업 여러 개, 변형 생성, 디자인 탐색, 다양하게 보여줘, design shotgun, 여러 스타일, 디자인 아이디어
+
+→ 감지 시:
+```
+[Design Shotgun] 디자인 변형 탐색 요청을 감지했습니다. sj-design shotgun 모드를 실행합니다.
+```
+`Skill("s-skills:sj-design")` 호출 (shotgun 모드)
+
+---
+
 ### Step 0a: 리뷰 요청 감지 (크기 판정 전 먼저 체크)
 
 태스크 텍스트가 리뷰/검토/점검/검수 성격인지 판단해라. 그렇다면 아래 리뷰 경로를 실행하고 Case B 종료 (Step 1로 넘어가지 않는다).

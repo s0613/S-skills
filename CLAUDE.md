@@ -23,6 +23,14 @@
 
 - **s-skills:obsidian-writer** (`/obsidian`, `/obsidian-writer`) — Obsidian 문서 작성 전문가. 기능·작업·프로젝트 전체를 아름다운 .md로 정리. iCloud/로컬 볼트 자동 탐지, 매 실행마다 저장 위치 선택 (iCloud·로컬·둘 다)
 
+### Quality · Security · Release
+
+- **s-skills:sj-spec** (`/spec`, `/sj-spec`) — 스펙 작성 전문가. 모호한 의도를 5단계(why·scope·technical·draft·file)로 실행 가능한 정밀 스펙으로 변환
+- **s-skills:sj-investigate** (`/investigate`, `/sj-investigate`) — 체계적 루트코즈 디버깅. 가설 수립→검증 강제, 조사 없는 수정 금지
+- **s-skills:sj-cso** (`/cso`, `/sj-cso`) — CSO 보안 감사. OWASP Top 10 + STRIDE 위협 모델링, 8/10 이상 확신 취약점만 보고
+- **s-skills:sj-ship** (`/ship`, `/sj-ship`) — 릴리즈 엔지니어 자동화. 테스트→커버리지 감사→PR 오픈까지 한 번에
+- **s-skills:sj-retro** (`/retro`, `/sj-retro`) — 주간 회고. 커밋·테스트·QA 지표로 Keep/Improve/Try 도출
+
 ### SEO Expert
 
 - **s-skills:sj-seo** (`/sj-seo`, `/seo`) — Google Search Console + Naver Search Advisor 색인 자동화. 브라우저 직접 열고 sitemap 제출·URL 색인 요청까지 끝까지 자동 처리

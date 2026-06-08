@@ -1,10 +1,12 @@
 ---
 name: sj-qa
-version: 2.0.0
+version: 2.1.0
 description: |
   QA 역할 에이전트. .state/dev-summary.md + .state/pm-brief.md를 받아 검증하고 테스트 계획을 수립한다.
   PASS / FAIL / CONDITIONAL 판정을 .state/qa-verdict.md에 저장하고 PROJECT.md를 갱신한다.
   qa-context.md에 학습된 검증 포인트를 누적한다.
+  /canary: 배포 후 프로덕션 상태 모니터링.
+  /benchmark: Core Web Vitals + 로드 시간 기준 측정.
 allowed-tools:
   - Bash
   - Read
@@ -13,6 +15,8 @@ allowed-tools:
   - Grep
 triggers:
   - /qa
+  - /canary
+  - /benchmark
 ---
 
 # QA Agent
@@ -154,3 +158,148 @@ echo "Playwright: $_HAS_PW"
 ## Step 9: 완료 보고
 
 전체 파이프라인 결과를 사용자에게 요약해서 출력한다.
+
+---
+
+## Canary 모드 (`/canary`)
+
+트리거가 `/canary`이거나, "배포 후 확인", "프로덕션 체크", "canary", "배포 모니터링" 키워드 감지 시 실행.
+
+### Canary Step 1: 프로덕션 URL 확인
+
+```bash
+# PROJECT.md에서 prod_url 읽기
+PROD_URL=$(grep "^prod_url:" docs/sj-company/PROJECT.md 2>/dev/null | awk '{print $2}')
+echo "프로덕션 URL: $PROD_URL"
+```
+
+URL이 없으면 AskUserQuestion으로 입력받기.
+
+### Canary Step 2: 상태 코드 체크
+
+```bash
+for path in "/" "/api/health" "/api" "/robots.txt"; do
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${PROD_URL}${path}" 2>/dev/null || echo "N/A")
+  echo "${path}: ${STATUS}"
+done
+```
+
+### Canary Step 3: 콘솔 에러 체크 (Playwright 있을 때)
+
+```bash
+if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then
+  echo "Playwright 감지됨 — 브라우저 에러 체크 가능"
+  # 설치된 환경에서 실행
+  cat > /tmp/canary-check.ts << 'EOF'
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch();
+const page = await browser.newPage();
+const errors = [];
+page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
+page.on('pageerror', err => errors.push(err.message));
+await page.goto(process.env.PROD_URL || '');
+await page.waitForTimeout(3000);
+console.log(JSON.stringify({ errors, url: page.url() }));
+await browser.close();
+EOF
+  npx ts-node /tmp/canary-check.ts 2>/dev/null | head -20 || echo "Playwright 실행 스킵"
+fi
+```
+
+### Canary Step 4: 결과 보고
+
+```
+[Canary 결과] {날짜}
+프로덕션: {PROD_URL}
+
+상태 코드:
+/ → {코드}
+/api/health → {코드}
+
+콘솔 에러: {N}개 {에러 목록 또는 "없음"}
+
+판정: ✅ 정상 / ⚠️ 경고 / 🚫 문제 있음
+```
+
+이상 감지 시 → `/sj-investigate`로 즉시 연결.
+
+---
+
+## Benchmark 모드 (`/benchmark`)
+
+트리거가 `/benchmark`이거나, "성능 측정", "로드 타임", "Core Web Vitals", "lighthouse", "벤치마크" 키워드 감지 시 실행.
+
+### Benchmark Step 1: URL + 기준선 설정
+
+```bash
+PROD_URL=$(grep "^prod_url:" docs/sj-company/PROJECT.md 2>/dev/null | awk '{print $2}')
+
+# 이전 벤치마크 결과
+[ -f "docs/sj-company/benchmark-history.md" ] && \
+  echo "=== 이전 결과 ===" && tail -20 docs/sj-company/benchmark-history.md
+```
+
+### Benchmark Step 2: 로드 시간 측정
+
+```bash
+for i in 1 2 3; do
+  TIME=$(curl -s -o /dev/null -w "%{time_total}" "${PROD_URL}" 2>/dev/null)
+  echo "측정 $i: ${TIME}s"
+done
+
+# 리소스 크기
+curl -s -I "${PROD_URL}" 2>/dev/null | grep -i "content-length\|transfer-encoding"
+```
+
+### Benchmark Step 3: Lighthouse (설치된 경우)
+
+```bash
+if command -v lighthouse >/dev/null 2>&1; then
+  lighthouse "${PROD_URL}" \
+    --output json \
+    --quiet \
+    --chrome-flags="--headless" \
+    2>/dev/null | python3 -c "
+import json, sys
+data = json.load(sys.stdin)
+cats = data.get('categories', {})
+for k, v in cats.items():
+    print(f\"{k}: {v['score']*100:.0f}\")
+audits = data.get('audits', {})
+for k in ['first-contentful-paint','largest-contentful-paint','total-blocking-time','cumulative-layout-shift','interactive']:
+    a = audits.get(k, {})
+    print(f\"{k}: {a.get('displayValue','N/A')}\")
+" 2>/dev/null || echo "JSON 파싱 실패"
+else
+  echo "lighthouse 미설치 — npm install -g lighthouse 권장"
+fi
+```
+
+### Benchmark Step 4: 결과 저장 + 비교
+
+```
+[Benchmark 결과] {날짜}
+
+로드 시간: {평균}s (이전: {이전값}s → {변화})
+
+Core Web Vitals:
+- LCP: {값} (목표: <2.5s) ✅/⚠️/❌
+- FID/INP: {값} (목표: <200ms)
+- CLS: {값} (목표: <0.1)
+- FCP: {값} (목표: <1.5s)
+
+Lighthouse:
+- Performance: {N}/100
+- Accessibility: {N}/100
+- Best Practices: {N}/100
+- SEO: {N}/100
+
+{이전 대비 회귀가 있으면 경고}
+```
+
+히스토리 저장:
+```bash
+echo "## {날짜}
+로드: {값}s | LCP: {값} | CLS: {값} | Performance: {N}
+" >> docs/sj-company/benchmark-history.md
+```

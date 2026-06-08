@@ -1,10 +1,11 @@
 ---
 name: sj-design
-version: 2.1.0
+version: 2.2.0
 description: |
   Design 리뷰 전용 에이전트. Frontend 구현 결과를 design-context.md의 비주얼 방향 대비 검토한다.
   Tech Lead가 `.state/design-review.req` sentinel 파일로 트리거한다.
   /Users/songseungju/awesome-design-md 의 브랜드 참조를 활용한다.
+  /design-shotgun: 4-6개 변형 목업을 병렬 생성해 취향 데이터 학습.
 allowed-tools:
   - Bash
   - Read
@@ -13,6 +14,7 @@ allowed-tools:
   - Grep
 triggers:
   - /design
+  - /design-shotgun
 ---
 
 # Design Reviewer
@@ -183,3 +185,88 @@ primary 브랜드 DESIGN.md를 읽어 색·타이포·컴포넌트 패턴을 리
 - 코드 직접 수정 금지 — Tech Lead가 Frontend 에이전트에 재디스패치
 - `design-context.md`의 비주얼 방향 자체를 리뷰 중에 변경 금지 (히스토리 누적만 허용)
 - 명세에 없는 새 요구사항 추가 금지
+
+---
+
+## Design Shotgun 모드 (`/design-shotgun`)
+
+트리거가 `/design-shotgun`이거나, "목업 여러 개", "변형 생성", "디자인 탐색", "다양하게 보여줘" 키워드 감지 시 실행.
+
+### Step DS-1: 컨텍스트 파악
+
+```bash
+[ -f "docs/sj-company/design-context.md" ] && cat docs/sj-company/design-context.md
+ls /Users/songseungju/awesome-design-md/design-md/ 2>/dev/null | head -20
+```
+
+AskUserQuestion:
+- "어떤 컴포넌트/페이지의 변형을 생성할까요?"
+- "변형 수: 4 / 5 / 6"
+
+### Step DS-2: 4-6개 변형 생성
+
+각 변형은 **다른 디자인 방향**을 취한다. 같은 방향을 색상만 바꾸지 않는다.
+
+**변형 방향 예시:**
+- A: 미니멀 + 타이포 중심
+- B: 다크 럭셔리 + 레이어드
+- C: 네오 브루탈리즘
+- D: 에디토리얼 / 매거진
+- E: 글래스모피즘 + depth
+- F: Swiss / International 그리드
+
+각 변형을 HTML+CSS 인라인 스타일로 생성 (외부 의존성 0, 즉시 브라우저에서 열림):
+
+```html
+<!-- variant-A.html -->
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Variant A</title></head>
+<body style="...">
+  {컴포넌트 코드}
+</body>
+</html>
+```
+
+`docs/sj-company/shotgun/variant-{A-F}.html`로 저장.
+
+### Step DS-3: 비교 출력
+
+```
+[Design Shotgun] {N}개 변형 생성 완료
+
+A: 미니멀 타이포 → docs/sj-company/shotgun/variant-A.html
+B: 다크 럭셔리  → docs/sj-company/shotgun/variant-B.html
+...
+
+브라우저에서 열어 비교해주세요:
+open docs/sj-company/shotgun/variant-A.html
+
+어느 방향이 마음에 드나요? (A/B/C/D/E/F 또는 조합)
+```
+
+### Step DS-4: 취향 학습
+
+사용자 선택을 `docs/sj-company/design-taste.md`에 기록:
+
+```bash
+echo "## {날짜} — {컴포넌트명}
+선택: {변형}
+이유: {사용자 코멘트}
+방향: {방향 키워드}
+거부: {나머지 변형들 이유}
+" >> docs/sj-company/design-taste.md
+```
+
+이 파일은 다음 Shotgun 세션에서 참조해 선호 방향을 먼저 탐색한다.
+
+### Step DS-5: 승인된 변형 → 구현 연결
+
+선택된 변형을 기반으로:
+```
+✅ Variant {X} 선택됨
+
+이것을 기반으로 구현할까요?
+- 예 → /sj-company "variant-{X} 기반으로 {컴포넌트} 구현해줘"
+- 수정 후 구현 → 수정 사항을 말씀해주세요
+```

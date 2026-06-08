@@ -1,6 +1,6 @@
 # S-skills
 
-[![version](https://img.shields.io/badge/version-2.9.0-blue)](https://github.com/s0613/S-skills/releases)
+[![version](https://img.shields.io/badge/version-3.0.0-blue)](https://github.com/s0613/S-skills/releases)
 [![plugin](https://img.shields.io/badge/claude--plugin-install-brightgreen)](https://github.com/s0613/S-skills)
 [![license](https://img.shields.io/badge/license-MIT-gray)](LICENSE)
 
@@ -19,12 +19,21 @@
 > | 말하면 | 자동으로 |
 > |--------|---------|
 > | "로그인 기능 만들어줘" | PM → Tech Lead → QA 전체 파이프라인 |
+> | "스펙 만들어줘" | 스펙 전문가 (5단계 정밀 명세) |
+> | "이게 맞아? 코딩 전 확인" | Office Hours (6개 강제 질문 검증) |
+> | "왜 이러지? 원인 파악" | 체계적 루트코즈 디버깅 |
+> | "보안 점검해줘" | CSO (OWASP + STRIDE 감사) |
+> | "PR 올려줘 / 배포해줘" | 릴리즈 자동화 (테스트→커버리지→PR) |
+> | "회고해줘" | 주간 회고 (커밋·테스트·성장 지표) |
+> | "배포 후 확인해줘" | Canary (프로덕션 상태 모니터링) |
+> | "성능 측정해줘" | Benchmark (Core Web Vitals·Lighthouse) |
+> | "목업 여러 개 보여줘" | Design Shotgun (4-6개 변형 병렬 생성) |
 > | "옵시디언에 정리해줘" | Obsidian Writer |
 > | "화면 클릭 자동화 만들어줘" | UI 자동화 전문가 (Playwright·PyAutoGUI) |
 > | "매일 파일 정리 자동화" | PC 자동화 전문가 (launchd·shell) |
 > | "인스타 포스팅 만들어줘" | SNS 마케팅 전문가 (카피·브랜드 검수) |
 > | "네이버 블로그 SEO 글 써줘" | SNS 마케팅 전문가 (블로그·AEO·RCON) |
-> | "구글 색인 등록해줘" | sj-seo (Search Console 브라우저 자동화) |
+> | "구글 색인 등록해줘" | SEO (Search Console 브라우저 자동화) |
 > | "코드 리뷰해줘" | 코드·문서·디자인 리뷰어 자동 선택 |
 > | "에이전트 설계 도와줘" | 에이전트 개발 전문가 |
 > | "에이전트 구조 점검해줘" | 에이전트 리뷰어 7축 심사 |
@@ -66,6 +75,13 @@ skills/
 │   ├── sj-automation/    ← PC 시스템 자동화 (launchd·shell·Python·AppleScript)
 │   └── sj-ui-auto/       ← 화면 UI 조작 자동화 (Playwright·PyAutoGUI·cliclick)
 │
+├── [품질·보안·릴리즈]
+│   ├── sj-spec/          ← 모호한 의도 → 실행 가능한 정밀 스펙 (5단계)
+│   ├── sj-investigate/   ← 체계적 루트코즈 디버깅 (가설→검증 강제)
+│   ├── sj-cso/           ← OWASP Top 10 + STRIDE 보안 감사
+│   ├── sj-ship/          ← 릴리즈 자동화 (테스트→커버리지→PR 오픈)
+│   └── sj-retro/         ← 주간 회고 (커밋·테스트·성장 지표)
+│
 ├── [마케팅·SEO]
 │   ├── sj-marketing/     ← SNS·블로그 캠페인·카피·브랜드 검수 (marketing_agent 연동)
 │   └── sj-seo/           ← Google Search Console + Naver 색인 자동화 (브라우저 직접 제어)
@@ -92,6 +108,15 @@ skills/
 |--------|----------------------------|------|
 | `/sj-company` | — | **전체 스킬 라우터** (항상 여기서 시작) |
 | `/s-skills` | — | 프로젝트 상태 감지 → 오케스트레이션 추천 |
+| `/spec` | 스펙, 명세, PRD, 기능 정의 | 모호한 의도 → 실행 가능한 정밀 스펙 |
+| `/office-hours` | 아이디어 검증, 이게 맞아?, 코딩 전 확인 | 6개 강제 질문 아이디어 검증 |
+| `/investigate` | 왜 이러지, 원인 파악, 디버깅, 루트코즈 | 체계적 루트코즈 디버깅 |
+| `/cso` | 보안 점검, 취약점, OWASP, 보안 감사 | OWASP Top 10 + STRIDE 보안 감사 |
+| `/ship` | 배포해줘, PR 올려줘, 릴리즈, 머지해줘 | 릴리즈 자동화 (테스트→커버리지→PR) |
+| `/retro` | 회고, retrospective, 이번 주 정리 | 주간 회고 (커밋·테스트·성장 지표) |
+| `/canary` | 배포 후 확인, 프로덕션 체크, 잘 올라갔어? | 배포 후 프로덕션 상태 모니터링 |
+| `/benchmark` | 성능 측정, Core Web Vitals, lighthouse | 성능 기준 측정 (전후 비교) |
+| `/design-shotgun` | 목업 여러 개, 변형 생성, 다양하게 보여줘 | 4-6개 디자인 변형 병렬 생성 |
 | `/obsidian` | 옵시디언, 문서화, 볼트, 노트로 | Obsidian 볼트 문서 작성 |
 | `/ui-auto` | 클릭, 버튼, 화면, 이미지 인식, 웹 자동화 | 화면 UI 조작 자동화 |
 | `/auto` | 자동화, 매일, 스케줄, 단축키, 파일 이동 | PC 시스템 자동화 |
