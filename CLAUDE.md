@@ -11,12 +11,12 @@
 
 ### SJ Company (역할 기반 개발 워크플로우)
 
-- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터. Obsidian 문서화 → 리뷰 → PM → Design → Tech Lead → QA
-- **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석
-- **s-skills:sj-design** (`/design`) — UI/UX 명세 작성 + Frontend 시각 리뷰
-- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰
-- **s-skills:sj-qa** (`/qa`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정
-- **s-skills:sj-secretary** (`/secretary`) — 비서. 총괄(sj-company)이 사이클 완료 시 작성한 report.md를 읽어 프로젝트별 현황·다음 명령·KPI를 요약 보고 (비서는 요약·전달만, 보고서 작성은 총괄 담당)
+- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v3.4.0. 17개 Step 0-* 키워드 블록으로 자동 감지. RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
+- **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석. AskUserQuestion 최대 1회, 모호해도 가정으로 진행. PII 마스킹 적용.
+- **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v3.0.0. 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
+- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.2.0. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용.
+- **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v2.2.0. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 자체 검토 루프 최대 2회.
+- **s-skills:sj-secretary** (`/secretary`) — 아침 브리핑 전문. 전체 프로젝트 PROJECT.md를 탐색해 긴급/진행/대기/완료별 우선순위 정렬 출력. 읽기 전용, 파일 수정 없음.
 - **s-skills:sj-dev-si** (`/sj-dev-si`) — SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 도메인 맵 직접 작성
 
 ### Obsidian Writer
@@ -28,7 +28,7 @@
 - **s-skills:sj-spec** (`/spec`, `/sj-spec`) — 스펙 작성 전문가. 모호한 의도를 5단계(why·scope·technical·draft·file)로 실행 가능한 정밀 스펙으로 변환
 - **s-skills:sj-investigate** (`/investigate`, `/sj-investigate`) — 체계적 루트코즈 디버깅. 가설 수립→검증 강제, 조사 없는 수정 금지
 - **s-skills:sj-cso** (`/cso`, `/sj-cso`) — CSO 보안 감사. OWASP Top 10 + STRIDE 위협 모델링, 8/10 이상 확신 취약점만 보고
-- **s-skills:sj-ship** (`/ship`, `/sj-ship`) — 릴리즈 엔지니어 자동화. 테스트→커버리지 감사→PR 오픈까지 한 번에
+- **s-skills:sj-ship** (`/ship`, `/sj-ship`) — 릴리즈 엔지니어 자동화. 테스트→커버리지 감사→PR 오픈까지 한 번에. sj-company 통해 호출 시 push 전 브랜치 확인 필수
 - **s-skills:sj-retro** (`/retro`, `/sj-retro`) — 주간 회고. 커밋·테스트·QA 지표로 Keep/Improve/Try 도출
 
 ### SEO Expert
@@ -63,6 +63,20 @@
 
 어느 프로젝트에서든 `/s-skills`로 시작하면 현재 상태를 감지해 안내한다.
 새 태스크는 `/sj-company <태스크 설명>`으로 시작하면 PM부터 자동 라우팅된다.
+
+## 환경 변수
+
+| 변수 | 기본값 | 설명 |
+|------|--------|------|
+| `DESIGN_REF_DIR` | `/Users/songseungju/awesome-design-md` | sj-design이 참조할 브랜드 DESIGN.md 루트 경로 |
+
+## 아키텍처 원칙 (v3.4.0 기준)
+
+- **RUN_ID**: sj-company 호출마다 `.state/current-run.txt`에 타임스탬프 ID 생성. 파이프라인 전체 추적 가능.
+- **Judge 독립성**: sj-qa는 구현자(Tech Lead)가 작성한 dev-summary.md를 읽지 않음. pm-brief + 실제 파일 직접 탐색으로 독립 검증.
+- **archive-only 불변식**: 영속 파일(PROJECT.md, *-context.md)은 통째 재작성 전 archive/ 백업 필수.
+- **PII 마스킹**: *-context.md append 전 password/token/secret 패턴 `[REDACTED]` 치환.
+- **spec 연속성**: sj-spec 저장 시 task.txt에 `[SPEC: 경로]` 자동 기록 → Tech Lead가 Dispatch Card에 포함.
 
 ## Docs Reference
 - [PRD](docs/prd.md)
