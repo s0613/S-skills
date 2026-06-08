@@ -3,9 +3,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.1.0-7c6f4f?style=flat-square" alt="version"></a>
-  <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-3f3a2c?style=flat-square" alt="plugin"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-a99e7d?style=flat-square" alt="license"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.1.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
 
 > **Claude Code용 역할 기반 개발 오케스트레이터.**  

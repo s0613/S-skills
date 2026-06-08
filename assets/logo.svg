@@ -1,70 +1,73 @@
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="S-skills mascot — marine duck">
-  <rect x="0" y="0" width="256" height="256" rx="28" fill="#f3ecda"/>
-
-  <g stroke="#3a302a" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-
-    <!-- tail (back) -->
-    <path d="M60 150 C 42 146 36 136 34 126 C 50 134 62 142 70 152 Z" fill="#f0c040"/>
-
-    <!-- body -->
-    <ellipse cx="112" cy="168" rx="56" ry="54" fill="#f7ce4d"/>
-    <!-- head -->
-    <circle cx="138" cy="116" r="42" fill="#f7ce4d"/>
-    <!-- belly highlight -->
-    <ellipse cx="108" cy="182" rx="34" ry="30" fill="#ffe08a" stroke="none"/>
-
-    <!-- front wing — SALUTE (raised to helmet brim) -->
-    <path d="M151 161 C 149 136 154 113 171 100 C 178 96 184 101 182 109 C 175 126 170 145 167 165 C 161 166 155 164 151 161 Z" fill="#f0c040"/>
-    <path d="M160 150 C 164 133 168 118 175 105" stroke-width="2" fill="none" opacity="0.5"/>
-
-    <!-- ===== MARINE COMBAT HELMET ===== -->
-    <!-- helmet dome (olive) over crown -->
-    <path d="M98 100 C 92 66 120 54 140 54 C 162 54 188 66 182 100 C 154 110 124 110 98 100 Z" fill="#5b6b43"/>
-    <!-- front brim over the eye -->
-    <path d="M174 94 C 192 92 202 99 199 108 C 188 111 179 109 172 104 Z" fill="#4a5836"/>
-    <!-- camo blobs -->
-    <g stroke="none">
-      <path d="M112 70 C 122 64 132 70 126 80 C 116 84 106 80 112 70 Z" fill="#3f4a2e"/>
-      <path d="M150 64 C 162 62 168 72 158 78 C 148 80 142 70 150 64 Z" fill="#8a8a5a"/>
-      <path d="M138 92 C 150 88 158 96 148 102 C 136 104 130 96 138 92 Z" fill="#3f4a2e"/>
-    </g>
-    <!-- helmet rim line -->
-    <path d="M98 100 C 124 110 154 110 182 100" stroke-width="2.5" fill="none" opacity="0.6"/>
-
-    <!-- eyebrow (angled, determined) + eye -->
-    <path d="M143 112 L 161 117" stroke-width="3" fill="none"/>
-    <circle cx="152" cy="124" r="6.5" fill="#3a302a" stroke="none"/>
-    <circle cx="154" cy="122" r="2" fill="#ffffff" stroke="none"/>
-    <!-- blush -->
-    <ellipse cx="161" cy="137" rx="7.5" ry="4.5" fill="#f6a8a0" stroke="none" opacity="0.8"/>
-
-    <!-- beak (closed, firm) -->
-    <path d="M174 124 Q 206 120 214 128 Q 206 136 178 134 Z" fill="#f3942f"/>
-    <path d="M178 134 Q 198 137 208 134" stroke-width="2" fill="none"/>
-
-    <!-- ===== RED NAME TAG (해병대 명찰) ===== -->
-    <g transform="rotate(-6 104 168)">
-      <rect x="84" y="158" width="40" height="20" rx="3" fill="#c0392b"/>
-      <rect x="89" y="164" width="30" height="3" rx="1.5" fill="#ffffff" stroke="none"/>
-      <rect x="89" y="170" width="20" height="3" rx="1.5" fill="#ffe08a" stroke="none"/>
-    </g>
-
-    <!-- feet -->
-    <path d="M96 218 L 86 234 L 110 234 Z" fill="#f3942f"/>
-    <path d="M126 220 L 118 236 L 142 236 Z" fill="#f3942f"/>
-
-    <!-- keyboard (held in front) -->
-    <rect x="64" y="202" width="118" height="30" rx="6" fill="#313a4a"/>
-    <g fill="#eaeef4" stroke="none">
-      <rect x="72" y="208" width="12" height="7" rx="1.5"/>
-      <rect x="88" y="208" width="12" height="7" rx="1.5"/>
-      <rect x="104" y="208" width="12" height="7" rx="1.5"/>
-      <rect x="120" y="208" width="12" height="7" rx="1.5"/>
-      <rect x="136" y="208" width="12" height="7" rx="1.5"/>
-      <rect x="152" y="208" width="22" height="7" rx="1.5"/>
-      <rect x="72" y="219" width="20" height="7" rx="1.5"/>
-      <rect x="96" y="219" width="60" height="7" rx="1.5"/>
-      <rect x="160" y="219" width="14" height="7" rx="1.5"/>
-    </g>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="S-skills">
+  <defs>
+    <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="0" y1="37.0" x2="0" y2="219.0">
+      <stop offset="0" stop-color="#ffd23f"/>
+      <stop offset="0.45" stop-color="#f7a521"/>
+      <stop offset="1" stop-color="#a85518"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="256" height="256" rx="28" fill="#0d0d0d"/>
+  <g stroke="#f2a92b" stroke-width="2.6" opacity="0.85" stroke-linecap="square">
+    <line x1="78.6" y1="52.6" x2="104.6" y2="52.6"/>
+    <line x1="78.6" y1="52.6" x2="78.6" y2="78.6"/>
+    <line x1="104.6" y1="52.6" x2="130.6" y2="52.6"/>
+    <line x1="104.6" y1="78.6" x2="130.6" y2="78.6"/>
+    <line x1="130.6" y1="52.6" x2="156.6" y2="52.6"/>
+    <line x1="130.6" y1="78.6" x2="156.6" y2="78.6"/>
+    <line x1="156.6" y1="52.6" x2="182.6" y2="52.6"/>
+    <line x1="156.6" y1="78.6" x2="182.6" y2="78.6"/>
+    <line x1="182.6" y1="52.6" x2="208.6" y2="52.6"/>
+    <line x1="182.6" y1="78.6" x2="208.6" y2="78.6"/>
+    <line x1="208.6" y1="52.6" x2="208.6" y2="78.6"/>
+    <line x1="78.6" y1="78.6" x2="78.6" y2="104.6"/>
+    <line x1="104.6" y1="78.6" x2="104.6" y2="104.6"/>
+    <line x1="78.6" y1="104.6" x2="78.6" y2="130.6"/>
+    <line x1="104.6" y1="104.6" x2="104.6" y2="130.6"/>
+    <line x1="78.6" y1="156.6" x2="104.6" y2="156.6"/>
+    <line x1="78.6" y1="130.6" x2="78.6" y2="156.6"/>
+    <line x1="104.6" y1="130.6" x2="130.6" y2="130.6"/>
+    <line x1="104.6" y1="156.6" x2="130.6" y2="156.6"/>
+    <line x1="130.6" y1="130.6" x2="156.6" y2="130.6"/>
+    <line x1="130.6" y1="156.6" x2="156.6" y2="156.6"/>
+    <line x1="156.6" y1="130.6" x2="182.6" y2="130.6"/>
+    <line x1="156.6" y1="156.6" x2="182.6" y2="156.6"/>
+    <line x1="182.6" y1="130.6" x2="208.6" y2="130.6"/>
+    <line x1="208.6" y1="130.6" x2="208.6" y2="156.6"/>
+    <line x1="182.6" y1="156.6" x2="182.6" y2="182.6"/>
+    <line x1="208.6" y1="156.6" x2="208.6" y2="182.6"/>
+    <line x1="182.6" y1="182.6" x2="182.6" y2="208.6"/>
+    <line x1="208.6" y1="182.6" x2="208.6" y2="208.6"/>
+    <line x1="78.6" y1="208.6" x2="104.6" y2="208.6"/>
+    <line x1="78.6" y1="234.6" x2="104.6" y2="234.6"/>
+    <line x1="78.6" y1="208.6" x2="78.6" y2="234.6"/>
+    <line x1="104.6" y1="208.6" x2="130.6" y2="208.6"/>
+    <line x1="104.6" y1="234.6" x2="130.6" y2="234.6"/>
+    <line x1="130.6" y1="208.6" x2="156.6" y2="208.6"/>
+    <line x1="130.6" y1="234.6" x2="156.6" y2="234.6"/>
+    <line x1="156.6" y1="208.6" x2="182.6" y2="208.6"/>
+    <line x1="156.6" y1="234.6" x2="182.6" y2="234.6"/>
+    <line x1="182.6" y1="234.6" x2="208.6" y2="234.6"/>
+    <line x1="208.6" y1="208.6" x2="208.6" y2="234.6"/>
+  </g>
+  <g fill="url(#gold)">
+    <rect x="63.0" y="37.0" width="26" height="26"/>
+    <rect x="89.0" y="37.0" width="26" height="26"/>
+    <rect x="115.0" y="37.0" width="26" height="26"/>
+    <rect x="141.0" y="37.0" width="26" height="26"/>
+    <rect x="167.0" y="37.0" width="26" height="26"/>
+    <rect x="63.0" y="63.0" width="26" height="26"/>
+    <rect x="63.0" y="89.0" width="26" height="26"/>
+    <rect x="63.0" y="115.0" width="26" height="26"/>
+    <rect x="89.0" y="115.0" width="26" height="26"/>
+    <rect x="115.0" y="115.0" width="26" height="26"/>
+    <rect x="141.0" y="115.0" width="26" height="26"/>
+    <rect x="167.0" y="115.0" width="26" height="26"/>
+    <rect x="167.0" y="141.0" width="26" height="26"/>
+    <rect x="167.0" y="167.0" width="26" height="26"/>
+    <rect x="63.0" y="193.0" width="26" height="26"/>
+    <rect x="89.0" y="193.0" width="26" height="26"/>
+    <rect x="115.0" y="193.0" width="26" height="26"/>
+    <rect x="141.0" y="193.0" width="26" height="26"/>
+    <rect x="167.0" y="193.0" width="26" height="26"/>
   </g>
 </svg>
