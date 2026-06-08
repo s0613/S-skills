@@ -1,50 +1,73 @@
-<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="S-skills logo">
-  <defs>
-    <radialGradient id="paper" cx="0.5" cy="0.42" r="0.75">
-      <stop offset="0" stop-color="#f3ecda"/>
-      <stop offset="1" stop-color="#e6dcc4"/>
-    </radialGradient>
-  </defs>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="S-skills mascot — herald duck">
+  <rect x="0" y="0" width="256" height="256" rx="28" fill="#f3ecda"/>
 
-  <rect x="0" y="0" width="256" height="256" rx="20" fill="url(#paper)"/>
+  <g stroke="#3a302a" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
 
-  <g stroke="#23211b" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <!-- classical double frame -->
-    <circle cx="128" cy="128" r="116" stroke-width="2.5"/>
-    <circle cx="128" cy="128" r="108" stroke-width="1"/>
+    <!-- helmet wings (behind head) — lower wing first for depth -->
+    <path d="M116 98 C 98 94 84 88 70 80 C 86 90 102 95 120 95 C 122 95 120 98 116 98 Z" fill="#efe7d0"/>
+    <path d="M110 90 C 90 82 74 72 60 56 C 78 72 96 82 114 86 C 117 87 115 90 110 90 Z" fill="#fbf6e6"/>
+    <path d="M102 84 C 90 78 80 71 70 62" stroke-width="2" fill="none"/>
 
-    <!-- wings: fine engraved feathers -->
-    <g stroke-width="2.2">
-      <path d="M122 94 Q 100 86 78 68"/>
-      <path d="M122 100 Q 97 96 74 82"/>
-      <path d="M122 106 Q 96 106 70 99"/>
-      <path d="M122 112 Q 99 116 77 117"/>
-      <path d="M134 94 Q 156 86 178 68"/>
-      <path d="M134 100 Q 159 96 182 82"/>
-      <path d="M134 106 Q 160 106 186 99"/>
-      <path d="M134 112 Q 157 116 179 117"/>
+    <!-- tail (back) -->
+    <path d="M60 150 C 42 146 36 136 34 126 C 50 134 62 142 70 152 Z" fill="#f0c040"/>
+
+    <!-- body -->
+    <ellipse cx="112" cy="168" rx="56" ry="54" fill="#f7ce4d"/>
+    <!-- head -->
+    <circle cx="138" cy="116" r="42" fill="#f7ce4d"/>
+    <!-- belly highlight -->
+    <ellipse cx="108" cy="182" rx="34" ry="30" fill="#ffe08a" stroke="none"/>
+
+    <!-- front wing holding trumpet -->
+    <path d="M150 158 C 172 150 192 146 212 140 C 202 152 184 162 166 168 C 158 166 150 164 150 158 Z" fill="#f0c040"/>
+
+    <!-- helmet dome (on top of crown) -->
+    <path d="M104 104 C 100 76 122 64 140 64 C 158 64 180 76 176 104 C 152 111 128 111 104 104 Z" fill="#c3cdd9"/>
+    <!-- helmet rim band (gold) -->
+    <path d="M102 101 C 128 109 150 109 178 101 L 177 106 C 150 114 128 114 103 106 Z" fill="#e8b84b"/>
+    <!-- dome shine -->
+    <path d="M118 76 C 126 70 136 69 146 71" stroke-width="2.5" fill="none" opacity="0.7"/>
+
+    <!-- eyebrow + eye -->
+    <path d="M145 113 Q 152 110 159 114" stroke-width="2.6" fill="none"/>
+    <circle cx="152" cy="122" r="6.5" fill="#3a302a" stroke="none"/>
+    <circle cx="154" cy="120" r="2" fill="#ffffff" stroke="none"/>
+    <!-- blush -->
+    <ellipse cx="160" cy="135" rx="8" ry="5" fill="#f6a8a0" stroke="none" opacity="0.8"/>
+
+    <!-- beak (open, blowing) -->
+    <path d="M174 119 Q 204 113 216 121 Q 206 127 178 128 Z" fill="#f3942f"/>
+    <path d="M180 131 Q 202 134 212 130 Q 202 140 182 138 Z" fill="#f3942f"/>
+
+    <!-- trumpet: tube -> bell -->
+    <path d="M214 120 L 238 113 L 240 128 L 215 131 Z" fill="#ecc14e"/>
+    <path d="M236 109 L 260 97 L 260 143 L 236 131 Z" fill="#ecc14e"/>
+    <path d="M259 98 Q 268 120 259 142" fill="#cfa233" stroke-width="2.5"/>
+    <circle cx="216" cy="124" r="4" fill="#cfa233"/>
+    <!-- sound notes -->
+    <g stroke-width="2.4">
+      <circle cx="250" cy="82" r="3.2" fill="#3a302a" stroke="none"/>
+      <path d="M253 82 L 253 70" fill="none"/>
+      <circle cx="266" cy="74" r="2.6" fill="#3a302a" stroke="none"/>
+      <path d="M268 74 L 268 64" fill="none"/>
     </g>
 
-    <!-- staff -->
-    <path d="M128 90 L 128 206" stroke-width="3"/>
-    <path d="M118 206 L 138 206" stroke-width="2.4"/>
+    <!-- feet -->
+    <path d="M96 218 L 86 234 L 110 234 Z" fill="#f3942f"/>
+    <path d="M126 220 L 118 236 L 142 236 Z" fill="#f3942f"/>
 
-    <!-- entwined serpents -->
-    <g stroke-width="2.2">
-      <path d="M128 202 C 112 192 112 172 128 162 C 144 152 144 132 128 122 C 117 115 117 106 125 100"/>
-      <path d="M128 202 C 144 192 144 172 128 162 C 112 152 112 132 128 122 C 139 115 139 106 131 100"/>
+    <!-- keyboard (held in front) -->
+    <rect x="64" y="202" width="118" height="30" rx="6" fill="#313a4a"/>
+    <g fill="#eaeef4" stroke="none">
+      <rect x="72" y="208" width="12" height="7" rx="1.5"/>
+      <rect x="88" y="208" width="12" height="7" rx="1.5"/>
+      <rect x="104" y="208" width="12" height="7" rx="1.5"/>
+      <rect x="120" y="208" width="12" height="7" rx="1.5"/>
+      <rect x="136" y="208" width="12" height="7" rx="1.5"/>
+      <rect x="152" y="208" width="22" height="7" rx="1.5"/>
+      <rect x="72" y="219" width="20" height="7" rx="1.5"/>
+      <rect x="96" y="219" width="60" height="7" rx="1.5"/>
+      <rect x="160" y="219" width="14" height="7" rx="1.5"/>
     </g>
-
-    <!-- serpent heads -->
-    <g stroke-width="2">
-      <circle cx="121" cy="97" r="3.4" fill="#23211b"/>
-      <circle cx="135" cy="97" r="3.4" fill="#23211b"/>
-      <path d="M119 95 L 114 92"/>
-      <path d="M137 95 L 142 92"/>
-    </g>
-
-    <!-- winged finial orb -->
-    <circle cx="128" cy="80" r="7" fill="#23211b"/>
-    <path d="M128 73 L 128 66" stroke-width="2"/>
   </g>
 </svg>
