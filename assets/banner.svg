@@ -9,34 +9,32 @@
   <rect x="0" y="0" width="1040" height="300" rx="20" fill="url(#paper)"/>
   <rect x="4" y="4" width="1032" height="292" rx="16" fill="none" stroke="#3a302a" stroke-width="1.5" opacity="0.45"/>
 
-  <!-- herald duck mascot -->
+  <!-- marine duck mascot -->
   <g transform="translate(18 26) scale(0.82)" stroke="#3a302a" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M116 98 C 98 94 84 88 70 80 C 86 90 102 95 120 95 C 122 95 120 98 116 98 Z" fill="#efe7d0"/>
-    <path d="M110 90 C 90 82 74 72 60 56 C 78 72 96 82 114 86 C 117 87 115 90 110 90 Z" fill="#fbf6e6"/>
-    <path d="M102 84 C 90 78 80 71 70 62" stroke-width="2" fill="none"/>
     <path d="M60 150 C 42 146 36 136 34 126 C 50 134 62 142 70 152 Z" fill="#f0c040"/>
     <ellipse cx="112" cy="168" rx="56" ry="54" fill="#f7ce4d"/>
     <circle cx="138" cy="116" r="42" fill="#f7ce4d"/>
     <ellipse cx="108" cy="182" rx="34" ry="30" fill="#ffe08a" stroke="none"/>
-    <path d="M150 158 C 172 150 192 146 212 140 C 202 152 184 162 166 168 C 158 166 150 164 150 158 Z" fill="#f0c040"/>
-    <path d="M104 104 C 100 76 122 64 140 64 C 158 64 180 76 176 104 C 152 111 128 111 104 104 Z" fill="#c3cdd9"/>
-    <path d="M102 101 C 128 109 150 109 178 101 L 177 106 C 150 114 128 114 103 106 Z" fill="#e8b84b"/>
-    <path d="M118 76 C 126 70 136 69 146 71" stroke-width="2.5" fill="none" opacity="0.7"/>
-    <path d="M145 113 Q 152 110 159 114" stroke-width="2.6" fill="none"/>
-    <circle cx="152" cy="122" r="6.5" fill="#3a302a" stroke="none"/>
-    <circle cx="154" cy="120" r="2" fill="#ffffff" stroke="none"/>
-    <ellipse cx="160" cy="135" rx="8" ry="5" fill="#f6a8a0" stroke="none" opacity="0.8"/>
-    <path d="M174 119 Q 204 113 216 121 Q 206 127 178 128 Z" fill="#f3942f"/>
-    <path d="M180 131 Q 202 134 212 130 Q 202 140 182 138 Z" fill="#f3942f"/>
-    <path d="M214 120 L 238 113 L 240 128 L 215 131 Z" fill="#ecc14e"/>
-    <path d="M236 109 L 260 97 L 260 143 L 236 131 Z" fill="#ecc14e"/>
-    <path d="M259 98 Q 268 120 259 142" fill="#cfa233" stroke-width="2.5"/>
-    <circle cx="216" cy="124" r="4" fill="#cfa233"/>
-    <g stroke-width="2.4">
-      <circle cx="250" cy="82" r="3.2" fill="#3a302a" stroke="none"/>
-      <path d="M253 82 L 253 70" fill="none"/>
-      <circle cx="266" cy="74" r="2.6" fill="#3a302a" stroke="none"/>
-      <path d="M268 74 L 268 64" fill="none"/>
+    <path d="M151 161 C 149 136 154 113 171 100 C 178 96 184 101 182 109 C 175 126 170 145 167 165 C 161 166 155 164 151 161 Z" fill="#f0c040"/>
+    <path d="M160 150 C 164 133 168 118 175 105" stroke-width="2" fill="none" opacity="0.5"/>
+    <path d="M98 100 C 92 66 120 54 140 54 C 162 54 188 66 182 100 C 154 110 124 110 98 100 Z" fill="#5b6b43"/>
+    <path d="M174 94 C 192 92 202 99 199 108 C 188 111 179 109 172 104 Z" fill="#4a5836"/>
+    <g stroke="none">
+      <path d="M112 70 C 122 64 132 70 126 80 C 116 84 106 80 112 70 Z" fill="#3f4a2e"/>
+      <path d="M150 64 C 162 62 168 72 158 78 C 148 80 142 70 150 64 Z" fill="#8a8a5a"/>
+      <path d="M138 92 C 150 88 158 96 148 102 C 136 104 130 96 138 92 Z" fill="#3f4a2e"/>
+    </g>
+    <path d="M98 100 C 124 110 154 110 182 100" stroke-width="2.5" fill="none" opacity="0.6"/>
+    <path d="M143 112 L 161 117" stroke-width="3" fill="none"/>
+    <circle cx="152" cy="124" r="6.5" fill="#3a302a" stroke="none"/>
+    <circle cx="154" cy="122" r="2" fill="#ffffff" stroke="none"/>
+    <ellipse cx="161" cy="137" rx="7.5" ry="4.5" fill="#f6a8a0" stroke="none" opacity="0.8"/>
+    <path d="M174 124 Q 206 120 214 128 Q 206 136 178 134 Z" fill="#f3942f"/>
+    <path d="M178 134 Q 198 137 208 134" stroke-width="2" fill="none"/>
+    <g transform="rotate(-6 104 168)">
+      <rect x="84" y="158" width="40" height="20" rx="3" fill="#c0392b"/>
+      <rect x="89" y="164" width="30" height="3" rx="1.5" fill="#ffffff" stroke="none"/>
+      <rect x="89" y="170" width="20" height="3" rx="1.5" fill="#ffe08a" stroke="none"/>
     </g>
     <path d="M96 218 L 86 234 L 110 234 Z" fill="#f3942f"/>
     <path d="M126 220 L 118 236 L 142 236 Z" fill="#f3942f"/>
