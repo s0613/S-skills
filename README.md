@@ -11,12 +11,12 @@
 <br>
 
 <p align="center">
-  <strong>혼자 일하는 개발자의 팀.</strong>
+  <strong>혼자서도 기업처럼.</strong>
 </p>
 
 <p align="center">
-  기획자, 디자이너, 개발자, QA, 보안 전문가가<br>
-  Claude Code 안에 있습니다.
+  PM, 디자이너, 개발자, QA, 보안 전문가가<br>
+  Claude Code 안에서 팀처럼 움직입니다.
 </p>
 
 <br>
