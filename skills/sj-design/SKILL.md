@@ -193,14 +193,16 @@ cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{브랜드
 ### Step G-3: 3개 시안 HTML 드래프트 생성
 
 각 시안을 self-contained HTML로 만든다. 외부 의존성 0, 브라우저에서 즉시 열린다.
-**드래프트 수준** — **레이아웃 와이어프레임만 구현한다. 실제 텍스트·이미지·데이터 금지.**
+**드래프트 수준** — **전체 페이지 섹션 흐름을 와이어프레임으로 구현한다. 실제 텍스트·이미지·데이터 금지.**
 
 와이어프레임 원칙:
+- **전체 페이지 섹션 순서를 위에서 아래로 모두 표현한다** (Nav → Hero → Features → Social Proof → Pricing → CTA → Footer 등 페이지 성격에 맞게 구성)
 - 모든 콘텐츠 영역은 **색상이 채워진 박스**로 표현한다
-- 박스 위에 요소 레이블만 표기한다 (예: `[Hero Heading]`, `[CTA Button]`, `[Feature Card × 3]`, `[Navigation]`)
+- 박스 위에 요소 레이블만 표기한다 (예: `[Hero Heading]`, `[CTA Button]`, `[Feature Card × 3]`, `[Footer Nav]`)
 - 실제 카피·이미지·아이콘 절대 금지
 - 박스 색상은 해당 시안의 팔레트에서 명도를 조절해 위계를 표현한다
-- 레이아웃 비율·spacing·그리드 배치가 핵심이다 — 내용이 아니라 구조를 보는 단계
+- 섹션 간 간격·비율·그리드 배치가 핵심이다 — 페이지 전체 흐름을 한눈에 파악하는 단계
+- 각 섹션 좌측에 섹션명 레이블을 고정 표기한다 (예: `// HERO`, `// FEATURES`, `// PRICING`)
 
 ```html
 <!-- 박스 표현 예시 -->
