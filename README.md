@@ -97,7 +97,7 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 |--------|------|
 | `/sj-company <태스크>` | **모든 것의 시작점** — 태스크를 설명하면 적절한 전문가로 자동 라우팅 |
 | `/spec` | 모호한 의도 → 5단계 실행 가능한 정밀 명세 |
-| `/design` | 레퍼런스 브랜드 DNA 기반 UI 설계 |
+| `/design` | 레퍼런스 브랜드 DNA 기반 UI 설계 — 역동/절제/균형 3개 시안 HTML 브라우저 확인 후 방향 선택 |
 | `/design-shotgun` | 4–6개 방향 병렬 탐색 후 선택 |
 | `/investigate` | 가설 수립 → 검증 강제, 추측성 수정 금지 |
 | `/cso` | OWASP + STRIDE 보안 감사 |
