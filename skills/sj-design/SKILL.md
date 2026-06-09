@@ -193,7 +193,26 @@ cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{브랜드
 ### Step G-3: 3개 시안 HTML 드래프트 생성
 
 각 시안을 self-contained HTML로 만든다. 외부 의존성 0, 브라우저에서 즉시 열린다.
-**드래프트 수준** — Hero 섹션 또는 핵심 컴포넌트 1개만 구현한다. 전체 페이지 불필요.
+**드래프트 수준** — **레이아웃 와이어프레임만 구현한다. 실제 텍스트·이미지·데이터 금지.**
+
+와이어프레임 원칙:
+- 모든 콘텐츠 영역은 **색상이 채워진 박스**로 표현한다
+- 박스 위에 요소 레이블만 표기한다 (예: `[Hero Heading]`, `[CTA Button]`, `[Feature Card × 3]`, `[Navigation]`)
+- 실제 카피·이미지·아이콘 절대 금지
+- 박스 색상은 해당 시안의 팔레트에서 명도를 조절해 위계를 표현한다
+- 레이아웃 비율·spacing·그리드 배치가 핵심이다 — 내용이 아니라 구조를 보는 단계
+
+```html
+<!-- 박스 표현 예시 -->
+<div style="background:#1a1a1a;height:80px;display:flex;align-items:center;padding:0 40px">
+  <div style="background:#333;width:120px;height:32px;border-radius:4px"></div>  <!-- [Logo] -->
+  <div style="margin-left:auto;display:flex;gap:24px">
+    <div style="background:#333;width:60px;height:20px;border-radius:3px"></div> <!-- [Nav Item] -->
+    <div style="background:#333;width:60px;height:20px;border-radius:3px"></div>
+    <div style="background:#e5c87a;width:90px;height:36px;border-radius:4px"></div> <!-- [CTA] -->
+  </div>
+</div>
+```
 
 ```bash
 mkdir -p docs/sj-company/drafts
