@@ -1,11 +1,13 @@
 ---
 name: sj-design
-version: 3.1.0
+version: 3.2.0
 description: |
   Design 전문가. 웹페이지·컴포넌트 디자인을 레퍼런스 DNA 기반으로 생성한다.
+  생성 시 항상 3개 시안(역동형·절제형·균형형) HTML을 브라우저에 열어 사용자가
+  방향을 선택한 뒤에만 풀 구현을 진행한다.
   URL 레퍼런스 시 사이트를 직접 방문해 스크린샷 캡처 후 DNA 추출, 구현 후 비교표 출력.
-  생성 전 실제 브랜드 DESIGN.md를 읽어 구체적 값(hex·font·spacing)을 추출하고
-  커밋 선언 후에만 코드를 작성한다. 거부 시 방향을 완전 폐기하고 재설계한다.
+  생성 전 실제 브랜드 DESIGN.md를 읽어 구체적 값(hex·font·spacing)을 추출한다.
+  거부 시 방향을 완전 폐기하고 재설계한다.
   /design-shotgun: 4-6개 변형 병렬 생성. /review: 구현 결과 리뷰.
 allowed-tools:
   - Bash
@@ -162,24 +164,43 @@ echo "{스크린샷 경로 또는 URL}" > docs/sj-company/.state/ref-source.txt
 
 ---
 
-### Step G-2: 디자인 커밋 선언 (코드 작성 전 사용자에게 출력)
+### Step G-2: 3개 시안 방향 설계 (HTML 생성 전)
 
-레퍼런스 DNA를 추출한 뒤, 코드를 작성하기 **전에** 반드시 아래 형식으로 선언한다:
+G-1에서 추출한 DNA를 바탕으로 **대비되는 3가지 방향**을 잡는다.
+각 시안은 서로 다른 브랜드 레퍼런스, 서로 다른 레이아웃 패턴을 사용한다.
 
+```bash
+# 브랜드 목록 확인 (3개 다른 브랜드 선정)
+ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/null
+
+# 시안별 DESIGN.md 읽기
+cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{브랜드A}/DESIGN.md
+cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{브랜드B}/DESIGN.md
+cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{브랜드C}/DESIGN.md
 ```
-[디자인 커밋 선언] {브랜드명}
-방향: {구체적 방향 — "세로 타이포 중심 + 넓은 여백 + 모노스페이스 강조"}
-컬러: bg #{hex} · text #{hex} · accent #{hex}
-타이포: {제목폰트} / {본문폰트}, ls {값}em, lh {제목}/{본문}
-레이아웃: {구체적 패턴} — 강조 {딱 1가지}
+
+3개 시안 방향 구성 원칙:
+
+| 시안 | 성격 | 방향 예시 |
+|------|------|-----------|
+| **A — 역동/임팩트** | 첫인상 강렬, 개성 극대화 | 네오브루탈·다크럭셔리·에디토리얼·3D |
+| **B — 절제/신뢰** | 깔끔하고 전문적, 전환율 최적화 | Swiss·미니멀·라이트럭셔리·재패니즈 |
+| **C — 균형/표준** | 친숙하고 안전, 넓은 타겟층 | Material·Friendly·Corporate Clean |
+
+사용자가 레퍼런스 URL을 줬으면 → 시안 A에 해당 DNA 우선 반영.
+`design-banned.md`에 기록된 방향은 어느 시안에도 사용 금지.
+
+### Step G-3: 3개 시안 HTML 드래프트 생성
+
+각 시안을 self-contained HTML로 만든다. 외부 의존성 0, 브라우저에서 즉시 열린다.
+**드래프트 수준** — Hero 섹션 또는 핵심 컴포넌트 1개만 구현한다. 전체 페이지 불필요.
+
+```bash
+mkdir -p docs/sj-company/drafts
+TS=$(date +%Y%m%d-%H%M%S)
 ```
 
-사용자가 이 방향을 **승인하면** 코드를 작성한다.
-사용자가 **아무 말 없이 진행 요청**하면 승인으로 간주한다.
-
-### Step G-3: HTML 구현
-
-외부 의존성 0, 브라우저에서 즉시 열리는 self-contained HTML로 작성한다.
+각 시안 파일 구조:
 
 ```html
 <!DOCTYPE html>
@@ -187,11 +208,10 @@ echo "{스크린샷 경로 또는 URL}" > docs/sj-company/.state/ref-source.txt
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{컴포넌트명}</title>
+  <title>시안 {A|B|C} — {컴포넌트명}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family={폰트}&display=swap" rel="stylesheet">
   <style>
-    /* 커밋 선언에서 추출한 정확한 값만 사용 */
     :root {
       --bg: #{hex};
       --text: #{hex};
@@ -200,45 +220,94 @@ echo "{스크린샷 경로 또는 URL}" > docs/sj-company/.state/ref-source.txt
       --font-title: '{제목폰트}', serif;
       --font-body: '{본문폰트}', sans-serif;
     }
-    /* 이하 CSS */
+    /* 해당 시안 CSS */
   </style>
 </head>
 <body>
-  <!-- 구현 -->
+  <!-- 드래프트: Hero 또는 핵심 컴포넌트 1개 -->
+  <!-- 상단에 시안 레이블 표시 -->
+  <div style="position:fixed;top:12px;right:12px;background:#000;color:#fff;padding:4px 10px;font-size:12px;border-radius:4px;z-index:9999;font-family:monospace">
+    시안 {A|B|C} — {방향 키워드}
+  </div>
 </body>
 </html>
 ```
 
-저장: `docs/sj-company/shotgun/design-{타임스탬프}.html`
+저장 경로: `docs/sj-company/drafts/draft-{A|B|C}-{TS}.html`
+
+3개 파일 생성 후 한꺼번에 오픈:
 
 ```bash
-mkdir -p docs/sj-company/shotgun
-open docs/sj-company/shotgun/design-{타임스탬프}.html
+open "docs/sj-company/drafts/draft-A-${TS}.html"
+sleep 0.3
+open "docs/sj-company/drafts/draft-B-${TS}.html"
+sleep 0.3
+open "docs/sj-company/drafts/draft-C-${TS}.html"
 ```
 
-### Step G-3b: 시각적 승인 게이트 + 레퍼런스 비교 (코드 이관 전 필수)
+### Step G-3b: 시안 선택 게이트
 
-HTML을 열었으면 **레퍼런스와 비교한 자가 평가를 먼저 출력한 뒤** 사용자 승인을 받는다.
+브라우저를 열었으면 아래 형식으로 요청한다:
 
-**레퍼런스가 있는 경우 (URL 또는 이미지를 받은 경우) — 비교 체크 필수:**
+```
+[시안 3개 브라우저에서 열렸습니다]
+
+시안 A ({브랜드A}) — {방향 한줄}
+  컬러: bg #{hex} · accent #{hex} · {폰트}
+  파일: docs/sj-company/drafts/draft-A-{TS}.html
+
+시안 B ({브랜드B}) — {방향 한줄}
+  컬러: bg #{hex} · accent #{hex} · {폰트}
+  파일: docs/sj-company/drafts/draft-B-{TS}.html
+
+시안 C ({브랜드C}) — {방향 한줄}
+  컬러: bg #{hex} · accent #{hex} · {폰트}
+  파일: docs/sj-company/drafts/draft-C-{TS}.html
+
+어느 방향으로 진행할까요?
+  A / B / C — 해당 방향으로 풀 구현
+  A+B 조합 — 두 시안의 요소 병합
+  "A인데 컬러만 B로" — 부분 수정 후 재생성
+  "다시" — 3개 전부 폐기, 새 방향으로 재생성
+```
+
+**사용자가 선택하기 전까지 구현 코드를 작성하지 않는다. 예외 없는 규칙이다.**
+
+### Step G-3c: 선택 처리
+
+| 사용자 응답 | 처리 |
+|-------------|------|
+| A / B / C 단독 | 선택된 시안 DNA로 커밋 선언 → G-4 진행 |
+| 조합 요청 | 두 시안 DNA 병합 → 새 드래프트 1개 재생성 → 다시 G-3b |
+| 부분 수정 | 해당 시안만 수정 재생성 → 다시 G-3b |
+| "다시" | 3개 전부 `design-banned.md` 기록 → G-2 재시작 |
+
+선택 확정 후 커밋 선언:
+
+```
+[디자인 커밋 선언] 시안 {X} — {브랜드명}
+방향: {구체적 방향}
+컬러: bg #{hex} · text #{hex} · accent #{hex}
+타이포: {제목폰트} / {본문폰트}, ls {값}em, lh {제목}/{본문}
+레이아웃: {구체적 패턴} — 강조 {딱 1가지}
+```
+
+**레퍼런스 비교 (URL 레퍼런스가 있을 때):**
 
 ```bash
-# 레퍼런스 소스 확인
 REF_SOURCE=$(cat docs/sj-company/.state/ref-source.txt 2>/dev/null)
-
-# 구현 HTML 스크린샷 캡처 (가능한 경우)
-npx playwright screenshot "file://$(pwd)/docs/sj-company/shotgun/design-{타임스탬프}.html" \
-  docs/sj-company/reference-shots/impl-{타임스탬프}.png 2>/dev/null || true
+npx playwright screenshot "file://$(pwd)/docs/sj-company/drafts/draft-{X}-${TS}.html" \
+  docs/sj-company/reference-shots/selected-${TS}.png 2>/dev/null || true
 ```
 
-구현 HTML과 레퍼런스를 나란히 보고 아래 비교표를 **반드시 출력한다**:
+비교표 출력:
 
 ```
-[레퍼런스 vs 구현 비교]
-레퍼런스: {URL 또는 이미지 경로}
-구현:     docs/sj-company/shotgun/design-{타임스탬프}.html
+[레퍼런스 vs 선택 시안 비교]
+레퍼런스: {URL 또는 경로}
+선택:     docs/sj-company/drafts/draft-{X}-{TS}.html
 
-항목              레퍼런스          구현              일치
+항목              레퍼런스          선택 시안         일치
 ──────────────────────────────────────────────────────
 배경색            #{hex}           #{hex}           ✅/⚠️
 포인트 컬러       #{hex}           #{hex}           ✅/⚠️
@@ -248,30 +317,9 @@ npx playwright screenshot "file://$(pwd)/docs/sj-company/shotgun/design-{타임�
 특징적 요소       {요소}            {요소}           ✅/⚠️
 
 전체 유사도 자가 평가: {높음/보통/낮음}
-차이점: {레퍼런스와 다르게 의도적으로 바꾼 점 또는 미처 반영 못한 점}
 ```
 
-⚠️ 항목이 2개 이상이면 승인 요청 전에 해당 항목을 자체 수정한다.
-
-**레퍼런스가 없는 경우 — 금지 패턴 체크만:**
-
-절대 금지 목록 항목별 ✅/❌ 출력 후 진행한다.
-
----
-
-이후 사용자 승인 요청:
-
-```
-[디자인 목업 확인 요청]
-브라우저에서 확인해주세요: docs/sj-company/shotgun/design-{타임스탬프}.html
-{레퍼런스가 있으면} 레퍼런스: {URL 또는 경로}
-
-✅ 승인 → 이 방향으로 React/Next.js 구현 진행
-❌ 거부 → [거부 프로토콜] 진입 (방향 완전 폐기 후 재설계)
-🔧 수정 → 구체적으로 어떤 점을 바꿀지 알려주세요
-```
-
-**승인 없이 구현 코드를 작성하지 않는다. 이것은 예외 없는 규칙이다.**
+⚠️ 항목 2개 이상이면 풀 구현 전 해당 항목 자체 수정.
 
 ### Step G-4: 구현 연결
 
@@ -287,7 +335,7 @@ Write 툴로 `docs/sj-company/.state/design-handoff.md` 생성:
 
 ```markdown
 # Design Handoff
-source: docs/sj-company/shotgun/design-{타임스탬프}.html
+source: docs/sj-company/drafts/draft-{X}-{TS}.html
 brand: {브랜드명}
 
 ## CSS 변수 (이 값을 한 글자도 바꾸지 말 것)
