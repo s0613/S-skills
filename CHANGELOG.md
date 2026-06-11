@@ -4,6 +4,14 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.3.0] - 2026-06-11
+
+### Added
+- **sj-company** v3.6.0 — `Step 0-loop` 키워드 블록 추가: "루프 만들어", "반복 자동화", "주기적으로 실행" 등 루프 엔지니어링 요청을 감지하면 sj-loop로 자동 라우팅 (Step 0-* 블록 19개). Playwright 테스트 반복은 기존대로 Step 0-pw-loop가 우선 처리하도록 구분 규칙 명시.
+
+### Changed
+- **CLAUDE.md** — sj-company 설명을 v3.6.0 / 19개 Step 0-* 키워드 블록으로 동기화.
+
 ## [3.2.1] - 2026-06-11
 
 독립 리뷰어 2종(문서·코드) 심사 결과 반영 패치.
