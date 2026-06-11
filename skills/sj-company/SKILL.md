@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.5.0
+version: 3.5.1
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
@@ -676,7 +676,7 @@ if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW=
 - Y → `Skill("s-skills:pw-loop")` 호출
 - N → 완료
 
-5. PROJECT.md 업데이트: Edit 툴로 `last_session`·`progress`·`next` 필드를 갱신해라 (Tiny와 동일 패턴).
+5. PROJECT.md 업데이트: Edit 툴로 `last_session`·`progress`·`next` 필드를 갱신해라 (Tiny와 동일 패턴 — `progress:` 줄이 없는 구버전 파일이면 `last_session` 줄 아래에 추가해라).
 
 ---
 
@@ -729,7 +729,9 @@ if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW=
 `_HAS_PW=yes`이면: `docs/sj-company/PROJECT.md`의 `pw_target` 필드를 읽어 목표 수치를 파악하고 (없으면 80) `Skill("s-skills:pw-loop")` 호출.
 `_HAS_PW=no`이면: 빌드 확인으로 대체.
 
-6. PROJECT.md 갱신: **건드리지 않는다**. Medium 경로의 PROJECT.md 최종 갱신(`last_session`/`next`/`blockers`/`status`)은 Tech Lead Step 9b가 책임진다. 역할-aware prefix(`si:` / `frontend:` / `dev:` …)도 거기서 결정됨. 여기서 다시 쓰면 prefix가 덮어써져 어떤 role이 참여했는지 추적할 수 없게 된다.
+6. PROJECT.md 갱신: **건드리지 않는다**. Medium 경로의 PROJECT.md 최종 갱신(`last_session`/`progress`/`next`/`blockers`/`status`)은 Tech Lead Step 9b가 책임진다. 역할-aware prefix(`si:` / `frontend:` / `dev:` …)도 거기서 결정됨. 여기서 다시 쓰면 prefix가 덮어써져 어떤 role이 참여했는지 추적할 수 없게 된다.
+
+   **예외 — HINT=agent_dev**: Tech Lead를 우회했으므로 Step 9b가 실행되지 않는다. 이 경우에만 sj-company가 직접 갱신한다: `last_session`을 `{오늘날짜} — agent: {태스크 한 줄 요약}`으로, `progress`·`next`는 Tiny와 동일 패턴으로 (`progress:` 줄이 없는 구버전 파일이면 `last_session` 줄 아래에 추가).
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: sj-secretary
-version: 3.1.0
+version: 3.1.1
 description: |
   프로젝트 상태 보고 에이전트. 모든 프로젝트의 PROJECT.md를 읽어
   어떤 프로젝트가 어떤 작업 중이고, 목표까지 현재 어떤 단계이며,
@@ -79,7 +79,8 @@ PY
 python3 - "$INDEX" > /tmp/secretary-data.json <<'PY'
 import json, os, sys, re
 
-idx = json.load(open(sys.argv[1]))
+with open(sys.argv[1], encoding="utf-8") as f:
+    idx = json.load(f)
 out = []
 
 def get(text, key):
@@ -89,33 +90,38 @@ def get(text, key):
 for slug, path in idx.items():
     docs = os.path.join(path, "docs/sj-company")
     project_md = os.path.join(docs, "PROJECT.md")
-    info = {"slug": slug, "path": path}
+    info = {"slug": slug, "path": path, "name": os.path.basename(path)}
 
-    if os.path.isfile(project_md):
-        text = open(project_md, encoding="utf-8").read()
-        info["has_project"] = True
-        info["goal"]         = get(text, "goal")
-        info["last_session"] = get(text, "last_session")
-        info["progress"]     = get(text, "progress")
-        info["next"]         = get(text, "next")
-        info["blockers"]     = get(text, "blockers")
-        info["status"]       = get(text, "status") or "active"
-        inbox = os.path.join(docs, "triage-inbox.md")
-        if os.path.isfile(inbox):
-            info["inbox_open"] = sum(
-                1 for l in open(inbox, encoding="utf-8") if l.lstrip().startswith("- [ ]")
+    # 프로젝트 1개가 깨져도(권한·손상 파일) 나머지 보고는 계속한다
+    try:
+        if os.path.isfile(project_md):
+            with open(project_md, encoding="utf-8", errors="replace") as f:
+                text = f.read()
+            info["has_project"] = True
+            info["goal"]         = get(text, "goal")
+            info["last_session"] = get(text, "last_session")
+            info["progress"]     = get(text, "progress")
+            info["next"]         = get(text, "next")
+            info["blockers"]     = get(text, "blockers")
+            info["status"]       = get(text, "status") or "active"
+            inbox = os.path.join(docs, "triage-inbox.md")
+            if os.path.isfile(inbox):
+                with open(inbox, encoding="utf-8", errors="replace") as f:
+                    info["inbox_open"] = sum(1 for l in f if l.startswith("- [ ]"))
+            name_m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
+            if name_m:
+                info["name"] = name_m.group(1).strip()
+        else:
+            info["has_project"] = False
+            # 레거시 여부: report.md 또는 stage.txt 존재
+            info["legacy"] = (
+                os.path.isfile(os.path.join(docs, "report.md")) or
+                os.path.isfile(os.path.join(docs, ".state", "stage.txt"))
             )
-        name_m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
-        info["name"] = name_m.group(1).strip() if name_m else os.path.basename(path)
-    else:
+            info["exists"] = os.path.isdir(docs)
+    except Exception as e:
         info["has_project"] = False
-        info["name"] = os.path.basename(path)
-        # 레거시 여부: report.md 또는 stage.txt 존재
-        info["legacy"] = (
-            os.path.isfile(os.path.join(docs, "report.md")) or
-            os.path.isfile(os.path.join(docs, ".state", "stage.txt"))
-        )
-        info["exists"] = os.path.isdir(docs)
+        info["error"] = str(e)
 
     out.append(info)
 
@@ -135,6 +141,7 @@ Read 툴로 `/tmp/secretary-data.json` 읽기.
 5. `status=done` → **[완료]**
 6. `has_project=False` + `legacy=True` → **[레거시]** (구버전 sj-company)
 7. `has_project=False` + `exists=False` → **[사라짐]**
+8. `error` 필드 존재 → **[확인 불가]** — `{name} (`{slug}`) — {error}` 한 줄로 표시
 
 `{현재}` 값: `progress`가 있고 "없음"이 아니면 `progress`, 아니면 `last_session`.
 

@@ -1,6 +1,6 @@
 ---
 name: sj-loop
-version: 1.0.0
+version: 1.0.1
 description: |
   루프 엔지니어링 전문가. "에이전트에 직접 프롬프트"를 "에이전트를 프롬프트하는
   루프 설계"로 바꾼다. 목적·1회 반복 작업·기계 검증 가능한 정지 조건·메모리(상태 파일)·
@@ -72,7 +72,8 @@ slug는 영소문자-하이픈 (예: `fix-failing-tests`). 아래 템플릿으�
 3. 결과를 상태 파일에 기록한다: `## 시도` / `## 통과` / `## 미해결` 섹션에 append
 4. 스스로 판단할 수 없는 항목은 `docs/sj-company/triage-inbox.md`에
    `- [ ] {날짜} [{slug}] {항목}` 형식으로 append한다
-5. 아래 정지 조건을 **실제로 실행**해 전부 참이면 `LOOP_DONE`을 선언하고 종료 보고한다
+5. 아래 정지 조건을 **실제로 실행**해 전부 참이면 상태 파일 상단의 `status:` 줄을
+   `status: DONE`으로 바꾸고 종료 보고한다 (정지 신호는 출력 문장이 아니라 상태 파일의 이 줄이다)
 
 ## 정지 조건 (기계 검증 가능)
 - {예: `npm test` 종료 코드 0}
@@ -93,11 +94,16 @@ slug는 영소문자-하이픈 (예: `fix-failing-tests`). 아래 템플릿으�
 ```markdown
 # State: {slug}
 > 마지막 반복: 없음
+status: RUNNING
 
 ## 시도
 ## 통과
 ## 미해결
 ```
+
+저장 전 확인 (기계 검증): `grep -q "사람 게이트" docs/sj-company/loops/{slug}.md` — 실패하면 저장하지 말고 가드레일 섹션을 다시 작성한다.
+
+동일 slug의 루프가 이미 존재하면: 기존 `{slug}.md`·`{slug}-state.md`를 `loops/archive/{slug}-{YYYYMMDD}-*.md`로 이동(백업)한 뒤 새로 생성한다 (archive-only 불변식).
 
 ### Step G4: 검수 + 실행 연결
 
@@ -122,18 +128,35 @@ AskUserQuestion:
 | 방식 | 동작 | 조건 |
 |------|------|------|
 | A) 드라이런 | 지금 이 세션에서 1회 반복만 수행 | 항상 가능. 첫 실행이면 이것 권장 |
-| B) 세션 내 반복 | `loop` 스킬 호출 — 간격마다 또는 자기 페이스로 재실행 | 노트북·세션이 켜져 있어야 함 |
-| C) 클라우드 스케줄 | `schedule` 스킬 호출 — cron 주기 클라우드 routine | 노트북 꺼져도 동작. GitHub repo 필요 |
+| B) 세션 내 반복 | Claude Code 내장 `loop` 스킬 호출 — 간격마다 또는 자기 페이스로 재실행 | 노트북·세션이 켜져 있어야 함 |
+| C) 클라우드 스케줄 | Claude Code 내장 `schedule` 스킬 호출 — cron 주기 클라우드 routine | 노트북 꺼져도 동작. GitHub repo 필요 |
+
+실행 전 상태 확인: `loops/{slug}-state.md`에 `status: DONE` 줄이 있으면 이 루프는 이미 완료된 것이다. 사용자에게 알리고, 다시 돌리려면 상태 파일을 archive 후 초기화(`status: RUNNING`)할지 AskUserQuestion으로 확인한다.
 
 ### Step R3: 실행
 
-**A) 드라이런:** 루프 프롬프트의 "이번 반복에서 할 일"을 지금 1회 수행한다. 상태 파일·triage-inbox 갱신까지 포함해 루프 1사이클을 그대로 밟고, 끝나면 "이대로 무인 반복해도 되겠는지" 관찰 결과를 보고한다.
+**A) 드라이런:** 루프 프롬프트의 "이번 반복에서 할 일"을 지금 1회 수행한다. 상태 파일·triage-inbox 갱신까지 포함해 루프 1사이클을 그대로 밟고, 끝나면 "이대로 무인 반복해도 되겠는지" 관찰 결과를 보고한다. 단, 정지 조건은 **평가하되 `status: DONE`을 기록하지 않고** 충족 여부만 보고한다 (드라이런 목적은 종료가 아니라 검증).
 
-**B) 세션 내 반복:** Skill 도구로 `loop` 스킬을 호출한다. 인자: `{간격} docs/sj-company/loops/{slug}.md 파일을 읽고 그 지시대로 1회 반복을 수행하라. LOOP_DONE이 선언되면 루프를 종료하라.` (간격 미지정 시 자기 페이스)
+**B) 세션 내 반복:** Skill 도구로 `loop` 스킬을 호출한다. 인자: `{간격} docs/sj-company/loops/{slug}.md 파일을 읽고 그 지시대로 1회 반복을 수행하라. docs/sj-company/loops/{slug}-state.md에 status: DONE 줄이 있으면 루프를 종료하라.` (간격 미지정 시 자기 페이스)
 
 **C) 클라우드 스케줄:** Skill 도구로 `schedule` 스킬을 호출해 routine을 생성한다. 프롬프트는 B와 동일하게 루프 파일 참조 방식. cron 주기는 사용자 입력 기반(기본: 평일 매일 07:00).
 
-`loop`/`schedule` 스킬이 이 환경에 없으면: 해당 방식 대신 launchd(macOS)·cron(Linux) + `claude -p` headless 등록 절차를 안내하고, 등록은 sj-automation 스킬로 위임할 수 있다고 알린다.
+`loop`/`schedule`은 Claude Code **내장 스킬**이라 이 레포에 파일로 존재하지 않는다. 구버전 CLI 등으로 내장 스킬이 없거나, C 선택 시 GitHub repo가 없으면: launchd(macOS)·cron(Linux) + `claude -p` headless 등록으로 대체한다. 예:
+
+```
+0 7 * * 1-5 cd {프로젝트 경로} && claude -p "docs/sj-company/loops/{slug}.md 파일을 읽고 그 지시대로 1회 반복을 수행하라."
+```
+
+등록 자체는 sj-automation 스킬로 위임할 수 있다.
+
+---
+
+## 루프 수명주기
+
+- 정지 신호는 상태 파일의 `status: DONE` 줄 하나다. 출력 문장(예: "LOOP_DONE")은 신호가 아니다.
+- `status: DONE`이 된 루프는 실행 대상에서 제외한다. 보관이 필요 없으면 `{slug}.md`·`{slug}-state.md`를 `loops/archive/`로 이동한다.
+- 같은 slug를 다시 만들거나 다시 돌릴 때는 기존 파일을 archive로 백업한 뒤 상태 파일을 초기화한다 (통째 삭제 금지 — archive-only 불변식).
+- 상태 파일의 `## 시도`가 과도하게 길어지면(약 200줄 초과) 오래된 항목을 archive로 옮기고 요약 한 줄만 남긴다.
 
 ---
 

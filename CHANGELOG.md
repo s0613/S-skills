@@ -4,6 +4,17 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.2.1] - 2026-06-11
+
+독립 리뷰어 2종(문서·코드) 심사 결과 반영 패치.
+
+### Fixed
+- **sj-company** — `HINT=agent_dev` 분기(Tech Lead 우회)에서 PROJECT.md의 `progress`·`last_session`을 아무도 갱신하지 않던 구멍 수정: sj-company가 직접 `agent:` prefix로 갱신. Step 6 필드 목록에 누락됐던 `progress` 추가, Small 경로에 구버전 파일 폴백 문구 명시.
+- **sj-secretary** v3.1.1 — 파서 견고화: `with open` + `errors="replace"` + 프로젝트 단위 예외 격리 (깨진 파일 1개가 전체 상태 보고를 중단시키지 않음, `[확인 불가]` 분류 신설). inbox 카운트가 중첩 체크박스를 집계하던 것을 평면 항목만으로 제한.
+- **sj-loop** v1.0.1 — 정지 신호를 출력 문장(`LOOP_DONE`)에서 상태 파일의 `status: DONE` 줄로 변경 (기계 검증 원칙과 일치, 오탐 제거). 드라이런은 정지 조건을 평가하되 기록하지 않고 보고만. 사람 게이트 문구를 저장 전 grep으로 기계 확인. 루프 수명주기(archive·재실행 초기화) 정의. `loop`/`schedule`이 Claude Code 내장 스킬임을 명시하고 cron + `claude -p` 폴백 예시 추가.
+- **README** — `/sj-agent-dev` 설명 7축 → 10축 (CLAUDE.md와 동기화).
+- 3.2.0 항목의 progress 갱신 분담 서술 정정: sj-qa는 Large뿐 아니라 **xLarge**도 담당.
+
 ## [3.2.0] - 2026-06-11
 
 ### Added
