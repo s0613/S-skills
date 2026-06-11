@@ -36,7 +36,7 @@
 
 PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별로 처리한다.
 
-- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v3.4.0. 17개 Step 0-* 키워드 블록으로 자동 감지. RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
+- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v3.6.0. 19개 Step 0-* 키워드 블록으로 자동 감지 (sj-loop 라우팅 포함). RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
 - **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석. AskUserQuestion 최대 1회, 모호해도 가정으로 진행. PII 마스킹 적용.
 - **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v3.0.0. 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
 - **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.2.0. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용.

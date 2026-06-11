@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.5.1
+version: 3.6.0
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
@@ -522,6 +522,23 @@ playwright 테스트, playwright 실행, e2e 테스트 실행, e2e 돌려줘, �
 [문서 정리] 문서 구조 정리 요청을 감지했습니다. docs-organize를 실행합니다.
 ```
 `Skill("s-skills:docs-organize")` 호출
+
+---
+
+### Step 0-loop: 루프 엔지니어링 요청 감지
+
+태스크 텍스트가 반복 작업의 루프 설계·생성·실행 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
+
+**감지 키워드:**
+루프 만들어, 루프 돌려, 루프 프롬프트, 루프 설계, 반복 자동화, 계속 돌려줘, 야간에 알아서, 주기적으로 실행, 무인으로 돌려, 스케줄로 돌려, sj-loop
+
+**구분 규칙:** Playwright 테스트 실행·통과율 반복은 이 블록이 아니라 Step 0-pw-loop 대상이다 (pw-loop가 먼저 평가되므로 그쪽 키워드에 걸리면 여기까지 오지 않는다).
+
+→ 감지 시:
+```
+[Loop] 루프 엔지니어링 요청을 감지했습니다. sj-loop를 실행합니다.
+```
+`Skill("s-skills:sj-loop")` 호출
 
 ---
 
