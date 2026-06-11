@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.1.2-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.2.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -104,6 +104,7 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 | `/ship` | 테스트 → 커버리지 → PR 자동화 |
 | `/retro` | 커밋·테스트·성장 지표 주간 회고 |
 | `/sj-agent-dev` | 7축 기반 비즈니스 에이전트 설계 |
+| `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | `/outsource` | 막혔을 때 전문가 위임 — 맥락 리포트 + 메일 초안 자동 작성 |
 
 ---
@@ -127,6 +128,7 @@ skills/
 ├── sj-seo/           ← 검색 색인 자동화
 ├── sj-agent-dev/     ← 에이전트 설계
 ├── sj-agent-review/  ← 에이전트 리뷰
+├── sj-loop/          ← 루프 엔지니어링
 └── sj-outsource/     ← 전문가 위임
 ```
 

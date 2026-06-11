@@ -86,6 +86,7 @@ content = f"""# {project_name}
 goal: {task or '설정 필요'}
 stack: {stack}
 last_session: {last_completed or '없음'} — 마이그레이션 (구버전 sj-company)
+progress: 없음
 next: {next_task or '없음'}
 blockers: 없음
 pw_target: 80
@@ -113,7 +114,7 @@ goal과 next를 확인하세요: docs/sj-company/PROJECT.md
 
 **이후 정상 Preamble 계속:**
 
-`docs/sj-company/PROJECT.md`를 직접 읽어 goal, stack, last_session, next, blockers, status, 프로젝트명(첫 줄 `#` 헤더)을 파악해라. 파일이 없으면 신규 프로젝트로 처리한다.
+`docs/sj-company/PROJECT.md`를 직접 읽어 goal, stack, last_session, progress, next, blockers, status, 프로젝트명(첫 줄 `#` 헤더)을 파악해라. 파일이 없으면 신규 프로젝트로 처리한다.
 
 ---
 
@@ -124,6 +125,7 @@ Preamble 결과를 바탕으로 브리핑 출력:
 ```
 [{NAME} 브리핑]
 목표: {GOAL}
+진행 단계: {PROGRESS}
 지난 세션: {LAST}
 다음: {NEXT}
 블로커: {BLOCKERS}
@@ -169,6 +171,7 @@ content = f"""# {os.path.basename(os.getcwd())}
 goal: {"{사용자 입력}"}
 stack: {stack}
 last_session: 없음
+progress: 없음
 next: 없음
 blockers: 없음
 pw_target: 80
@@ -644,7 +647,7 @@ eval "$BUILD_CMD"
 4. 빌드 실패 → 에러 분석 후 수정 → 재빌드
 
 PROJECT.md 업데이트 (Tiny 완료 후):
-Edit 툴로 `docs/sj-company/PROJECT.md`의 `last_session` 필드를 `{오늘날짜} — {완료 작업 한 줄 요약}`으로, `next` 필드를 `없음`으로 업데이트해라.
+Edit 툴로 `docs/sj-company/PROJECT.md`의 `last_session` 필드를 `{오늘날짜} — {완료 작업 한 줄 요약}`으로, `progress` 필드를 `{goal 대비 현재 단계 한 줄 — 예: "기본 CRUD 완료, 인증 미착수"}`로, `next` 필드를 `없음`으로 업데이트해라. `progress:` 줄이 없는 구버전 파일이면 `last_session` 줄 아래에 추가해라.
 
 ---
 
@@ -673,7 +676,7 @@ if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW=
 - Y → `Skill("s-skills:pw-loop")` 호출
 - N → 완료
 
-5. PROJECT.md 업데이트: Edit 툴로 `last_session`과 `next` 필드를 갱신해라 (Tiny와 동일 패턴).
+5. PROJECT.md 업데이트: Edit 툴로 `last_session`·`progress`·`next` 필드를 갱신해라 (Tiny와 동일 패턴).
 
 ---
 
@@ -801,13 +804,13 @@ Workflow 도구로 다음 구조의 스크립트를 작성해 실행한다:
 |------|------|------|------|
 | 사이클 단위 휘발 | `.state/pm-brief.md`, `.state/design-review.md`, `.state/dev/{role}.md`, `.state/dev-summary.md`, `.state/qa-verdict.md` | 이번 태스크 한정. 다음 사이클이 시작되면 덮어쓰기 | 단계 간 데이터 패스 |
 | 영속 학습 | `pm-context.md`, `design-context.md`, `dev-context.md`, `qa-context.md` | 영구 누적 | 다음 사이클이 이 프로젝트를 더 잘 이해하기 위한 brain |
-| 현재 상태 | `PROJECT.md` | 영구 | `goal`/`next`/`last_session`/`blockers`/`status` 단일 사실 |
+| 현재 상태 | `PROJECT.md` | 영구 | `goal`/`progress`/`next`/`last_session`/`blockers`/`status` 단일 사실 |
 
 ### 금지
 
 - `pm-output.md`, `design-output.md`, `dev-output.md`, `qa-output.md`, `report.md` 생성 금지 (이주 완료)
 - `docs/sj-company/dev-output/` 디렉토리 생성 금지 (→ `.state/dev/`로 통일)
-- `.state/stage.txt` 업데이트 금지 (단계 추적은 PROJECT.md `last_session`으로)
+- `.state/stage.txt` 업데이트 금지 (단계 추적은 PROJECT.md `last_session`·`progress`로)
 - Design 명세 단계 없음 (PM이 커버). Design 리뷰는 Tech Lead가 sentinel 파일로 트리거.
 
 ### 학습 누적 의무

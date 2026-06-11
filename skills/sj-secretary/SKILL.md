@@ -1,9 +1,11 @@
 ---
 name: sj-secretary
-version: 3.0.0
+version: 3.1.0
 description: |
-  아침 브리핑 에이전트. 모든 프로젝트의 PROJECT.md를 읽어 우선순위로 정렬 출력.
-  보고서 에코 없음. WBS/KPI 없음. 오늘 어디서 시작할지 한눈에.
+  프로젝트 상태 보고 에이전트. 모든 프로젝트의 PROJECT.md를 읽어
+  어떤 프로젝트가 어떤 작업 중이고, 목표까지 현재 어떤 단계이며,
+  다음 할 일이 무엇인지 우선순위로 정렬 출력.
+  보고서 에코 없음. WBS/KPI 없음. 어디서 시작할지 한눈에.
 allowed-tools:
   - Bash
   - Read
@@ -11,7 +13,7 @@ triggers:
   - /secretary
 ---
 
-# Secretary — 아침 브리핑
+# Secretary — 프로젝트 상태 보고
 
 어떤 프로젝트의 파일도 수정하지 않는다. 읽기 전용.
 
@@ -94,9 +96,15 @@ for slug, path in idx.items():
         info["has_project"] = True
         info["goal"]         = get(text, "goal")
         info["last_session"] = get(text, "last_session")
+        info["progress"]     = get(text, "progress")
         info["next"]         = get(text, "next")
         info["blockers"]     = get(text, "blockers")
         info["status"]       = get(text, "status") or "active"
+        inbox = os.path.join(docs, "triage-inbox.md")
+        if os.path.isfile(inbox):
+            info["inbox_open"] = sum(
+                1 for l in open(inbox, encoding="utf-8") if l.lstrip().startswith("- [ ]")
+            )
         name_m = re.search(r"^#\s+(.+)$", text, re.MULTILINE)
         info["name"] = name_m.group(1).strip() if name_m else os.path.basename(path)
     else:
@@ -128,23 +136,31 @@ Read 툴로 `/tmp/secretary-data.json` 읽기.
 6. `has_project=False` + `legacy=True` → **[레거시]** (구버전 sj-company)
 7. `has_project=False` + `exists=False` → **[사라짐]**
 
+`{현재}` 값: `progress`가 있고 "없음"이 아니면 `progress`, 아니면 `last_session`.
+
+`inbox_open`이 1 이상인 프로젝트는 해당 항목 안에 `수신함: 미처리 {n}건 → docs/sj-company/triage-inbox.md` 줄을 추가한다 (자동 루프가 발견했지만 사람 판단이 필요한 항목).
+
 출력 포맷:
 
 ```
-[아침 브리핑] {YYYY-MM-DD} · 프로젝트 {N}개
+[프로젝트 상태 보고] {YYYY-MM-DD} · 프로젝트 {N}개
 진행중 {A}개 · 긴급/주의 {U}개 · 완료 {D}개
 
 [긴급] {name} (`{slug}`)
   목표: {goal}
+  현재: {현재}
   블로커: {blockers}
   → /sj-company (블로커 해소 후)
 
 [주의] {name} (`{slug}`)
   목표: {goal}
+  현재: {현재}
   주의: {blockers}
   → /sj-company "{next}"
 
 [진행] {name} (`{slug}`)
+  목표: {goal}
+  현재: {현재}
   다음: {next}
   → /sj-company "{next}"
 

@@ -161,6 +161,12 @@ echo "{선택}" > docs/sj-company/.state/model-policy.txt
 
 의존 단계별로 호출한다. **같은 단계 내에서는 단일 메시지에서 Agent 도구를 multi-call하여 병렬 실행**한다.
 
+**병렬 충돌 방지 (worktree 규칙):**
+1. 같은 단계에서 파일을 수정하는 에이전트를 2명 이상 병렬 디스패치할 때는 Dispatch Card에 **파일 소유권**(담당 디렉터리·파일)을 명시해 겹치지 않게 분할한다.
+2. 소유권이 겹칠 수밖에 없으면 같은 단계에 두지 말고 **의존 단계로 직렬화**한다.
+3. 그래도 동시 수정이 불가피하면(예: 대규모 일괄 마이그레이션) Agent 호출에 `isolation: "worktree"`를 지정해 격리하고, **병합은 Tech Lead가 Step 6 통합 시 책임**진다.
+4. 읽기 전용 리뷰(MODE=review)·단일 디스패치는 격리 불필요.
+
 > 데이터 전달 규약 전체는 `references/work-card-protocol.md` 참고.
 > 아래는 필수 요약이다.
 
@@ -458,7 +464,7 @@ echo $((_ITER + 1)) > docs/sj-company/.state/review-iterations.txt
 
 ### 9b. PROJECT.md 갱신 (사용자에게 보이는 영속 상태)
 
-Tech Lead가 Medium 경로 PROJECT.md 최종 갱신을 책임진다 — `last_session`/`next`/`blockers`/`status` 모두 여기서 결정. sj-company Medium 경로는 PROJECT.md를 직접 건드리지 않는다(중복 갱신 방지). Large 경로에선 sj-qa Step 7이 한 번 더 덮어쓴다.
+Tech Lead가 Medium 경로 PROJECT.md 최종 갱신을 책임진다 — `last_session`/`progress`/`next`/`blockers`/`status` 모두 여기서 결정. sj-company Medium 경로는 PROJECT.md를 직접 건드리지 않는다(중복 갱신 방지). Large 경로에선 sj-qa Step 7이 한 번 더 덮어쓴다.
 
 `last_session` prefix는 이번 사이클의 실제 참여 역할로 결정:
 - 단일 역할(`.state/dev/*.md`가 1개): 그 역할 이름(`si`, `frontend`, …)
@@ -472,6 +478,7 @@ ls docs/sj-company/.state/dev/*.md 2>/dev/null | grep -v _channel
 ```
 
 - `last_session`: `{오늘날짜} — {prefix}: {이번 태스크 한 줄 요약}`
+- `progress`: `{goal 대비 현재 단계 한 줄 — 예: "핵심 API 구현 완료, QA 대기"}` (줄이 없는 구버전 파일이면 `last_session` 아래에 추가)
 - `next`: `없음`
 - `blockers`: `없음`
 - `status`: `active`

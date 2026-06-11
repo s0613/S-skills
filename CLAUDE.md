@@ -16,9 +16,10 @@
 | **마케팅** | `/marketing`, `/sns` | SNS 캠페인, 채널별 카피, 카드뉴스 |
 | **SEO** | `/seo` | Google/Naver 색인 자동화, sitemap 제출 |
 | **PC 자동화** | `/automation`, `/auto`, `/ui-auto` | 스크립트·UI 조작·네이티브 앱 제작 |
+| **루프 엔지니어링** | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | **에이전트 개발** | `/agent-dev`, `/agent-review` | AI 에이전트 설계·심사 |
 | **외주 핸드오프** | `/outsource`, `/외주` | 막힌 작업 전문가 위임 리포트 생성 |
-| **비서** | `/secretary` | 아침 브리핑, 우선순위 정렬 |
+| **비서** | `/secretary` | 프로젝트 상태 보고(목표 대비 단계·다음 할 일), 우선순위 정렬 |
 | **SI 문서** | `/sj-dev-si` | 제안서·WBS·결과보고서 6종 작성 |
 
 ---
@@ -40,7 +41,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v3.0.0. 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
 - **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.2.0. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용.
 - **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v2.2.0. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 자체 검토 루프 최대 2회.
-- **s-skills:sj-secretary** (`/secretary`) — 아침 브리핑 전문. 전체 프로젝트 PROJECT.md를 탐색해 긴급/진행/대기/완료별 우선순위 정렬 출력. 읽기 전용, 파일 수정 없음.
+- **s-skills:sj-secretary** (`/secretary`) — 프로젝트 상태 보고 전문. 전체 프로젝트 PROJECT.md를 탐색해 목표·현재 단계(progress)·다음 할 일을 긴급/진행/대기/완료별 우선순위로 정렬 출력. 읽기 전용, 파일 수정 없음.
 - **s-skills:sj-dev-si** (`/sj-dev-si`) — SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 도메인 맵 직접 작성
 
 ## 품질 · 보안 · 릴리즈
@@ -59,6 +60,10 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 ## PC 자동화
 
 - **s-skills:sj-automation** (`/sj-automation`, `/automation`, `/auto`, `/sj-ui-auto`, `/ui-auto`) — 자동화 + UI 조작 + 네이티브 앱 제작 통합 전문가 v2.0.0. OS 자동 감지(macOS·Linux·Windows) 후 최적 도구 선택. 스크립트 자동화(launchd·systemd·Task Scheduler)·UI 조작(Playwright·PyAutoGUI·AppleScript·xdotool·AutoHotkey)·네이티브 앱 제작(SwiftUI·WinForms·GTK·Tauri·customtkinter) 통합 구현
+
+## 루프 엔지니어링
+
+- **s-skills:sj-loop** (`/sj-loop`) — 루프 엔지니어링 전문가 v1.0.0. 목적·1회 반복 작업·기계 검증 가능한 정지 조건·메모리(상태 파일)·가드레일을 갖춘 루프 프롬프트를 생성해 `docs/sj-company/loops/`에 저장하고, 드라이런·세션 내 반복(/loop)·클라우드 스케줄(/schedule) 중 선택해 실행. 사람 게이트(PR 머지·배포 금지) 문구 없는 루프 저장 금지. 미처리 항목은 triage-inbox.md로 — sj-secretary 상태 보고가 수신함 건수를 표시.
 
 ## 에이전트 개발
 
@@ -103,6 +108,9 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **archive-only 불변식**: 영속 파일(PROJECT.md, *-context.md)은 통째 재작성 전 archive/ 백업 필수.
 - **PII 마스킹**: *-context.md append 전 password/token/secret 패턴 `[REDACTED]` 치환.
 - **spec 연속성**: sj-spec 저장 시 task.txt에 `[SPEC: 경로]` 자동 기록 → Tech Lead가 Dispatch Card에 포함.
+- **사람 게이트**: PR 머지·프로덕션 배포 승인은 항상 사람이 한다. 어떤 스킬·루프·자동화도 이 두 가지를 자동 실행하지 않는다 (build the loop, stay the engineer).
+- **완료 조건 검증**: pm-brief의 `## 완료 조건`(기계 검증 가능)을 sj-qa가 1:1 실행·대조해 판정. "done"은 주장이 아니라 조건 충족의 결과.
+- **병렬 충돌 방지**: Tech Lead 같은 단계 병렬 디스패치는 파일 소유권 분할이 기본, 불가피한 동시 수정만 `isolation: worktree` 격리.
 
 ## Docs Reference
 - [PRD](docs/prd.md)

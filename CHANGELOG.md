@@ -4,6 +4,20 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.2.0] - 2026-06-11
+
+### Added
+- **sj-loop** (`/sj-loop`) — 루프 엔지니어링 스킬. 목적·1회 반복 작업·기계 검증 가능한 정지 조건·메모리(상태 파일)·가드레일을 갖춘 루프 프롬프트를 생성해 `docs/sj-company/loops/`에 저장하고, 드라이런·세션 내 반복(/loop)·클라우드 스케줄(/schedule) 중 선택해 실행. 사람 게이트(PR 머지·배포 금지) 문구 없는 루프 저장 금지.
+- **PROJECT.md `progress` 필드** — 목표 대비 현재 단계 한 줄. sj-company(Tiny/Small)·sj-tech-lead(Medium)·sj-qa(Large)가 갱신, sj-secretary가 표시. 구버전 파일은 갱신 시 자동 추가.
+- **pm-brief `## 완료 조건`** — PM이 기계 검증 가능한 완료 조건을 정의하고, sj-qa가 각 조건을 실제 실행·관찰해 1:1 대조 (판정의 1차 근거).
+- **triage-inbox 규약** — 루프가 스스로 판단 못 한 항목을 `docs/sj-company/triage-inbox.md`에 기록, sj-secretary가 미처리 건수를 상태 보고에 표시.
+
+### Changed
+- **sj-secretary** v3.1.0 — "아침 브리핑" → "프로젝트 상태 보고"로 재정의. [긴급]/[주의]/[진행] 항목에 목표·현재 단계(progress, 폴백 last_session) 표시.
+- **sj-tech-lead** — 같은 단계 병렬 디스패치 충돌 방지 규칙 추가 (파일 소유권 분할 → 의존 단계 직렬화 → 불가피 시 `isolation: worktree` + Tech Lead 병합 책임).
+- **CLAUDE.md 아키텍처 원칙** — 사람 게이트(PR 머지·배포 승인은 항상 사람)·완료 조건 검증·병렬 충돌 방지 원칙 명문화.
+- 버전 단일화: `package.json`·`skills/VERSION`·`marketplace.json`·README 배지를 모두 `3.2.0`으로 정렬 (skills/VERSION 3.1.0 드리프트 해소).
+
 ## [3.1.0] - 2026-06-08
 
 ### Added

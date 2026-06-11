@@ -104,6 +104,7 @@ qa-context.md + `.state/pm-brief.md` + **실제 변경 파일(직접 탐색)**�
 dev-summary.md는 참조 금지 — 구현자의 자기 평가는 Judge의 독립성을 훼손한다.
 - 테스트 케이스 목록 작성
 - 엣지 케이스 식별
+- pm-brief에 `## 완료 조건` 섹션이 있으면 **각 조건을 실제로 실행·관찰해 충족 여부를 1:1 대조**한다 (판정의 1차 근거)
 - 최종 판정 (PASS / FAIL / CONDITIONAL)
 
 ## Step 4: 자체 검토
@@ -111,6 +112,7 @@ dev-summary.md는 참조 금지 — 구현자의 자기 평가는 Judge의 독�
 결과 저장 전, 아래 체크리스트를 스스로 검토한다. 문제가 있으면 Step 3으로 돌아가 수정한다. **최대 2회 반복 후 미해결 항목은 CONDITIONAL 판정 사유로 기록하고 진행한다.**
 
 - [ ] PM 요구사항(`.state/pm-brief.md`의 태스크 목록)의 모든 항목에 대응하는 테스트 케이스가 있는가?
+- [ ] pm-brief의 `## 완료 조건` 각 항목에 대해 실행/관찰 결과가 기록됐는가? (섹션이 없으면 해당 없음)
 - [ ] 엣지 케이스가 최소 1개 이상 식별됐는가?
 - [ ] 판정(PASS/FAIL/CONDITIONAL) 근거가 구체적인가? ("잘 됨" 같은 표현 없는가)
 - [ ] FAIL 또는 CONDITIONAL인 경우, Dev가 수정할 수 있는 구체적 이슈가 명시됐는가?
@@ -156,6 +158,7 @@ echo "Playwright: $_HAS_PW"
 `docs/sj-company/.state/qa-verdict.md`에서 `## 판정:` 헤더를 읽어 PASS/FAIL/CONDITIONAL을 파악한 뒤, Edit 툴로 `docs/sj-company/PROJECT.md`를 업데이트해라:
 
 - `last_session`: `{오늘날짜} — QA {판정}`
+- `progress`: `{goal 대비 현재 단계 한 줄, 판정 반영 — 예: "구현 완료 + QA PASS, 배포 대기" / "QA FAIL, 재구현 필요"}` (줄이 없는 구버전 파일이면 `last_session` 아래에 추가)
 - 판정이 FAIL → `status: blocked`, `blockers: QA FAIL — 재구현 필요`
 - 판정이 CONDITIONAL → `status: active`, `blockers: QA CONDITIONAL — 조건부 통과, 후속 수정 필요`
 - 판정이 PASS → `status: active`, `blockers: 없음`
