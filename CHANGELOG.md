@@ -4,6 +4,18 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.8.0] - 2026-06-13
+
+gbrain(garrytan/gbrain)의 `doctor --remediate --target-score` 패턴 차용 — docs 건강 점수를 목표까지 끌어올리는 치유 루프. 점수가 기계 검증 가능한 정지 조건이라 sj-loop 철학과 정확히 맞는다.
+
+### Added
+- **skills/docs-organize/REMEDIATE.md** — 점수 기반 치유 루프. 부족분을 자동/수동으로 분류하고(문서·env.example·README는 자동, 테스트 통과율은 개발 필요), `max_reachable` 천장을 계산해 자동 도달 불가 점수에서 멈춘다. 의존성 순서 치유 플랜 → 사람 승인 → 단계별 실행·재측정 → 정지(점수≥목표 OR 천장). 천장 초과분은 triage-inbox 기록 또는 sj-company 위임. 사람 게이트·archive-only 컨벤션 준수.
+- **docs-organize** v1.1.0 — SKILL.md에 remediate 모드 분기 추가 (`remediate`/`점수 올려`/`치유`/`target` 감지 시 REMEDIATE.md 실행).
+
+### Changed
+- **RESOLVER #21** — 문서 정리 행에 remediate 모드 구분 추가.
+- **CLAUDE.md** — docs-organize remediate 모드 설명 동기화.
+
 ## [3.7.0] - 2026-06-13
 
 gbrain(garrytan/gbrain)의 manifest 패턴 차용 — 스킬 인벤토리를 frontmatter에서 파생시키고, 정합성을 기계가 검사한다. "규칙이 병을 만들었으니 가드가 치료한다."

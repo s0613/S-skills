@@ -38,7 +38,7 @@ sj-company Step 0이 런타임에 이 테이블을 읽어 디스패치하고, CL
 | 18 | 비서 | 비서, secretary, 현황 보고, 요약 보고, 보고서 봐줘, 진행 상황 알려줘, 지금 어때, 프로젝트 현황, 뭐가 완료됐어 | | `Skill("s-skills:sj-secretary")` |
 | 19 | 테스트 시나리오 | 테스트 시나리오, 검증 시나리오, test scenario, 기능 검증 목록, 테스트 케이스 만들어줘, 시나리오 작성, 통과율 추적 | | `Skill("s-skills:test-scenario")` |
 | 20 | PW Loop | playwright 테스트, playwright 실행, e2e 테스트 실행, e2e 돌려줘, 테스트 통과율, pw-loop, pw 실행, 테스트 돌려줘 | 전제: `playwright.config.ts`/`.js` 존재. 없으면 "playwright 설정 파일이 없습니다" 출력 후 Tiny 경로 | `Skill("s-skills:pw-loop")` |
-| 21 | 문서 정리 | 문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize | | `Skill("s-skills:docs-organize")` |
+| 21 | 문서 정리 | 문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize | `점수 올려`, `치유`, `remediate`, `N점까지`, `target` 포함 시 → docs-organize **remediate 모드**(REMEDIATE.md): 목표 점수까지 치유 플랜→승인→단계 실행 | `Skill("s-skills:docs-organize")` |
 | 22 | Loop | 루프 만들어, 루프 돌려, 루프 프롬프트, 루프 설계, 반복 자동화, 계속 돌려줘, 야간에 알아서, 주기적으로 실행, 무인으로 돌려, 스케줄로 돌려, sj-loop | Playwright 테스트 반복은 #20이 먼저 매치되므로 여기 오지 않음 | `Skill("s-skills:sj-loop")` |
 | 23 | 리뷰 | 리뷰/검토/점검/검수 성격의 태스크 | | sj-company **리뷰 경로 (Step R)** — 대상 자동 감지 후 리뷰어 병렬 디스패치 |
 

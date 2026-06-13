@@ -27,7 +27,7 @@
 ## 상태 라우터 · 문서화 · 테스트
 
 - **s-skills:harness** (`/s-skills`) — 프로젝트 상태 감지 후 적절한 스킬로 라우팅
-- **s-skills:docs-organize** (`/docs-organize`) — 코드베이스 분석 및 docs/ 생성, 건강 점수 산출
+- **s-skills:docs-organize** (`/docs-organize`) — 코드베이스 분석 및 docs/ 생성, 건강 점수 산출 v1.1.0. `remediate` 모드(`/docs-organize remediate [목표점수]`): 목표 점수까지 치유 플랜→사람 승인→단계별 실행·재측정. 자동 도달 불가 점수(테스트 통과율 등)는 천장에서 멈추고 triage/sj-company 위임 (gbrain doctor --remediate 차용).
 - **s-skills:test-scenario** (`/test-scenario`) — 기능 검증 시나리오 생성 및 통과율 추적
 - **s-skills:pw-loop** (`/pw-loop`) — 기능 단위 Playwright 반복 테스트 루프
 - **s-skills:obsidian-writer** (`/obsidian`, `/obsidian-writer`) — Obsidian 문서 작성 전문가. 기능·작업·프로젝트 전체를 .md로 정리. iCloud/로컬 볼트 자동 탐지, 매 실행마다 저장 위치 선택

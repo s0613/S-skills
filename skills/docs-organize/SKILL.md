@@ -1,12 +1,13 @@
 ---
 name: docs-organize
-version: 1.0.0
+version: 1.1.0
 description: |
   Analyzes a project codebase, interviews the user for missing context, and
   generates a standardized docs/ structure: prd.md, architecture.md,
   UI_GUIDE.md (frontend only), STATUS.md, adr/, spec/.
   Also runs the test suite and scores the project 0-100.
   Invoke with /docs-organize in any project directory.
+  remediate mode (/docs-organize remediate [목표점수]): 목표 점수까지 치유 플랜→승인→단계 실행.
 allowed-tools:
   - Bash
   - Read
@@ -24,6 +25,12 @@ triggers:
 # docs-organize
 
 Generate and maintain project documentation with a project health score.
+
+## 모드 분기 (최우선)
+
+인자에 `remediate`, `점수 올려`, `치유`, `target`, 또는 목표 점수 숫자(예: `90까지`)가 포함되면 → **Remediate 모드**: 이 스킬 베이스 디렉토리의 [`REMEDIATE.md`](REMEDIATE.md)를 읽고 그 로직을 실행한다 (아래 Phase 0–7은 건너뛴다). REMEDIATE는 목표 점수까지 치유 플랜을 짜고, 사람 승인 후 단계별로 실행하며, 자동 도달 불가 점수에서 멈춘다.
+
+그 외(인자 없음 또는 일반 문서 정리 요청) → 아래 Phase 0–7(측정 + 생성)을 실행한다.
 
 ## HARD RULE
 
