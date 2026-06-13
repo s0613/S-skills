@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.3.1-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.8.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -71,6 +71,23 @@ QA는 구현자가 작성한 요약 문서를 읽지 않습니다. PM 브리프�
 
 ---
 
+## 하네스 설계 — gbrain에서 가져온 6가지
+
+[garrytan/gbrain](https://github.com/garrytan/gbrain)의 검증된 하네스 구조를 S-skills에 이식했습니다. 스킬이 늘어도 무너지지 않게 하는 골격입니다.
+
+| # | 원칙 | 무엇을 하는가 |
+|---|------|--------------|
+| 1 | **2층 라우팅** | 트리거→스킬 라우팅을 [`RESOLVER.md`](skills/RESOLVER.md) 한 곳에 모음. sj-company는 얇은 디스패처가 되고(866→542줄), 두꺼운 본문은 온디맨드 로드 |
+| 2 | **횡단 컨벤션 단일화** | 사람 게이트·PII·archive-only·Judge 독립성·RUN_ID·friction·context-curation을 [`_conventions/`](skills/_conventions)에 단일 정의. 규칙이 N개 스킬에 흩어져 하나만 빠뜨리는 사고를 구조적으로 제거 |
+| 3 | **프릭션 루프** | 스킬 실행 중 마찰·기쁨을 한 줄 기록 → 주간 회고가 모아 개선 입력으로 소비. "마찰을 기록하는 일 자체에 마찰이 없어야" |
+| 4 | **컨텍스트 위생** | 학습 누적은 notability 게이트(다음 사이클에 도움?/코드에서 못 얻나?/재사용?) 통과분만, `[run:RUN_ID]` 인용 형식으로. 잡음이 brain을 흐리지 않게 |
+| 5 | **manifest 정합성** | [`scripts/skill-manifest.py`](scripts/skill-manifest.py)가 frontmatter↔디렉토리↔RESOLVER↔CLAUDE.md 버전을 기계 검사. 산문이 아니라 가드가 drift를 막음 (도입 즉시 실제 버그 3건 검출) |
+| 6 | **점수 치유 루프** | `/docs-organize remediate`가 목표 점수까지 치유 플랜→승인→단계 실행·재측정. 자동 도달 불가 점수는 천장에서 멈추고 위임 |
+
+> 전 과정에서 **사람 게이트**는 불변입니다 — PR 머지·프로덕션 배포 승인은 항상 사람이 합니다. *build the loop, stay the engineer.*
+
+---
+
 ## 시작하기
 
 ```bash
@@ -127,8 +144,7 @@ skills/
 ├── sj-investigate/   ← 루트코즈 디버깅
 ├── sj-cso/           ← 보안 감사
 ├── sj-ship/          ← 릴리즈 자동화
-├── sj-automation/    ← PC 시스템 자동화
-├── sj-ui-auto/       ← 화면 UI 자동화
+├── sj-automation/    ← PC 시스템 자동화 + 화면 UI 자동화 (`/sj-ui-auto`는 트리거 별칭)
 ├── sj-marketing/     ← SNS·블로그 마케팅
 ├── sj-seo/           ← 검색 색인 자동화
 ├── sj-agent-dev/     ← 에이전트 설계
