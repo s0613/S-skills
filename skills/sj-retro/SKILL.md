@@ -1,8 +1,8 @@
 ---
 name: sj-retro
-version: 1.0.0
+version: 1.1.0
 description: |
-  주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·성장 기회를 분석한다.
+  주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·프로세스 마찰·성장 기회를 분석한다.
   "회고", "retro", "이번 주 정리", "retrospective", "지난주 리뷰" 요청에 반응.
 allowed-tools:
   - Bash
@@ -124,6 +124,40 @@ git log --format="%ad" --date=short --since="$SINCE" 2>/dev/null | sort -u | wc 
 
 ---
 
+## Step 4b: 프로세스 마찰 신호 (friction)
+
+> **컨벤션:** [프릭션 로그](../_conventions/friction-log.md) — 스킬 실행 중 쌓인 마찰·기쁨 신호를 회고에 반영한다.
+
+```bash
+python3 - "$SINCE" <<'PY'
+import json, os, sys
+from collections import Counter
+f = "docs/sj-company/friction.jsonl"
+if not os.path.exists(f):
+    print("friction 없음"); raise SystemExit
+since = sys.argv[1]
+rows = [json.loads(l) for l in open(f, encoding="utf-8") if l.strip()]
+recent = [r for r in rows if r.get("ts", "")[:10] >= since]
+sev = Counter(r["severity"] for r in recent if r.get("kind") == "friction")
+delight = sum(1 for r in recent if r.get("kind") == "delight")
+print(f"friction {sum(sev.values())}건 "
+      f"(blocker:{sev['blocker']} error:{sev['error']} confused:{sev['confused']} nit:{sev['nit']}) "
+      f"/ delight {delight}건")
+# 반복 마찰 = 같은 skill/phase가 여러 번 → 우선 개선 후보
+freq = Counter((r["skill"], r["phase"]) for r in recent if r.get("kind") == "friction")
+for (skill, phase), n in freq.most_common(5):
+    print(f"  x{n}  {skill}/{phase}")
+for r in recent:
+    if r.get("kind") == "friction" and r["severity"] in ("blocker", "error", "confused"):
+        print(f"  [{r['severity']}] {r['skill']}/{r['phase']}: {r['message']}"
+              + (f"  → {r['hint']}" if r.get("hint") else ""))
+PY
+```
+
+이 출력을 Step 5의 Improve/Try 도출에 직접 입력으로 쓴다. 반복 횟수가 많은 `skill/phase`가 최우선 개선 후보다.
+
+---
+
 ## Step 5: 성장 기회 분석
 
 데이터를 바탕으로 패턴을 도출한다:
@@ -131,12 +165,14 @@ git log --format="%ad" --date=short --since="$SINCE" 2>/dev/null | sort -u | wc 
 **잘 된 것 (Keep):**
 - 커밋 수, 테스트 수, 커버리지가 이전 주 대비 향상됐으면 언급
 - PASS 판정이 많으면 언급
+- delight 신호가 가리키는 "잘 작동한 스킬·문서"를 언급 (Step 4b)
 
 **개선할 것 (Improve):**
 - fix 커밋이 feat보다 많으면 → 사전 스펙 작성 권장 (`/sj-spec`)
 - test 커밋이 0이면 → TDD 도입 권장
 - 블로커가 2주 이상 이어지면 → 근본 원인 조사 권장 (`/sj-investigate`)
 - 커버리지가 목표보다 낮으면 → 테스트 집중 세션 권장
+- **반복 friction(Step 4b)** → 해당 스킬·문서를 고친다. blocker/error는 즉시, 반복 confused는 문서 명확화
 
 **실험할 것 (Try):**
 - 데이터 패턴에서 도출한 이번 주 시도 제안 1~2개
@@ -161,6 +197,10 @@ git log --format="%ad" --date=short --since="$SINCE" 2>/dev/null | sort -u | wc 
 ## QA 판정
 PASS: {N} | CONDITIONAL: {N} | FAIL: {N}
 
+## 프로세스 마찰
+friction {N}건 (blocker:{N} error:{N} confused:{N}) / delight {N}건
+최다 마찰: {skill/phase} x{N}
+
 ## 이번 주 요약
 ✅ Keep: {잘 된 것}
 🔧 Improve: {개선할 것}
@@ -175,11 +215,15 @@ PASS: {N} | CONDITIONAL: {N} | FAIL: {N}
 echo "
 ## {SINCE} ~ {UNTIL}
 커밋: {N} | 커버리지: {N}% | QA PASS: {N}
+friction: {N}건 (blocker:{N}) | delight: {N}건
 블로커: {블로커}
 배송 스트리크: {N}일
 인사이트: {이번 주 가장 중요한 학습}
 " >> docs/sj-company/retro-history.md
 ```
+
+friction.jsonl이 수백 줄을 넘어 무거워졌으면, 회고 반영을 마친 뒤
+[archive-only](../_conventions/archive-only.md)로 백업하고 이번 회고 범위 이전 항목을 잘라낸다.
 
 ```
 ✅ 회고 완료! retro-history.md에 기록됨.

@@ -102,7 +102,7 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 | `/investigate` | 가설 수립 → 검증 강제, 추측성 수정 금지 |
 | `/cso` | OWASP + STRIDE 보안 감사 |
 | `/ship` | 테스트 → 커버리지 → PR 자동화 |
-| `/retro` | 커밋·테스트·성장 지표 주간 회고 |
+| `/retro` | 커밋·테스트·프로세스 마찰(friction)·성장 지표 주간 회고 |
 | `/sj-agent-dev` | 10축 기반 비즈니스 에이전트 설계 |
 | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | `/outsource` | 막혔을 때 전문가 위임 — 맥락 리포트 + 메일 초안 자동 작성 |

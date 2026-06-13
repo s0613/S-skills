@@ -15,6 +15,7 @@ S-skills의 모든 스킬에 적용되는 공통 규칙. **규칙 본문은 여�
 | [archive-only.md](archive-only.md) | 영속 파일은 삭제 금지 — 백업 후에만 통째 덮어쓰기 | sj-company, 영속 파일을 쓰는 모든 스킬 |
 | [judge-independence.md](judge-independence.md) | 검증자는 구현자의 자기 평가를 읽지 않는다 | sj-qa |
 | [run-id.md](run-id.md) | 파이프라인 실행 식별자 생성·전파 계약 | sj-company, sj-tech-lead |
+| [friction-log.md](friction-log.md) | 스킬 실행 중 마찰·기쁨을 한 줄 기록 → sj-retro가 주간 소비 | 모든 스킬 (기록), sj-retro (소비) |
 
 ## 스킬에서 참조하는 방법
 

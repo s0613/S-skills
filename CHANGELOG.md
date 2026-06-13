@@ -4,6 +4,18 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.5.0] - 2026-06-13
+
+gbrain(garrytan/gbrain)의 friction protocol 이식 — 스킬 실행 중 마찰을 만난 자리에서 한 줄로 기록하고, 주간 회고가 이를 개선 입력으로 소비하는 피드백 루프.
+
+### Added
+- **skills/_conventions/friction-log.md** — 프릭션 로그 컨벤션 단일 정의. 언제(friction/delight)·severity 가이드(blocker/error/confused/nit)·JSONL 스키마·기록 레시피(argv+heredoc JSON 안전)·조회 레시피. 기록 위치 `docs/sj-company/friction.jsonl` (영속·append-only, RUN_ID 연결). message는 PII 마스킹 후 기록.
+- **sj-retro** v1.1.0 — Step 4b(프로세스 마찰 신호) 신설: friction.jsonl을 회고 범위로 필터해 severity 집계 + 반복 `skill/phase` Top5 추출. Step 5 Improve/Try와 Keep(delight)에 직접 반영 — 반복 마찰이 최우선 개선 후보. 보고서·retro-history에 friction 줄 추가. 파일 비대 시 archive-only 백업 후 절단.
+
+### Changed
+- **sj-tech-lead** v2.2.2 / **sj-qa** v2.2.2 / **sj-loop** v1.0.4 — 마찰 빈발 지점(디스패치·통합 / 검증 / 드라이런·반복 실행)에 프릭션 로그 컨벤션 참조 추가.
+- **CLAUDE.md / README / RESOLVER / _conventions/README** — friction 프로토콜 등록 및 sj-retro 설명 동기화.
+
 ## [3.4.0] - 2026-06-12
 
 gbrain(garrytan/gbrain)의 2층 라우팅(얇은 디스패처 + 온디맨드 상세)과 `_conventions` 단일 정의 패턴 차용.

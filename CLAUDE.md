@@ -50,7 +50,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **s-skills:sj-investigate** (`/investigate`, `/sj-investigate`) — 체계적 루트코즈 디버깅. 가설 수립→검증 강제, 조사 없는 수정 금지
 - **s-skills:sj-cso** (`/cso`, `/sj-cso`) — CSO 보안 감사. OWASP Top 10 + STRIDE 위협 모델링, 8/10 이상 확신 취약점만 보고
 - **s-skills:sj-ship** (`/ship`, `/sj-ship`) — 릴리즈 엔지니어 자동화. 테스트→커버리지 감사→PR 오픈까지 한 번에. sj-company 통해 호출 시 push 전 브랜치 확인 필수
-- **s-skills:sj-retro** (`/retro`, `/sj-retro`) — 주간 회고. 커밋·테스트·QA 지표로 Keep/Improve/Try 도출
+- **s-skills:sj-retro** (`/retro`, `/sj-retro`) — 주간 회고 v1.1.0. 커밋·테스트·QA 지표 + 프로세스 마찰(friction)로 Keep/Improve/Try 도출. 반복 friction이 최우선 개선 후보.
 
 ## 마케팅 · SEO · 성장
 
@@ -113,6 +113,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **사람 게이트**: PR 머지·프로덕션 배포 승인은 항상 사람이 한다. 어떤 스킬·루프·자동화도 이 두 가지를 자동 실행하지 않는다 (build the loop, stay the engineer).
 - **완료 조건 검증**: pm-brief의 `## 완료 조건`(기계 검증 가능)을 sj-qa가 1:1 실행·대조해 판정. "done"은 주장이 아니라 조건 충족의 결과.
 - **병렬 충돌 방지**: Tech Lead 같은 단계 병렬 디스패치는 파일 소유권 분할이 기본, 불가피한 동시 수정만 `isolation: worktree` 격리.
+- **프릭션 로그**: 스킬 실행 중 마찰(혼란·오류·막힘)·기쁨(delight)을 `docs/sj-company/friction.jsonl`에 append-only 기록. sj-retro가 주간으로 모아 Keep/Improve/Try에 반영 — 반복 마찰이 최우선 개선 후보 (gbrain friction protocol 차용).
 
 ## Docs Reference
 - [PRD](docs/prd.md)

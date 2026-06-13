@@ -59,3 +59,4 @@ sj-company Step 0이 런타임에 이 테이블을 읽어 디스패치하고, CL
 - [archive-only 불변식](_conventions/archive-only.md) — 영속 파일은 삭제 금지, 백업 후 덮어쓰기
 - [Judge 독립성](_conventions/judge-independence.md) — QA는 구현자 자기 평가를 읽지 않는다
 - [RUN_ID 추적](_conventions/run-id.md) — 파이프라인 실행 식별자 계약
+- [프릭션 로그](_conventions/friction-log.md) — 스킬 실행 중 마찰·기쁨을 한 줄 기록, sj-retro가 주간 소비
