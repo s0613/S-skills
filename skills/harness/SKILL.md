@@ -1,6 +1,6 @@
 ---
-name: s-skills
-version: 2.4.0
+name: harness
+version: 2.4.1
 description: |
   S-skills 하네스. 프로젝트 상태를 감지하고 docs-organize, test-scenario, pw-loop 스킬을
   오케스트레이션한다. /s-skills 하나로 지금 무엇이 필요한지 판단해 적절한 스킬을 호출.

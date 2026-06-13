@@ -4,6 +4,23 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.7.0] - 2026-06-13
+
+gbrain(garrytan/gbrain)의 manifest 패턴 차용 — 스킬 인벤토리를 frontmatter에서 파생시키고, 정합성을 기계가 검사한다. "규칙이 병을 만들었으니 가드가 치료한다."
+
+### Added
+- **scripts/skill-manifest.py** — SKILL.md frontmatter를 진실의 원천으로 한 정합성 검사·생성기. `--check`: frontmatter 유효성·name↔디렉토리·RESOLVER 디스패치 유효성·CLAUDE.md 버전 표기↔frontmatter·manifest 최신 (drift 시 exit 1). `--write`: manifest.json 재생성. PyYAML 비의존(표준 라이브러리만).
+- **skills/manifest.json** — 24개 스킬 인벤토리(name/path/version/description/triggers). frontmatter에서 파생, 손편집 금지.
+
+### Fixed
+- **RESOLVER #2** — `Skill("s-skills:sj-ui-auto")` → `Skill("s-skills:sj-automation")`. sj-ui-auto는 sj-automation의 트리거 별칭일 뿐 실존 스킬이 아니라, 런타임에 실패할 잘못된 디스패치였다 (정합성 검사가 검출).
+- **harness/SKILL.md** v2.4.1 — frontmatter `name: s-skills` → `harness` (디렉토리명·`s-skills:harness` 참조와 불일치했던 기존 버그, 정합성 검사가 검출).
+- **CLAUDE.md 버전 표기** — sj-design v3.2.1→3.2.2, sj-tech-lead v2.2.1→2.2.3, sj-qa v2.2.1→2.2.3, sj-loop v1.0.3→1.0.4 (frontmatter와 drift, 정합성 검사가 검출).
+
+### Changed
+- **validate-skill-frontmatter 루프** — frontmatter name/description만 보던 검사를 `skill-manifest.py --check` 전체 정합성 검사로 확장. 정지 조건도 exit 0으로.
+- **CLAUDE.md / README** — manifest 정합성 원칙 등록, scripts/·manifest.json 구조 반영.
+
 ## [3.6.0] - 2026-06-13
 
 gbrain(garrytan/gbrain)의 `_brain-filing-rules.md`에서 컨텍스트 위생 두 가지 — notability 게이트와 인용 — 를 `*-context.md` 학습 누적에 적용. 컨텍스트 파일이 사이클을 거듭해도 읽을 가치를 유지하게 한다.

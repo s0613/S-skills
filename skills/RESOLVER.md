@@ -19,7 +19,7 @@ sj-company Step 0이 런타임에 이 테이블을 읽어 디스패치하고, CL
 | # | 라벨 | 감지 키워드 | 제외 / 구분 조건 | 디스패치 |
 |---|------|------------|------------------|----------|
 | 1 | Obsidian | 옵시디언, obsidian, 노트로, 볼트, vault, 기록해줘, obs | Obsidian 전용 단어가 있을 때만. "문서 정리해줘"·"문서화해줘"만으로는 트리거하지 않음 → #21 | `Skill("s-skills:obsidian-writer")` |
-| 2 | UI 자동화 | 클릭, 버튼, 화면, 스크린, 입력해, UI, 자동 클릭, 이미지 인식, 화면 조작, 화면을, 창을, pyautogui, selenium, 웹 자동화, 브라우저 자동화, 로그인 자동화 | `playwright 테스트`, `playwright 설정`, `e2e 테스트`, `테스트 실행` 포함 시 건너뜀 (테스트 요청) | `Skill("s-skills:sj-ui-auto")` |
+| 2 | UI 자동화 | 클릭, 버튼, 화면, 스크린, 입력해, UI, 자동 클릭, 이미지 인식, 화면 조작, 화면을, 창을, pyautogui, selenium, 웹 자동화, 브라우저 자동화, 로그인 자동화 | `playwright 테스트`, `playwright 설정`, `e2e 테스트`, `테스트 실행` 포함 시 건너뜀 (테스트 요청) | `Skill("s-skills:sj-automation")` (UI 자동화는 sj-automation에 통합, `/sj-ui-auto`는 그 트리거 별칭) |
 | 3 | PC 자동화 | 자동화, 자동으로, 매일, 매주, 스케줄, 단축키, launchd, cron, 알림, 파일 이동, 폴더 정리, 앱 실행, 반복, 할 때마다, 되면 자동, shell, 스크립트 | UI 조작 키워드(#2)와 동시 감지 시 #2 우선 | `Skill("s-skills:sj-automation")` |
 | 4 | SEO 색인 | 색인 등록, 검색 노출 안 돼, Search Console, 서치어드바이저, sitemap 제출, 구글 색인, 네이버 색인, 검색에 안 나와, 검색 노출 도와줘 | | `Skill("s-skills:sj-seo")` |
 | 5 | 마케팅 | 마케팅, SNS, 캠페인, 카피, 게시글, 포스팅, 홍보, 인스타, 인스타그램, 스레드, threads, 링크드인, linkedin, 트위터, 광고 문구, 콘텐츠 작성, 컨텐츠, 카드뉴스, 슬라이드 포스팅, sns-start, 브랜드 카피, 마케팅 글, 네이버 블로그, 티스토리, 블로그 글, SEO 글, AEO, 블로그 콘텐츠, 상위노출 글 | `기술 블로그`, `개발 블로그`, `개발자 블로그`, `기술 문서` 포함 시 건너뜀 (개발 문서 요청). SEO 키워드(#4)와 동시 감지 시 #4 우선 | `Skill("s-skills:sj-marketing")` |

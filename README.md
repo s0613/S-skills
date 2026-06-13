@@ -112,9 +112,12 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 ## 구조
 
 ```
+scripts/
+└── skill-manifest.py ← SKILL.md ↔ manifest ↔ RESOLVER ↔ CLAUDE.md 정합성 검사 (--check/--write)
 skills/
+├── manifest.json     ← 스킬 인벤토리 (frontmatter에서 파생, 손편집 금지)
 ├── RESOLVER.md       ← 라우팅 단일 사실 (트리거 → 스킬 디스패치 테이블)
-├── _conventions/     ← 횡단 규칙 단일 정의 (사람 게이트·PII·archive-only·Judge 독립성·RUN_ID)
+├── _conventions/     ← 횡단 규칙 단일 정의 (사람 게이트·PII·archive-only·Judge 독립성·RUN_ID·friction·context-curation)
 ├── sj-company/       ← 모든 스킬의 진입점 (Step 0이 RESOLVER.md를 읽어 디스패치)
 ├── sj-pm/            ← 요구사항 분석
 ├── sj-design/        ← UI 설계 + 디자인 리뷰

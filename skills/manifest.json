@@ -1,0 +1,251 @@
+{
+  "name": "s-skills",
+  "version": "3.7.0",
+  "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
+  "skills": [
+    {
+      "name": "docs-organize",
+      "path": "skills/docs-organize/SKILL.md",
+      "version": "1.0.0",
+      "description": "Analyzes a project codebase, interviews the user for missing context, and",
+      "triggers": [
+        "/docs-organize",
+        "docs 정리",
+        "문서 정리"
+      ]
+    },
+    {
+      "name": "harness",
+      "path": "skills/harness/SKILL.md",
+      "version": "2.4.1",
+      "description": "S-skills 하네스. 프로젝트 상태를 감지하고 docs-organize, test-scenario, pw-loop 스킬을",
+      "triggers": [
+        "/s-skills"
+      ]
+    },
+    {
+      "name": "obsidian-writer",
+      "path": "skills/obsidian-writer/SKILL.md",
+      "version": "1.0.0",
+      "description": "Obsidian 문서 작성 전문가.",
+      "triggers": [
+        "/obsidian",
+        "/obsidian-writer"
+      ]
+    },
+    {
+      "name": "pw-loop",
+      "path": "skills/pw-loop/SKILL.md",
+      "version": "2.0.0",
+      "description": "기능 단위 Playwright 테스트 반복 루프.",
+      "triggers": [
+        "/pw-loop"
+      ]
+    },
+    {
+      "name": "sj-agent-dev",
+      "path": "skills/sj-agent-dev/SKILL.md",
+      "version": "1.1.0",
+      "description": "비즈니스 에이전트 개발 전문가. 실제 회사 업무에 투입할 AI 에이전트를",
+      "triggers": [
+        "/agent-dev",
+        "/sj-agent-dev"
+      ]
+    },
+    {
+      "name": "sj-agent-review",
+      "path": "skills/sj-agent-review/SKILL.md",
+      "version": "1.1.0",
+      "description": "비즈니스 에이전트 코드 리뷰어. 에이전트 프로젝트의 파일·폴더 구조를 탐색하고,",
+      "triggers": [
+        "/agent-review",
+        "/sj-agent-review"
+      ]
+    },
+    {
+      "name": "sj-automation",
+      "path": "skills/sj-automation/SKILL.md",
+      "version": "2.0.0",
+      "description": "PC 자동화 + UI 조작 + 네이티브 앱 제작 통합 전문가.",
+      "triggers": [
+        "/sj-automation",
+        "/automation",
+        "/auto",
+        "/sj-ui-auto",
+        "/ui-auto"
+      ]
+    },
+    {
+      "name": "sj-company",
+      "path": "skills/sj-company/SKILL.md",
+      "version": "3.7.0",
+      "description": "SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.",
+      "triggers": [
+        "/sj-company"
+      ]
+    },
+    {
+      "name": "sj-cso",
+      "path": "skills/sj-cso/SKILL.md",
+      "version": "1.0.0",
+      "description": "CSO(Chief Security Officer) 역할 보안 감사 에이전트.",
+      "triggers": [
+        "/sj-cso",
+        "/cso"
+      ]
+    },
+    {
+      "name": "sj-design",
+      "path": "skills/sj-design/SKILL.md",
+      "version": "3.2.2",
+      "description": "Design 전문가. 웹페이지·컴포넌트 디자인을 레퍼런스 DNA 기반으로 생성한다.",
+      "triggers": [
+        "/design",
+        "/design-shotgun",
+        "/review"
+      ]
+    },
+    {
+      "name": "sj-dev-si",
+      "path": "skills/sj-dev-si/SKILL.md",
+      "version": "1.1.0",
+      "description": "SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 견적서 + DDD 도메인 맵을 작성한다.",
+      "triggers": [
+        "/sj-dev-si"
+      ]
+    },
+    {
+      "name": "sj-investigate",
+      "path": "skills/sj-investigate/SKILL.md",
+      "version": "1.0.0",
+      "description": "체계적 루트코즈 디버깅 전문가. \"고쳐줘\" 전에 원인을 반드시 추적한다.",
+      "triggers": [
+        "/sj-investigate",
+        "/investigate"
+      ]
+    },
+    {
+      "name": "sj-loop",
+      "path": "skills/sj-loop/SKILL.md",
+      "version": "1.0.4",
+      "description": "루프 엔지니어링 전문가. \"에이전트에 직접 프롬프트\"를 \"에이전트를 프롬프트하는",
+      "triggers": [
+        "/sj-loop"
+      ]
+    },
+    {
+      "name": "sj-marketing",
+      "path": "skills/sj-marketing/SKILL.md",
+      "version": "1.1.0",
+      "description": "SNS + 블로그 마케팅 콘텐츠 전문가.",
+      "triggers": [
+        "/sj-marketing",
+        "/marketing",
+        "/sns",
+        "/blog-seo"
+      ]
+    },
+    {
+      "name": "sj-outsource",
+      "path": "skills/sj-outsource/SKILL.md",
+      "version": "1.0.1",
+      "description": "외주 연결 스킬. 사용자가 배포·구현에 막히면 프로젝트 개요와 대화 맥락을",
+      "triggers": [
+        "/outsource",
+        "/외주",
+        "/handoff"
+      ]
+    },
+    {
+      "name": "sj-pm",
+      "path": "skills/sj-pm/SKILL.md",
+      "version": "2.1.2",
+      "description": "PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위, 역할 힌트를 정의한다.",
+      "triggers": [
+        "/pm",
+        "/office-hours"
+      ]
+    },
+    {
+      "name": "sj-qa",
+      "path": "skills/sj-qa/SKILL.md",
+      "version": "2.2.3",
+      "description": "QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.",
+      "triggers": [
+        "/qa",
+        "/canary",
+        "/benchmark"
+      ]
+    },
+    {
+      "name": "sj-retro",
+      "path": "skills/sj-retro/SKILL.md",
+      "version": "1.1.0",
+      "description": "주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·프로세스 마찰·성장 기회를 분석한다.",
+      "triggers": [
+        "/sj-retro",
+        "/retro"
+      ]
+    },
+    {
+      "name": "sj-secretary",
+      "path": "skills/sj-secretary/SKILL.md",
+      "version": "3.1.1",
+      "description": "프로젝트 상태 보고 에이전트. 모든 프로젝트의 PROJECT.md를 읽어",
+      "triggers": [
+        "/secretary"
+      ]
+    },
+    {
+      "name": "sj-seo",
+      "path": "skills/sj-seo/SKILL.md",
+      "version": "1.0.0",
+      "description": "Google Search Console + Naver Search Advisor 색인 자동화 전문가.",
+      "triggers": [
+        "/sj-seo",
+        "/seo"
+      ]
+    },
+    {
+      "name": "sj-ship",
+      "path": "skills/sj-ship/SKILL.md",
+      "version": "1.0.1",
+      "description": "릴리즈 엔지니어 자동화 에이전트. 테스트 → 커버리지 감사 → PR 오픈까지 한 번에.",
+      "triggers": [
+        "/sj-ship",
+        "/ship"
+      ]
+    },
+    {
+      "name": "sj-spec",
+      "path": "skills/sj-spec/SKILL.md",
+      "version": "1.0.0",
+      "description": "스펙 작성 전문가. 모호한 의도를 5단계(why·scope·technical·draft·file)를 거쳐",
+      "triggers": [
+        "/sj-spec",
+        "/spec"
+      ]
+    },
+    {
+      "name": "sj-tech-lead",
+      "path": "skills/sj-tech-lead/SKILL.md",
+      "version": "2.2.3",
+      "description": "Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트",
+      "triggers": [
+        "/tech-lead"
+      ]
+    },
+    {
+      "name": "test-scenario",
+      "path": "skills/test-scenario/SKILL.md",
+      "version": "2.2.0",
+      "description": "기능별 테스트 시나리오 프롬프트를 생성하고, Claude Chrome 확장으로 실행한",
+      "triggers": [
+        "/test-scenario",
+        "테스트 시나리오",
+        "시나리오 만들기",
+        "시나리오 하네스"
+      ]
+    }
+  ]
+}
