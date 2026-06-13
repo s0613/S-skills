@@ -4,6 +4,18 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.6.0] - 2026-06-13
+
+gbrain(garrytan/gbrain)의 `_brain-filing-rules.md`에서 컨텍스트 위생 두 가지 — notability 게이트와 인용 — 를 `*-context.md` 학습 누적에 적용. 컨텍스트 파일이 사이클을 거듭해도 읽을 가치를 유지하게 한다.
+
+### Added
+- **skills/_conventions/context-curation.md** — 컨텍스트 큐레이션 컨벤션 단일 정의. (1) notability 게이트 3문항(다음 사이클 의사결정에 도움? / 코드·git에서 못 얻나? / 재사용 패턴인가? — 의심되면 쓰지 않는다), (2) 인용 형식 `- {날짜} [run:{RUN_ID}]: {인사이트}` (RUN_ID는 current-run.txt 연결), (3) 모순은 덮지 말고 명시. "빠진 인사이트는 추가 가능하나 잡음은 읽기 품질을 망친다."
+
+### Changed
+- **sj-pm** v2.1.2 / **sj-tech-lead** v2.2.3 / **sj-qa** v2.2.3 / **sj-design** v3.2.2 — 각 context append 지점(Step 6 / 9c / Step 8 / Step R-4)에 notability 게이트 + 인용 형식 적용. 기존 `- {날짜}: {인사이트}` → `- {날짜} [run:{RUN_ID}]: {인사이트}`.
+- **sj-company** — 학습 누적 의무를 컨텍스트 큐레이션 컨벤션 참조로 정리.
+- **CLAUDE.md / RESOLVER / _conventions/README** — 컨텍스트 큐레이션 원칙 등록.
+
 ## [3.5.0] - 2026-06-13
 
 gbrain(garrytan/gbrain)의 friction protocol 이식 — 스킬 실행 중 마찰을 만난 자리에서 한 줄로 기록하고, 주간 회고가 이를 개선 입력으로 소비하는 피드백 루프.

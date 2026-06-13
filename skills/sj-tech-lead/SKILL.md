@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 2.2.2
+version: 2.2.3
 description: |
   Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,
@@ -487,9 +487,13 @@ ls docs/sj-company/.state/dev/*.md 2>/dev/null | grep -v _channel
 
 ### 9c. dev-context.md 학습 누적
 
-이번 사이클에서 알게 된 **코드 컨벤션·API 계약·기술 결정** 1~3줄을 Edit 툴로 `docs/sj-company/dev-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
+> **컨벤션:** [컨텍스트 큐레이션](../_conventions/context-curation.md) — notability 게이트 통과 항목만, 인용 형식으로.
 
-append 전, 인사이트 텍스트에서 `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환 (> **컨벤션:** [PII 마스킹](../_conventions/pii-masking.md)).
+이번 사이클에서 알게 된 **코드 컨벤션·API 계약·기술 결정** 1~3줄을 Edit 툴로 `docs/sj-company/dev-context.md`의 `## 히스토리` 끝에 append해라. notability 게이트(다음 사이클 도움? / 코드·git에서 못 얻나? / 재사용 패턴인가?)를 통과한 것만 — 의심되면 스킵.
+
+형식: `- {오늘날짜} [run:{RUN_ID}]: {인사이트}` (RUN_ID는 `.state/current-run.txt`, 없으면 날짜만). 기존 항목과 모순되면 덮지 말고 모순 명시.
+
+append 전 [PII 마스킹](../_conventions/pii-masking.md): `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
 
 ### 9d. 크로스 프로젝트 패턴 학습 (선택적)
 

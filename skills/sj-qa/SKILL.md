@@ -1,6 +1,6 @@
 ---
 name: sj-qa
-version: 2.2.2
+version: 2.2.3
 description: |
   QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.
   dev-summary.md(구현자 자기 평가) 참조 금지 — Judge 독립성 원칙.
@@ -169,11 +169,13 @@ echo "Playwright: $_HAS_PW"
 
 ## Step 8: qa-context.md 학습 누적
 
-이번 사이클에서 **새로 알게 된 검증 포인트·취약 영역** 1~3줄을 `docs/sj-company/qa-context.md`의 `## 히스토리`에 append.
+> **컨벤션:** [컨텍스트 큐레이션](../_conventions/context-curation.md) — notability 게이트 통과 항목만, 인용 형식으로.
 
-이번 사이클에서 발견한 **새 취약 영역·검증 포인트** 1~3줄을 Edit 툴로 `docs/sj-company/qa-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
+이번 사이클에서 발견한 **새 취약 영역·검증 포인트** 1~3줄을 Edit 툴로 `docs/sj-company/qa-context.md`의 `## 히스토리` 끝에 append해라. notability 게이트(다음 사이클 도움? / 코드·git에서 못 얻나? / 재사용 패턴인가?)를 통과한 것만 — 의심되면 스킵.
 
-append 전 [PII 마스킹](../_conventions/pii-masking.md) 적용: `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
+형식: `- {오늘날짜} [run:{RUN_ID}]: {인사이트}` (RUN_ID는 `.state/current-run.txt`, 없으면 날짜만). 기존 항목과 모순되면 덮지 말고 모순 명시.
+
+append 전 [PII 마스킹](../_conventions/pii-masking.md): `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
 
 ## Step 9: 완료 보고
 

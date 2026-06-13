@@ -16,6 +16,7 @@ S-skills의 모든 스킬에 적용되는 공통 규칙. **규칙 본문은 여�
 | [judge-independence.md](judge-independence.md) | 검증자는 구현자의 자기 평가를 읽지 않는다 | sj-qa |
 | [run-id.md](run-id.md) | 파이프라인 실행 식별자 생성·전파 계약 | sj-company, sj-tech-lead |
 | [friction-log.md](friction-log.md) | 스킬 실행 중 마찰·기쁨을 한 줄 기록 → sj-retro가 주간 소비 | 모든 스킬 (기록), sj-retro (소비) |
+| [context-curation.md](context-curation.md) | *-context.md append는 notability 게이트 통과 항목만, 인용 형식으로 | sj-pm, sj-tech-lead, sj-qa, sj-design |
 
 ## 스킬에서 참조하는 방법
 

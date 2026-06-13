@@ -1,6 +1,6 @@
 ---
 name: sj-design
-version: 3.2.1
+version: 3.2.2
 description: |
   Design 전문가. 웹페이지·컴포넌트 디자인을 레퍼런스 DNA 기반으로 생성한다.
   생성 시 항상 3개 시안(역동형·절제형·균형형) HTML을 브라우저에 열어 사용자가
@@ -598,11 +598,15 @@ TARGET 파일을 읽고 아래를 검증한다.
 
 ### Step R-4: design-context.md 학습 누적
 
-새로 정립된 비주얼 약속이 있으면 append. append 전 [PII 마스킹](../_conventions/pii-masking.md) 적용: `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
+> **컨벤션:** [컨텍스트 큐레이션](../_conventions/context-curation.md) — notability 게이트 통과 항목만, 인용 형식으로.
+
+새로 정립된 **비주얼 약속**이 있으면 append. notability 게이트(다음 사이클 도움? / 기존 DESIGN.md에서 못 얻나? / 재사용 약속인가?)를 통과한 것만 — 일회성 결정이면 스킵. 기존 항목과 모순되면 덮지 말고 모순 명시.
+
+append 전 [PII 마스킹](../_conventions/pii-masking.md): `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
 
 ```bash
 # Edit 툴로 docs/sj-company/design-context.md의 ## 히스토리 끝에 추가
-# - {날짜}: {약속}
+# - {날짜} [run:{RUN_ID}]: {약속}   (RUN_ID는 .state/current-run.txt, 없으면 날짜만)
 ```
 
 ### Step R-5: Tech Lead 보고

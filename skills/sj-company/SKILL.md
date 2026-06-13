@@ -508,7 +508,7 @@ Workflow 도구로 다음 구조의 스크립트를 작성해 실행한다:
 
 ### 학습 누적 의무
 
-각 역할 스킬(`sj-pm`/`sj-design`/`sj-tech-lead`/`sj-qa`)은 사이클을 마칠 때 **이번 사이클에서 새로 알게 된 인사이트 1~3줄**을 자기 `*-context.md`의 `## 히스토리` 섹션에 날짜와 함께 append 한다. 사이클 산출이 모두 휘발해도 학습은 영속. append 전 [PII 마스킹](../_conventions/pii-masking.md)을 적용한다.
+각 역할 스킬(`sj-pm`/`sj-design`/`sj-tech-lead`/`sj-qa`)은 사이클을 마칠 때 **이번 사이클에서 새로 알게 된 인사이트 1~3줄**을 자기 `*-context.md`의 `## 히스토리` 섹션에 append 한다. 사이클 산출이 모두 휘발해도 학습은 영속. append 규칙은 [컨텍스트 큐레이션](../_conventions/context-curation.md)을 따른다 — notability 게이트 통과 항목만, `- {날짜} [run:{RUN_ID}]: {인사이트}` 인용 형식, [PII 마스킹](../_conventions/pii-masking.md) 적용.
 
 ### archive-only 불변식 (영속 파일 보호)
 

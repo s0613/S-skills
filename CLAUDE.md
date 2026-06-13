@@ -109,6 +109,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **Judge 독립성**: sj-qa는 구현자(Tech Lead)가 작성한 dev-summary.md를 읽지 않음. pm-brief + 실제 파일 직접 탐색으로 독립 검증.
 - **archive-only 불변식**: 영속 파일(PROJECT.md, *-context.md)은 통째 재작성 전 archive/ 백업 필수.
 - **PII 마스킹**: *-context.md append 전 password/token/secret 패턴 `[REDACTED]` 치환.
+- **컨텍스트 큐레이션**: *-context.md 학습 누적은 notability 게이트(다음 사이클 도움?/코드·git에서 못 얻나?/재사용 패턴?) 통과 항목만, `- {날짜} [run:{RUN_ID}]: {인사이트}` 인용 형식으로. 모순은 덮지 말고 명시 (gbrain filing-rules 차용 — 빠진 인사이트는 추가 가능하나 잡음은 읽기 품질을 망친다).
 - **spec 연속성**: sj-spec 저장 시 task.txt에 `[SPEC: 경로]` 자동 기록 → Tech Lead가 Dispatch Card에 포함.
 - **사람 게이트**: PR 머지·프로덕션 배포 승인은 항상 사람이 한다. 어떤 스킬·루프·자동화도 이 두 가지를 자동 실행하지 않는다 (build the loop, stay the engineer).
 - **완료 조건 검증**: pm-brief의 `## 완료 조건`(기계 검증 가능)을 sj-qa가 1:1 실행·대조해 판정. "done"은 주장이 아니라 조건 충족의 결과.

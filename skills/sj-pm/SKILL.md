@@ -1,6 +1,6 @@
 ---
 name: sj-pm
-version: 2.1.1
+version: 2.1.2
 description: |
   PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위, 역할 힌트를 정의한다.
   결과는 .state/pm-brief.md(휘발)에, 학습 인사이트는 pm-context.md(영속)에 누적한다.
@@ -212,14 +212,15 @@ pm-brief.md의 태스크 목록에서 첫 번째 항목을 읽어, Edit 툴로 `
 
 ## Step 6: pm-context.md 학습 누적
 
-이번 사이클에서 **새로 알게 된 인사이트** 1~3줄을 `docs/sj-company/pm-context.md`의 `## 히스토리` 섹션 끝에 추가한다. 단순한 작업 기록이 아니라 "다음 사이클이 알면 좋을 사실"만 기록.
+> **컨벤션:** [컨텍스트 큐레이션](../_conventions/context-curation.md) — notability 게이트 통과 항목만, 인용 형식으로.
 
-이번 사이클에서 **다음 사이클이 알면 좋을 사실** 1~3줄을 Edit 툴로 `docs/sj-company/pm-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
+이번 사이클에서 **다음 사이클이 알면 좋을 사실** 1~3줄을 Edit 툴로 `docs/sj-company/pm-context.md`의 `## 히스토리` 끝에 append해라.
 
-append 전, 인사이트 텍스트에서 민감 정보를 제거한다 (> **컨벤션:** [PII 마스킹](../_conventions/pii-masking.md)):
-`password|token|secret|api.?key|Bearer|private.?key` 패턴에 해당하는 값은 `[REDACTED]`로 치환.
+notability 게이트(3문항 — 다음 사이클 의사결정에 도움? / 코드·git에서 못 얻나? / 재사용 패턴인가?)를 통과한 것만 쓴다. 단순 작업 기록이면 스킵. **의심되면 쓰지 않는다.**
 
-인사이트가 없으면 (단순 작업) 스킵.
+형식: `- {오늘날짜} [run:{RUN_ID}]: {인사이트}` — RUN_ID는 `docs/sj-company/.state/current-run.txt`에서 읽고, 없으면 날짜만. 기존 항목과 모순되면 덮지 말고 모순을 명시해 추가.
+
+append 전 [PII 마스킹](../_conventions/pii-masking.md): `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
 
 ## Step 7: 완료 보고
 
