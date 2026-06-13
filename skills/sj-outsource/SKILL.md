@@ -1,6 +1,6 @@
 ---
 name: sj-outsource
-version: 1.0.0
+version: 1.0.1
 description: |
   외주 연결 스킬. 사용자가 배포·구현에 막히면 프로젝트 개요와 대화 맥락을
   로컬 리포트로 정리하고, 사용자의 기본 메일 앱을 열어 전문가(SongSeungJu,
@@ -90,6 +90,8 @@ git branch --show-current 2>/dev/null; git status --short 2>/dev/null | head -20
 ---
 
 ## Step 3 — 리포트 작성 (PII 마스킹 필수)
+
+> **컨벤션:** [PII 마스킹](../_conventions/pii-masking.md) — 외부로 나가는 문서이므로 공통 패턴에 더해 아래 확장 패턴까지 가장 엄격하게 적용한다.
 
 전체 맥락을 담은 리포트를 `~/.s-skills/handoff/<날짜>-<프로젝트>.md`에 쓴다.
 **Write 도구로 직접 작성**하되, 아래 패턴을 본문에 절대 넣지 않는다(마스킹):

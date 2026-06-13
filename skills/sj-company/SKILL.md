@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.6.0
+version: 3.7.0
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
@@ -142,7 +142,7 @@ NEXT가 "없음"이면:
 ```
 
 AskUserQuestion으로 사용자 입력 받기:
-- A) 바로 시작 (NEXT 태스크로) → NEXT 값을 태스크로 두고 **이 시점부터 Case B Step 0(리뷰 감지)부터 실행**
+- A) 바로 시작 (NEXT 태스크로) → NEXT 값을 태스크로 두고 **이 시점부터 Case B Step 0(라우팅)부터 실행**
 - B) 새 태스크 입력 → 입력값을 태스크로 두고 **이 시점부터 Case B Step 0부터 실행**
 
 PROJECT.md가 없는 경우 (신규 프로젝트):
@@ -181,158 +181,28 @@ open("docs/sj-company/PROJECT.md", "w").write(content)
 print("PROJECT.md 생성 완료")
 ```
 
-생성 직후, 사용자에게 "프로젝트가 등록됐습니다. 다음 태스크를 입력하세요"를 출력하고 새 태스크 입력을 받아 **Case B Step 0(리뷰 감지)부터 실행**한다.
+생성 직후, 사용자에게 "프로젝트가 등록됐습니다. 다음 태스크를 입력하세요"를 출력하고 새 태스크 입력을 받아 **Case B Step 0(라우팅)부터 실행**한다.
 
 ---
 
 ## Case B: 인자와 함께 호출 (`/sj-company <태스크>`) — 실행
 
-### Step 0: Obsidian 문서 요청 감지 (최우선 체크)
+### Step 0: 라우팅 (RESOLVER 단일 사실)
 
-태스크 텍스트가 Obsidian 문서화 요청인지 판단해라. 아래 키워드 중 하나라도 포함되면 Obsidian 경로를 실행하고 Case B 종료 (Step 0a로 넘어가지 않는다).
+태스크 텍스트를 라우팅 테이블과 대조한다. 키워드·제외 조건·우선순위의 **단일 사실은 `skills/RESOLVER.md`**다 — Read 툴로 이 스킬의 베이스 디렉토리 기준 `../RESOLVER.md`를 읽어라 (예: 베이스가 `.../skills/sj-company`이면 `.../skills/RESOLVER.md`). 키워드 추가·수정도 이 SKILL.md가 아니라 RESOLVER.md에서 한다.
 
-**감지 키워드:** 옵시디언, obsidian, 노트로, 볼트, vault, 기록해줘, obs
+테이블을 **위에서 아래로** 평가해 첫 매치의 스킬을 디스패치하고 Case B를 종료한다.
+디스패치 시 `[{라벨}] {감지 안내}. {스킬}을 실행합니다.` 한 줄을 출력한다.
 
-**판별 기준:** `obsidian`/`옵시디언`/`볼트`/`vault` 같은 Obsidian 전용 단어가 포함된 경우에만 트리거. "문서 정리해줘", "문서화해줘" 만으로는 트리거하지 않는다 — 이 경우 Step 0-docs-organize로 내려간다.
+분기:
+- **매치 없음** → Step 1(태스크 크기 판정)로 진행
+- **#10 릴리즈(ship) 매치** → 아래 "ship 사전 확인 프로토콜"을 수행한 뒤 디스패치
+- **#20 PW Loop 매치인데 playwright.config가 없음** → "playwright 설정 파일이 없습니다" 출력 후 Tiny 경로로
+- **#23 리뷰 매치** → Step R(리뷰 경로) 실행
 
-**Obsidian 경로:**
-```
-[Obsidian] 문서 작성 요청을 감지했습니다. obsidian-writer를 실행합니다.
-```
-`Skill("s-skills:obsidian-writer")` 호출 — 볼트 탐지·저장 위치 선택·문서 작성까지 obsidian-writer가 전담한다.
+#### ship 사전 확인 프로토콜
 
----
-
-### Step 0-auto: PC 자동화 요청 감지
-
-태스크 텍스트가 PC 자동화 또는 화면 조작 자동화 요청인지 판단해라. 해당하면 아래 경로를 실행하고 Case B 종료.
-
-**UI 조작 자동화 감지 키워드** (화면 클릭·버튼·입력·화면인식 포함):
-클릭, 버튼, 화면, 스크린, 입력해, UI, 자동 클릭, 이미지 인식, 화면 조작, 화면을, 창을, pyautogui, selenium, 웹 자동화, 브라우저 자동화, 로그인 자동화
-
-**제외 조건:** `playwright 테스트`, `playwright 설정`, `e2e 테스트`, `테스트 실행` 포함 시 → UI 자동화가 아닌 테스트 요청. 이 키워드들이 포함되면 Step 0-auto를 건너뛴다.
-
-→ 감지 시:
-```
-[UI 자동화] 화면 조작 자동화 요청을 감지했습니다. sj-ui-auto를 실행합니다.
-```
-`Skill("s-skills:sj-ui-auto")` 호출
-
----
-
-**PC/시스템 자동화 감지 키워드** (스케줄·파일·앱·단축키 자동화):
-자동화, 자동으로, 매일, 매주, 스케줄, 단축키, launchd, cron, 알림, 파일 이동, 폴더 정리, 앱 실행, 반복, 할 때마다, 되면 자동, shell, 스크립트
-
-→ 감지 시 (단, UI 조작 키워드와 함께 감지된 경우 sj-ui-auto 우선):
-```
-[PC 자동화] 시스템 자동화 요청을 감지했습니다. sj-automation을 실행합니다.
-```
-`Skill("s-skills:sj-automation")` 호출
-
----
-
-### Step 0-marketing: 마케팅 콘텐츠 요청 감지
-
-태스크 텍스트가 SNS 마케팅·카피라이팅·캠페인 관련 요청인지 판단해라. 해당하면 아래 경로를 실행하고 Case B 종료.
-
-**기술적 SEO 감지 키워드** (색인·Search Console·검색 노출 등록):
-색인 등록, 검색 노출 안 돼, Search Console, 서치어드바이저, sitemap 제출, 구글 색인, 네이버 색인, 검색에 안 나와, 검색 노출 도와줘
-
-→ 감지 시:
-```
-[SEO 색인] 기술적 SEO 요청을 감지했습니다. sj-seo를 실행합니다.
-```
-`Skill("s-skills:sj-seo")` 호출
-
----
-
-**마케팅·콘텐츠 감지 키워드:**
-마케팅, SNS, 캠페인, 카피, 게시글, 포스팅, 홍보, 인스타, 인스타그램, 스레드, threads, 링크드인, linkedin, 트위터, 광고 문구, 콘텐츠 작성, 컨텐츠, 카드뉴스, 슬라이드 포스팅, sns-start, 브랜드 카피, 마케팅 글, 네이버 블로그, 티스토리, 블로그 글, SEO 글, AEO, 블로그 콘텐츠, 상위노출 글
-
-**제외 조건:** `기술 블로그`, `개발 블로그`, `개발자 블로그`, `기술 문서` 포함 시 → 마케팅이 아닌 개발 문서 요청. 이 키워드들이 포함되면 Step 0-marketing을 건너뛰고 Tiny/Small/Medium으로 처리한다.
-
-→ 감지 시 (기술적 SEO 키워드와 함께 감지된 경우 totaro-seo 우선):
-```
-[마케팅] SNS/블로그 마케팅 요청을 감지했습니다. sj-marketing을 실행합니다.
-```
-`Skill("s-skills:sj-marketing")` 호출
-
----
-
-### Step 0-spec: 스펙/명세 작성 요청 감지
-
-태스크 텍스트가 스펙·명세·PRD 작성 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-스펙, 명세, PRD, 기능 정의, 요구사항 정리, 스펙 만들어줘, 뭘 만들지 정리, 설계 문서, spec
-
-→ 감지 시:
-```
-[스펙] 스펙 작성 요청을 감지했습니다. sj-spec을 실행합니다.
-```
-`Skill("s-skills:sj-spec")` 호출
-
----
-
-### Step 0-investigate: 디버깅/원인 분석 요청 감지
-
-태스크 텍스트가 버그 원인 추적·디버깅 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-왜 이러지, 원인 파악, 디버깅, 에러 원인, 버그 추적, investigate, 어디서 나는지, 루트코즈, root cause
-
-→ 감지 시:
-```
-[조사] 원인 분석 요청을 감지했습니다. sj-investigate를 실행합니다.
-```
-`Skill("s-skills:sj-investigate")` 호출
-
----
-
-### Step 0-agent-dev: AI 에이전트 개발 요청 감지
-
-태스크 텍스트가 AI 에이전트 설계·구현·오케스트레이션 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-에이전트 만들어줘, 에이전트 설계, AI 에이전트, agent 개발, 오케스트레이션 구현, 멀티에이전트, multi-agent, 에이전트 아키텍처, agent-dev, 런타임 루프, 역할 분리 에이전트
-
-**구분 기준:**
-- "에이전트 리뷰", "에이전트 점검" 포함 시 → Step 0a(리뷰)로 내려간다
-- 신규 에이전트 설계·구현 요청이면 → 이 단계에서 sj-agent-dev 실행
-
-→ 감지 시:
-```
-[Agent Dev] AI 에이전트 개발 요청을 감지했습니다. sj-agent-dev를 실행합니다.
-```
-`Skill("s-skills:sj-agent-dev")` 호출
-
----
-
-### Step 0-cso: 보안 감사 요청 감지
-
-태스크 텍스트가 보안 점검·취약점 검사 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-보안 점검, 보안 감사, 취약점, OWASP, STRIDE, 보안 리뷰, 보안 검사, cso, security audit
-
-→ 감지 시:
-```
-[보안] 보안 감사 요청을 감지했습니다. sj-cso를 실행합니다.
-```
-`Skill("s-skills:sj-cso")` 호출
-
----
-
-### Step 0-ship: 릴리즈/배포 요청 감지
-
-태스크 텍스트가 릴리즈·PR·배포 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-배포해줘, PR 올려줘, 릴리즈, ship, 머지해줘, 배포 준비, PR 만들어, 커밋하고 push
-
-**충돌 방지:** "배포 후 확인", "배포 모니터링", "잘 올라갔어", "canary", "프로덕션 체크" 포함 시 → ship이 아닌 canary(Step 0-canary)로 라우팅. ship은 push/PR **생성** 요청에만 반응.
-
-→ 감지 시:
+> **컨벤션:** [사람 게이트](../_conventions/human-gate.md) — push/PR 생성은 취소 불가 작업. 사전 확인 생략 금지.
 
 ```bash
 _SHIP_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
@@ -340,213 +210,17 @@ echo "현재 브랜치: $_SHIP_BRANCH"
 git log origin/main..HEAD --oneline 2>/dev/null | head -5
 ```
 
-AskUserQuestion으로 사전 확인 (취소 불가 작업이므로 필수):
+AskUserQuestion으로 사전 확인 (필수):
 - "현재 브랜치: {브랜치명}. PR 생성 및 push를 진행할까요?"
 - "예 → sj-ship 실행 / 아니오 → 취소"
 
-확인 후:
-```
-[릴리즈] sj-ship을 실행합니다.
-```
-`Skill("s-skills:sj-ship")` 호출
+확인 후 `Skill("s-skills:sj-ship")` 호출.
 
 ---
 
-### Step 0-outsource: 외주/전문가 위임 요청 감지
+### Step R: 리뷰 경로
 
-태스크 텍스트가 외주·전문가 위임 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-외주, outsource, handoff, 전문가에게, 맡기고 싶어, 대신 해줄 사람, SongSeungJu, 넘기고 싶어, 도와줄 사람 연결
-
-→ 감지 시:
-```
-[외주] sj-outsource를 실행합니다.
-```
-`Skill("s-skills:sj-outsource")` 호출
-
----
-
-### Step 0-retro: 회고 요청 감지
-
-태스크 텍스트가 회고·retrospective 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-회고, retro, retrospective, 이번 주 정리, 지난주 리뷰, 한 주 돌아보기, 회고해줘
-
-→ 감지 시:
-```
-[회고] 주간 회고 요청을 감지했습니다. sj-retro를 실행합니다.
-```
-`Skill("s-skills:sj-retro")` 호출
-
----
-
-### Step 0-canary: 배포 모니터링 요청 감지
-
-태스크 텍스트가 배포 후 상태 확인·canary 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-canary, 배포 후 확인, 프로덕션 체크, 상태 확인, 배포 모니터링, 잘 올라갔어?
-
-→ 감지 시:
-```
-[Canary] 배포 후 모니터링 요청을 감지했습니다. sj-qa canary 모드를 실행합니다.
-```
-`Skill("s-skills:sj-qa")` 호출 (canary 모드)
-
----
-
-### Step 0-benchmark: 성능 측정 요청 감지
-
-태스크 텍스트가 성능 측정·벤치마크 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-성능 측정, 벤치마크, benchmark, Core Web Vitals, lighthouse, 로드 타임, 느린 이유
-
-→ 감지 시:
-```
-[Benchmark] 성능 측정 요청을 감지했습니다. sj-qa benchmark 모드를 실행합니다.
-```
-`Skill("s-skills:sj-qa")` 호출 (benchmark 모드)
-
----
-
-### Step 0-office-hours: 아이디어 검증 요청 감지
-
-태스크 텍스트가 코딩 전 아이디어 검증·office hours 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-office hours, 아이디어 검증, 코딩 전 확인, 이 기능 만들어야 할까, 이 기능 필요할까, 제품 방향 맞아?, 이 접근법 맞아?, 만들기 전에 확인
-
-**제외 조건:** 코드 레벨 질문("이 코드 맞아?", "이 로직 맞아?", "이게 에러야?")은 office-hours가 아니다. 제품·기능·방향 수준의 결정 요청에만 반응한다.
-
-→ 감지 시:
-```
-[Office Hours] 아이디어 검증 요청을 감지했습니다. sj-pm office hours 모드를 실행합니다.
-```
-`Skill("s-skills:sj-pm")` 호출 (office-hours 모드)
-
----
-
-### Step 0-design: 단일 디자인 구현 요청 감지
-
-태스크 텍스트가 UI 디자인·화면·컴포넌트 **단일 생성** 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-디자인 만들어줘, 화면 만들어줘, UI 만들어줘, 페이지 디자인, 컴포넌트 만들어줘, 스타일 잡아줘, 레이아웃 만들어줘, 디자인해줘, 화면 구성, 디자인 구현, UI 구현
-
-**구분 기준:**
-- "다양하게", "여러 스타일", "목업 여러 개" 포함 시 → Step 0-design-shotgun으로 넘어간다 (다중 변형 요청)
-- 단일 화면·컴포넌트 구현 요청이면 → 이 단계에서 sj-design 실행
-
-→ 감지 시:
-```
-[Design] 디자인 구현 요청을 감지했습니다. sj-design을 실행합니다.
-```
-`Skill("s-skills:sj-design")` 호출
-
----
-
-### Step 0-design-shotgun: 디자인 탐색 요청 감지
-
-태스크 텍스트가 다수 디자인 변형 생성 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-목업 여러 개, 변형 생성, 디자인 탐색, 다양하게 보여줘, design shotgun, 여러 스타일, 디자인 아이디어
-
-→ 감지 시:
-```
-[Design Shotgun] 디자인 변형 탐색 요청을 감지했습니다. sj-design shotgun 모드를 실행합니다.
-```
-`Skill("s-skills:sj-design")` 호출 (shotgun 모드)
-
----
-
-### Step 0-secretary: 비서 보고 요청 감지
-
-태스크 텍스트가 비서 보고·현황 요약 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-비서, secretary, 현황 보고, 요약 보고, 보고서 봐줘, 진행 상황 알려줘, 지금 어때, 프로젝트 현황, 뭐가 완료됐어
-
-→ 감지 시:
-```
-[비서] 현황 보고 요청을 감지했습니다. sj-secretary를 실행합니다.
-```
-`Skill("s-skills:sj-secretary")` 호출
-
----
-
-### Step 0-test-scenario: 테스트 시나리오 요청 감지
-
-태스크 텍스트가 테스트 시나리오 생성·검증 시나리오 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-테스트 시나리오, 검증 시나리오, test scenario, 기능 검증 목록, 테스트 케이스 만들어줘, 시나리오 작성, 통과율 추적
-
-→ 감지 시:
-```
-[테스트 시나리오] 시나리오 생성 요청을 감지했습니다. test-scenario를 실행합니다.
-```
-`Skill("s-skills:test-scenario")` 호출
-
----
-
-### Step 0-pw-loop: Playwright 테스트 실행 요청 감지
-
-태스크 텍스트가 Playwright 테스트 실행·통과율 확인 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-playwright 테스트, playwright 실행, e2e 테스트 실행, e2e 돌려줘, 테스트 통과율, pw-loop, pw 실행, 테스트 돌려줘
-
-**전제 조건:** `playwright.config.ts` 또는 `playwright.config.js`가 존재해야 한다. 없으면 "playwright 설정 파일이 없습니다"를 출력하고 Tiny 경로로 넘어간다.
-
-→ 감지 시:
-```
-[PW Loop] Playwright 테스트 실행 요청을 감지했습니다. pw-loop를 실행합니다.
-```
-`Skill("s-skills:pw-loop")` 호출
-
----
-
-### Step 0-docs-organize: 문서 정리 요청 감지
-
-태스크 텍스트가 문서 구조 정리·docs 생성·health score 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize
-
-→ 감지 시:
-```
-[문서 정리] 문서 구조 정리 요청을 감지했습니다. docs-organize를 실행합니다.
-```
-`Skill("s-skills:docs-organize")` 호출
-
----
-
-### Step 0-loop: 루프 엔지니어링 요청 감지
-
-태스크 텍스트가 반복 작업의 루프 설계·생성·실행 요청인지 판단해라. 해당하면 실행하고 Case B 종료.
-
-**감지 키워드:**
-루프 만들어, 루프 돌려, 루프 프롬프트, 루프 설계, 반복 자동화, 계속 돌려줘, 야간에 알아서, 주기적으로 실행, 무인으로 돌려, 스케줄로 돌려, sj-loop
-
-**구분 규칙:** Playwright 테스트 실행·통과율 반복은 이 블록이 아니라 Step 0-pw-loop 대상이다 (pw-loop가 먼저 평가되므로 그쪽 키워드에 걸리면 여기까지 오지 않는다).
-
-→ 감지 시:
-```
-[Loop] 루프 엔지니어링 요청을 감지했습니다. sj-loop를 실행합니다.
-```
-`Skill("s-skills:sj-loop")` 호출
-
----
-
-### Step 0a: 리뷰 요청 감지 (크기 판정 전 먼저 체크)
-
-태스크 텍스트가 리뷰/검토/점검/검수 성격인지 판단해라. 그렇다면 아래 리뷰 경로를 실행하고 Case B 종료 (Step 1로 넘어가지 않는다).
-
-#### 리뷰 경로
+RESOLVER #23(리뷰/검토/점검/검수)에서 라우팅된 경우 이 경로를 실행하고 Case B를 종료한다 (Step 1로 넘어가지 않는다).
 
 1. 리뷰 대상 자동 감지:
 
@@ -609,7 +283,7 @@ done
 - docs/sj-company/.state/review-design.md (디자인, 있는 경우)
 ```
 
-**IS_REVIEW=no이면** → Step 1(태스크 크기 판정)으로 진행.
+리뷰 성격이 아닌데 이 경로로 온 경우(오라우팅) → Step 1(태스크 크기 판정)으로 진행.
 
 ---
 
@@ -834,9 +508,11 @@ Workflow 도구로 다음 구조의 스크립트를 작성해 실행한다:
 
 ### 학습 누적 의무
 
-각 역할 스킬(`sj-pm`/`sj-design`/`sj-tech-lead`/`sj-qa`)은 사이클을 마칠 때 **이번 사이클에서 새로 알게 된 인사이트 1~3줄**을 자기 `*-context.md`의 `## 히스토리` 섹션에 날짜와 함께 append 한다. 사이클 산출이 모두 휘발해도 학습은 영속.
+각 역할 스킬(`sj-pm`/`sj-design`/`sj-tech-lead`/`sj-qa`)은 사이클을 마칠 때 **이번 사이클에서 새로 알게 된 인사이트 1~3줄**을 자기 `*-context.md`의 `## 히스토리` 섹션에 날짜와 함께 append 한다. 사이클 산출이 모두 휘발해도 학습은 영속. append 전 [PII 마스킹](../_conventions/pii-masking.md)을 적용한다.
 
 ### archive-only 불변식 (영속 파일 보호)
+
+> **컨벤션:** [archive-only](../_conventions/archive-only.md) — 규칙 본문의 단일 정의. 아래는 실행 커널.
 
 `PROJECT.md`·`*-context.md` 등 **영속 파일을 통째로 재생성(Write로 덮어쓰기)** 하기 직전에는, 반드시 직전 버전을 `docs/sj-company/archive/`로 보존한 뒤 덮어쓴다. 필드 단위 수정(Edit)은 해당 없음 — 통째 재작성·마이그레이션·리셋에만 적용.
 

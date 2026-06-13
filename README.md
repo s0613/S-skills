@@ -113,7 +113,9 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 
 ```
 skills/
-├── sj-company/       ← 모든 스킬의 진입점
+├── RESOLVER.md       ← 라우팅 단일 사실 (트리거 → 스킬 디스패치 테이블)
+├── _conventions/     ← 횡단 규칙 단일 정의 (사람 게이트·PII·archive-only·Judge 독립성·RUN_ID)
+├── sj-company/       ← 모든 스킬의 진입점 (Step 0이 RESOLVER.md를 읽어 디스패치)
 ├── sj-pm/            ← 요구사항 분석
 ├── sj-design/        ← UI 설계 + 디자인 리뷰
 ├── sj-tech-lead/     ← 서브에이전트 오케스트레이션

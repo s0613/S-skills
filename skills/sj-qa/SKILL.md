@@ -1,6 +1,6 @@
 ---
 name: sj-qa
-version: 2.2.0
+version: 2.2.1
 description: |
   QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.
   dev-summary.md(구현자 자기 평가) 참조 금지 — Judge 독립성 원칙.
@@ -81,6 +81,8 @@ cat package.json 2>/dev/null | grep -A5 '"scripts"'
 ```
 
 ## Step 2: 이전 단계 컨텍스트 로드
+
+> **컨벤션:** [Judge 독립성](../_conventions/judge-independence.md) — dev-summary.md(구현자 자기 평가)는 판정 근거로 읽지 않는다.
 
 ```bash
 # Judge 독립성 원칙: pm-brief(요구사항 원본)과 실제 변경 파일만 읽는다.
@@ -168,6 +170,8 @@ echo "Playwright: $_HAS_PW"
 이번 사이클에서 **새로 알게 된 검증 포인트·취약 영역** 1~3줄을 `docs/sj-company/qa-context.md`의 `## 히스토리`에 append.
 
 이번 사이클에서 발견한 **새 취약 영역·검증 포인트** 1~3줄을 Edit 툴로 `docs/sj-company/qa-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
+
+append 전 [PII 마스킹](../_conventions/pii-masking.md) 적용: `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
 
 ## Step 9: 완료 보고
 

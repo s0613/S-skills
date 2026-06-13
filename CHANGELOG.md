@@ -4,6 +4,26 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.4.0] - 2026-06-12
+
+gbrain(garrytan/gbrain)의 2층 라우팅(얇은 디스패처 + 온디맨드 상세)과 `_conventions` 단일 정의 패턴 차용.
+
+### Added
+- **skills/RESOLVER.md** — 트리거 → 스킬 라우팅의 단일 사실. 23개 라우팅 행(키워드·제외 조건·우선순위) + 모호성 해소 규칙. 키워드 추가·수정은 이 파일에서만 한다.
+- **skills/_conventions/** — 횡단 규칙 단일 정의 5종: 사람 게이트(human-gate.md)·PII 마스킹(pii-masking.md)·archive-only 불변식(archive-only.md)·Judge 독립성(judge-independence.md)·RUN_ID 추적(run-id.md). 각 스킬은 한 줄 참조 + 실행 커널(정규식 등)만 인라인 유지, 커널 변경 시 grep 동기화 절차 명시.
+
+### Changed
+- **sj-company** v3.7.0 — Step 0-* 키워드 블록 19개(약 350줄)를 RESOLVER.md 참조 한 단계로 교체 (866줄 → 545줄). ship 사전 확인 프로토콜과 리뷰 경로(Step 0a → Step R)는 실행 로직이므로 SKILL.md에 유지. archive-only·학습 누적 의무에 컨벤션 참조 추가.
+- **sj-pm** v2.1.1 / **sj-tech-lead** v2.2.1 — PII 마스킹 줄에 컨벤션 참조 추가.
+- **sj-qa** v2.2.1 — Step 2에 Judge 독립성 컨벤션 참조 추가. Step 8(qa-context append)에 누락돼 있던 PII 마스킹 적용 추가 (컨벤션 단일화 과정에서 발견된 실제 갭).
+- **sj-design** v3.2.1 — Step R-4(design-context append)에 누락돼 있던 PII 마스킹 적용 추가.
+- **sj-loop** v1.0.3 / **sj-ship** v1.0.1 — 사람 게이트 컨벤션 참조 추가 (sj-ship은 "PR 생성까지가 영역, 머지·배포 승인은 사람" 경계 명시).
+- **sj-outsource** v1.0.1 — Step 3 PII 마스킹에 컨벤션 참조 추가 (외부 문서이므로 확장 패턴 유지).
+- **CLAUDE.md / README** — RESOLVER·_conventions 참조 추가, 스킬 버전 표기 동기화 (sj-design v3.0.0 → v3.2.1 기존 누락분 포함).
+
+### Fixed
+- sj-company 마케팅 라우팅의 낡은 스킬명 `totaro-seo` 참조를 RESOLVER 이전 과정에서 `sj-seo`로 정정.
+
 ## [3.3.1] - 2026-06-11
 
 드라이런 실전 테스트(frontmatter 검증 루프 1사이클)에서 발견된 관찰 사항 반영 패치.

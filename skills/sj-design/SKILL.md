@@ -1,6 +1,6 @@
 ---
 name: sj-design
-version: 3.2.0
+version: 3.2.1
 description: |
   Design 전문가. 웹페이지·컴포넌트 디자인을 레퍼런스 DNA 기반으로 생성한다.
   생성 시 항상 3개 시안(역동형·절제형·균형형) HTML을 브라우저에 열어 사용자가
@@ -598,7 +598,7 @@ TARGET 파일을 읽고 아래를 검증한다.
 
 ### Step R-4: design-context.md 학습 누적
 
-새로 정립된 비주얼 약속이 있으면 append.
+새로 정립된 비주얼 약속이 있으면 append. append 전 [PII 마스킹](../_conventions/pii-masking.md) 적용: `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환.
 
 ```bash
 # Edit 툴로 docs/sj-company/design-context.md의 ## 히스토리 끝에 추가

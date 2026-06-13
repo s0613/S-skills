@@ -36,11 +36,11 @@
 
 PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별로 처리한다.
 
-- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v3.6.0. 19개 Step 0-* 키워드 블록으로 자동 감지 (sj-loop 라우팅 포함). RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
+- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v3.7.0. 라우팅 키워드의 단일 사실은 [skills/RESOLVER.md](skills/RESOLVER.md) — Step 0이 런타임에 읽어 디스패치 (23개 라우팅 행). RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
 - **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석. AskUserQuestion 최대 1회, 모호해도 가정으로 진행. PII 마스킹 적용.
-- **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v3.0.0. 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
-- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.2.0. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용.
-- **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v2.2.0. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 자체 검토 루프 최대 2회.
+- **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v3.2.1. 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
+- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.2.1. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용.
+- **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v2.2.1. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 자체 검토 루프 최대 2회.
 - **s-skills:sj-secretary** (`/secretary`) — 프로젝트 상태 보고 전문. 전체 프로젝트 PROJECT.md를 탐색해 목표·현재 단계(progress)·다음 할 일을 긴급/진행/대기/완료별 우선순위로 정렬 출력. 읽기 전용, 파일 수정 없음.
 - **s-skills:sj-dev-si** (`/sj-dev-si`) — SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 도메인 맵 직접 작성
 
@@ -63,7 +63,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 
 ## 루프 엔지니어링
 
-- **s-skills:sj-loop** (`/sj-loop`) — 루프 엔지니어링 전문가 v1.0.2. 목적·1회 반복 작업·기계 검증 가능한 정지 조건·메모리(상태 파일)·가드레일을 갖춘 루프 프롬프트를 생성해 `docs/sj-company/loops/`에 저장하고, 드라이런·세션 내 반복(/loop)·클라우드 스케줄(/schedule) 중 선택해 실행. 사람 게이트(PR 머지·배포 금지) 문구 없는 루프 저장 금지. 미처리 항목은 triage-inbox.md로 — sj-secretary 상태 보고가 수신함 건수를 표시.
+- **s-skills:sj-loop** (`/sj-loop`) — 루프 엔지니어링 전문가 v1.0.3. 목적·1회 반복 작업·기계 검증 가능한 정지 조건·메모리(상태 파일)·가드레일을 갖춘 루프 프롬프트를 생성해 `docs/sj-company/loops/`에 저장하고, 드라이런·세션 내 반복(/loop)·클라우드 스케줄(/schedule) 중 선택해 실행. 사람 게이트(PR 머지·배포 금지) 문구 없는 루프 저장 금지. 미처리 항목은 triage-inbox.md로 — sj-secretary 상태 보고가 수신함 건수를 표시.
 
 ## 에이전트 개발
 
@@ -102,6 +102,8 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 | `DESIGN_REF_DIR` | `/Users/songseungju/awesome-design-md` | sj-design이 참조할 브랜드 DESIGN.md 루트 경로 |
 
 ## 아키텍처 원칙 (v3.4.0 기준)
+
+> 횡단 원칙의 **단일 정의는 [skills/_conventions/](skills/_conventions/README.md)** — 아래는 요약. 규칙 수정은 컨벤션 파일에서 한다. 라우팅 키워드의 단일 정의는 [skills/RESOLVER.md](skills/RESOLVER.md). (gbrain의 얇은 디스패처 + 단일 컨벤션 패턴 차용)
 
 - **RUN_ID**: sj-company 호출마다 `.state/current-run.txt`에 타임스탬프 ID 생성. 파이프라인 전체 추적 가능.
 - **Judge 독립성**: sj-qa는 구현자(Tech Lead)가 작성한 dev-summary.md를 읽지 않음. pm-brief + 실제 파일 직접 탐색으로 독립 검증.

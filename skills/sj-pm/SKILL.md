@@ -1,6 +1,6 @@
 ---
 name: sj-pm
-version: 2.1.0
+version: 2.1.1
 description: |
   PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위, 역할 힌트를 정의한다.
   결과는 .state/pm-brief.md(휘발)에, 학습 인사이트는 pm-context.md(영속)에 누적한다.
@@ -216,7 +216,7 @@ pm-brief.md의 태스크 목록에서 첫 번째 항목을 읽어, Edit 툴로 `
 
 이번 사이클에서 **다음 사이클이 알면 좋을 사실** 1~3줄을 Edit 툴로 `docs/sj-company/pm-context.md`의 `## 히스토리` 끝에 `- {오늘날짜}: {인사이트}` 형식으로 append해라.
 
-append 전, 인사이트 텍스트에서 민감 정보를 제거한다:
+append 전, 인사이트 텍스트에서 민감 정보를 제거한다 (> **컨벤션:** [PII 마스킹](../_conventions/pii-masking.md)):
 `password|token|secret|api.?key|Bearer|private.?key` 패턴에 해당하는 값은 `[REDACTED]`로 치환.
 
 인사이트가 없으면 (단순 작업) 스킵.
