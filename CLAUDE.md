@@ -116,6 +116,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **완료 조건 검증**: pm-brief의 `## 완료 조건`(기계 검증 가능)을 sj-qa가 1:1 실행·대조해 판정. "done"은 주장이 아니라 조건 충족의 결과.
 - **병렬 충돌 방지**: Tech Lead 같은 단계 병렬 디스패치는 파일 소유권 분할이 기본, 불가피한 동시 수정만 `isolation: worktree` 격리.
 - **프릭션 로그**: 스킬 실행 중 마찰(혼란·오류·막힘)·기쁨(delight)을 `docs/sj-company/friction.jsonl`에 append-only 기록. sj-retro가 주간으로 모아 Keep/Improve/Try에 반영 — 반복 마찰이 최우선 개선 후보 (gbrain friction protocol 차용).
+- **최소 코드 사다리**: 구현 전 "안 써도 되는 길"부터 따진다 — 존재 필요(YAGNI)→표준 라이브러리→플랫폼 네이티브→설치된 의존성→한 줄→그때서야 최소 코드. 요청 안 한 추상화·"나중을 위한" 보일러플레이트·불필요 의존성 금지, 추가보다 삭제. 의도된 단순화는 `ponytail:` 주석으로 표시. 단, 입력 검증·보안·접근성·명시 요청은 절대 깎지 않는다. Tech Lead Dispatch Card `[BUILD]`로 서브에이전트에 전파, Step 6 리뷰가 과설계를 검사 (ponytail 차용 — build less, not flimsier).
 
 ## Docs Reference
 - [PRD](docs/prd.md)

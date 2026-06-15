@@ -106,8 +106,9 @@ echo "테스트 명령: $TEST_CMD"
 
 테스트 실행:
 ```bash
-eval "$TEST_CMD" 2>&1 | tail -30
-TEST_EXIT=$?
+eval "$TEST_CMD" > /tmp/sj-ship-test.log 2>&1
+TEST_EXIT=$?          # 테스트 명령의 종료 코드 (파이프로 가리지 않는다)
+tail -30 /tmp/sj-ship-test.log
 echo "테스트 종료 코드: $TEST_EXIT"
 ```
 
@@ -183,9 +184,15 @@ PR 제목과 본문을 자동 생성 후 미리보기:
 이대로 PR 생성할까요?
 ```
 
-AskUserQuestion으로 확인 / 제목 수정 선택.
+AskUserQuestion으로 확인 / 제목 수정 선택. (push·PR 생성은 취소 불가 — [사람 게이트](../_conventions/human-gate.md) 적용, 사용자 승인 후에만 진행)
 
-확인 후:
+확인 후 — 먼저 현재 브랜치를 원격에 push한다 (`gh pr create`는 원격 브랜치를 전제로 한다):
+```bash
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+git push -u origin "$BRANCH" || { echo "push 실패 — 원격/권한 확인 필요"; exit 1; }
+```
+
+그다음 PR 생성:
 ```bash
 gh pr create \
   --title "{제목}" \
@@ -201,7 +208,7 @@ gh pr create \
 - [ ] 코드 리뷰 완료
 - [ ] 보안 검토 완료
 EOF
-)" 2>/dev/null || echo "gh CLI 미설치 — 수동으로 PR을 생성하세요"
+)" || echo "PR 생성 실패 — gh CLI 미설치이거나 인증/원격 문제. 수동으로 PR을 생성하세요"
 ```
 
 ---

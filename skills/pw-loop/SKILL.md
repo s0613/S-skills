@@ -24,7 +24,7 @@ triggers:
 
 - **Chrome 확장 사용 금지.** `npx playwright test`는 Claude가 Bash로 직접 실행한다.
 - **사용자에게 테스트 위임 금지.**
-- **기능 목표 준수.** sj-dev 수정은 `feature-goal.txt`에 정의된 범위 내에서만. 범위 밖 수정이 필요하면 → AskUserQuestion 에스컬레이션.
+- **기능 목표 준수.** sj-tech-lead 수정은 `feature-goal.txt`에 정의된 범위 내에서만. 범위 밖 수정이 필요하면 → AskUserQuestion 에스컬레이션.
 - **PASS 즉시 다음 시나리오 자동 진입.** 사용자 확인 없이.
 - **기능 완료 즉시 다음 기능 자동 진입.** 사용자 확인 없이.
 - **현재 기능의 spec 파일만 실행.** 다른 기능 spec은 건드리지 않는다.
@@ -103,7 +103,7 @@ echo "TEST_DIR: ${_TEST_DIR} | PW_INSTALLED: ${_PW_INSTALLED}"
 | 유저 메시지에 수정 완료 내용 포함 | **rerun** |
 
 "수정 완료" 판단 기준: "수정했어", "고쳤어", 코드 변경 내역, 버그 수정 내용 포함 시.  
-→ sj-dev 없이 Run 모드 Step 2로 직접 진입.
+→ sj-tech-lead 없이 Run 모드 Step 2로 직접 진입.
 
 ---
 
@@ -494,7 +494,7 @@ for f in d.get('failed_tests', []):
 cat "${_TEST_DIR}/${_SLUG}-s${_SCENARIO_IDX}.spec.ts" 2>/dev/null
 ```
 
-### Step 2: fix-attempts 증가 및 sj-dev 호출
+### Step 2: fix-attempts 증가 및 sj-tech-lead 호출
 
 ```bash
 _FIX_ATTEMPTS=$(cat docs/pw-loop/.state/fix-attempts.txt 2>/dev/null || echo "0")
@@ -541,9 +541,9 @@ EOF
 echo "dev" > docs/sj-company/.state/stage.txt
 ```
 
-`Skill("s-skills:sj-dev")` 호출.
+`Skill("s-skills:sj-tech-lead")` 호출 — `.state/task.txt`(위에서 기록)를 받아 수정 디스패치.
 
-### Step 3: sj-dev 완료 후 즉시 재실행
+### Step 3: sj-tech-lead 완료 후 즉시 재실행
 
 사용자 확인 없이 즉시 Run 모드 Step 2(Playwright 실행)로 돌아간다.
 
@@ -573,7 +573,7 @@ AskUserQuestion:
 실패 테스트:
 - {test1}: {error}
 ```
-- A) sj-dev 재시도 (다른 접근법으로) → fix-attempts 초기화 후 Fix 모드 재진입
+- A) sj-tech-lead 재시도 (다른 접근법으로) → fix-attempts 초기화 후 Fix 모드 재진입
 - B) 해당 테스트를 `test.skip`으로 표시 후 다음 시나리오 진행
 - C) 직접 수정 후 `/pw-loop`로 계속
 

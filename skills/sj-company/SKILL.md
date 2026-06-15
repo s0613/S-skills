@@ -31,6 +31,8 @@ triggers:
 
 ## Preamble — 마이그레이션 감지 + 상태 읽기
 
+> **컨벤션:** [RUN_ID 추적](../_conventions/run-id.md) — 아래 블록이 실행 식별자를 생성·기록하는 단일 생성점. 계약 본문은 컨벤션 파일.
+
 ```bash
 mkdir -p docs/sj-company docs/sj-company/.state
 
@@ -317,7 +319,7 @@ AskUserQuestion으로 크기 확인 (기본값: 자동 판정).
 [Tiny] 바로 구현합니다.
 ```
 
-1. 태스크에 맞는 파일 탐색 후 즉시 수정
+1. 태스크에 맞는 파일 탐색 후 즉시 수정 — [최소 코드 사다리](../_conventions/minimal-code.md): 표준 라이브러리·네이티브·기존 의존성 먼저, 가장 짧은 동작 diff. 요청 안 한 추상화·보일러플레이트 금지.
 2. 빌드 확인:
 
 ```bash
@@ -355,7 +357,7 @@ Edit 툴로 `docs/sj-company/PROJECT.md`의 `last_session` 필드를 `{오늘날
 2. {파일명}: {변경 내용}
 ```
 
-2. 구현
+2. 구현 — [최소 코드 사다리](../_conventions/minimal-code.md) 적용: 안 써도 되는 길부터 따지고, 의도된 단순화는 `ponytail:` 주석으로 표시.
 3. 빌드 확인 (Tiny와 동일)
 4. pw-loop 필요 여부:
 

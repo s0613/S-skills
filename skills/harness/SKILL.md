@@ -222,7 +222,7 @@ AskUserQuestion:
 ```
 
 옵션:
-- A) 에이전트 리뷰 → `Skill("s-skills:sj-agent-review")` 호출 (7가지 설계 축 기준 심사, PASS/WARN/FAIL 판정)
+- A) 에이전트 리뷰 → `Skill("s-skills:sj-agent-review")` 호출 (10가지 설계 축 기준 심사, PASS/WARN/FAIL 판정)
 - B) 에이전트 확장 → `Skill("s-skills:sj-agent-dev")` 호출 (새 에이전트/스킬 추가 설계)
 - C) 무시하고 계속 → Case 5 판단으로 이동
 
