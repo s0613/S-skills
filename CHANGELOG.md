@@ -4,6 +4,27 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.9.0] - 2026-06-15
+
+DietrichGebert/ponytail(MIT)의 "lazy senior dev" 룰을 횡단 컨벤션으로 차용 + 하네스 전수 리뷰(5개 병렬 에이전트) 후속 수정. 가장 좋은 코드는 끝내 쓰지 않은 코드다 — 그리고 산문이 아니라 가드가 drift를 막는다.
+
+### Added
+- **skills/_conventions/minimal-code.md** — 최소 코드 사다리 컨벤션(YAGNI→표준 라이브러리→네이티브→설치된 의존성→한 줄→최소 코드). Tech Lead Dispatch Card `[BUILD]`로 서브에이전트에 전파, sj-company Tiny/Small·Step 6 리뷰에 배선. 의도된 단순화는 `ponytail:` 주석으로 표시.
+- **skill-manifest.py 정합성 검사 #4** — `allowed-tools` ↔ 본문 도구 사용 가드. 본문이 호출하는 WebFetch/WebSearch/Skill(/Agent(/AskUserQuestion/Edit/Write가 frontmatter에 선언됐는지 검사(보수적 시그니처로 prose 오탐 회피).
+
+### Fixed
+- **sj-ship** v1.0.2 — 테스트 게이트 우회(`| tail`이 `$?`를 가려 실패해도 통과로 보이던) 수정 + `gh pr create` 전 `git push -u` 추가.
+- **pw-loop** v2.0.1 — 존재하지 않는 `Skill("s-skills:sj-dev")` → `sj-tech-lead` (프로즈 참조 일괄 정정).
+- **sj-design** v3.2.3 — `allowed-tools`에 WebFetch 추가(URL 레퍼런스 분석 기능이 미선언이던 문제).
+- **harness** v2.4.2 — sj-agent-review "7가지 축" → "10가지 축".
+- **sj-qa** v2.2.4 — 판정을 `archive/{RUN_ID}.qa-verdict.md`로 사본 저장(sj-retro 히스토리 glob이 항상 비던 문제) + Edit/Skill/AskUserQuestion 미선언 수정.
+- **allowed-tools 가드가 적발한 미선언 수정** — sj-pm v2.1.3(+Edit,+AskUserQuestion), sj-investigate v1.0.1(+Edit,+AskUserQuestion), docs-organize v1.1.1(+Skill).
+
+### Changed
+- **sj-company** v3.8.0 / **sj-tech-lead** v2.3.0 — RUN_ID 컨벤션 역참조 복원, minimal-code 배선, 프릭션 로그 배선(sj-pm·sj-company), Result Card 재디스패치 트리거를 관찰 가능한 신호로 변경.
+- **friction-log** — "모든 스킬" 과장 주장을 실제 기록 집합으로 정정.
+- **CLAUDE.md** — 최소 코드 사다리 원칙 등록, 버전 표기 동기화.
+
 ## [3.8.0] - 2026-06-13
 
 gbrain(garrytan/gbrain)의 `doctor --remediate --target-score` 패턴 차용 — docs 건강 점수를 목표까지 끌어올리는 치유 루프. 점수가 기계 검증 가능한 정지 조건이라 sj-loop 철학과 정확히 맞는다.

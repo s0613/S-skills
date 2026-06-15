@@ -1,6 +1,6 @@
 ---
 name: pw-loop
-version: 2.0.0
+version: 2.0.1
 description: |
   기능 단위 Playwright 테스트 반복 루프.
   한 번에 하나의 기능(feature)을 집중 테스트.

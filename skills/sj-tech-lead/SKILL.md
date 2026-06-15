@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 2.2.3
+version: 2.3.0
 description: |
   Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,

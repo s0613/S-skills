@@ -1,6 +1,6 @@
 ---
 name: docs-organize
-version: 1.1.0
+version: 1.1.1
 description: |
   Analyzes a project codebase, interviews the user for missing context, and
   generates a standardized docs/ structure: prd.md, architecture.md,

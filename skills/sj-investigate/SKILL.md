@@ -1,6 +1,6 @@
 ---
 name: sj-investigate
-version: 1.0.0
+version: 1.0.1
 description: |
   체계적 루트코즈 디버깅 전문가. "고쳐줘" 전에 원인을 반드시 추적한다.
   버그, 에러, 예상과 다른 동작, "왜 이러지?" 요청에 반응.

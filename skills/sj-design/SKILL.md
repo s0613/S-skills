@@ -1,6 +1,6 @@
 ---
 name: sj-design
-version: 3.2.2
+version: 3.2.3
 description: |
   Design 전문가. 웹페이지·컴포넌트 디자인을 레퍼런스 DNA 기반으로 생성한다.
   생성 시 항상 3개 시안(역동형·절제형·균형형) HTML을 브라우저에 열어 사용자가

@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.7.0
+version: 3.8.0
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.

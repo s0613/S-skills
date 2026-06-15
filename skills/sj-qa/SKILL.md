@@ -1,6 +1,6 @@
 ---
 name: sj-qa
-version: 2.2.3
+version: 2.2.4
 description: |
   QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.
   dev-summary.md(구현자 자기 평가) 참조 금지 — Judge 독립성 원칙.

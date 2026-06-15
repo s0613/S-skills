@@ -27,7 +27,7 @@
 ## 상태 라우터 · 문서화 · 테스트
 
 - **s-skills:harness** (`/s-skills`) — 프로젝트 상태 감지 후 적절한 스킬로 라우팅
-- **s-skills:docs-organize** (`/docs-organize`) — 코드베이스 분석 및 docs/ 생성, 건강 점수 산출 v1.1.0. `remediate` 모드(`/docs-organize remediate [목표점수]`): 목표 점수까지 치유 플랜→사람 승인→단계별 실행·재측정. 자동 도달 불가 점수(테스트 통과율 등)는 천장에서 멈추고 triage/sj-company 위임 (gbrain doctor --remediate 차용).
+- **s-skills:docs-organize** (`/docs-organize`) — 코드베이스 분석 및 docs/ 생성, 건강 점수 산출 v1.1.1. `remediate` 모드(`/docs-organize remediate [목표점수]`): 목표 점수까지 치유 플랜→사람 승인→단계별 실행·재측정. 자동 도달 불가 점수(테스트 통과율 등)는 천장에서 멈추고 triage/sj-company 위임 (gbrain doctor --remediate 차용).
 - **s-skills:test-scenario** (`/test-scenario`) — 기능 검증 시나리오 생성 및 통과율 추적
 - **s-skills:pw-loop** (`/pw-loop`) — 기능 단위 Playwright 반복 테스트 루프
 - **s-skills:obsidian-writer** (`/obsidian`, `/obsidian-writer`) — Obsidian 문서 작성 전문가. 기능·작업·프로젝트 전체를 .md로 정리. iCloud/로컬 볼트 자동 탐지, 매 실행마다 저장 위치 선택
@@ -36,11 +36,11 @@
 
 PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별로 처리한다.
 
-- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v3.7.0. 라우팅 키워드의 단일 사실은 [skills/RESOLVER.md](skills/RESOLVER.md) — Step 0이 런타임에 읽어 디스패치 (23개 라우팅 행). RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
+- **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v3.8.0. 라우팅 키워드의 단일 사실은 [skills/RESOLVER.md](skills/RESOLVER.md) — Step 0이 런타임에 읽어 디스패치 (23개 라우팅 행). RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
 - **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석. AskUserQuestion 최대 1회, 모호해도 가정으로 진행. PII 마스킹 적용.
-- **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v3.2.2. 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
-- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.2.3. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용.
-- **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v2.2.3. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 자체 검토 루프 최대 2회.
+- **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v3.2.3. 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
+- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.3.0. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용.
+- **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v2.2.4. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 자체 검토 루프 최대 2회.
 - **s-skills:sj-secretary** (`/secretary`) — 프로젝트 상태 보고 전문. 전체 프로젝트 PROJECT.md를 탐색해 목표·현재 단계(progress)·다음 할 일을 긴급/진행/대기/완료별 우선순위로 정렬 출력. 읽기 전용, 파일 수정 없음.
 - **s-skills:sj-dev-si** (`/sj-dev-si`) — SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 도메인 맵 직접 작성
 
@@ -101,7 +101,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 |------|--------|------|
 | `DESIGN_REF_DIR` | `/Users/songseungju/awesome-design-md` | sj-design이 참조할 브랜드 DESIGN.md 루트 경로 |
 
-## 아키텍처 원칙 (v3.8.0 기준)
+## 아키텍처 원칙 (v3.9.0 기준)
 
 > 횡단 원칙의 **단일 정의는 [skills/_conventions/](skills/_conventions/README.md)** — 아래는 요약. 규칙 수정은 컨벤션 파일에서 한다. 라우팅 키워드의 단일 정의는 [skills/RESOLVER.md](skills/RESOLVER.md). (gbrain의 얇은 디스패처 + 단일 컨벤션 패턴 차용)
 

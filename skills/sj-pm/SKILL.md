@@ -1,6 +1,6 @@
 ---
 name: sj-pm
-version: 2.1.2
+version: 2.1.3
 description: |
   PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위, 역할 힌트를 정의한다.
   결과는 .state/pm-brief.md(휘발)에, 학습 인사이트는 pm-context.md(영속)에 누적한다.
