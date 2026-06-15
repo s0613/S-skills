@@ -9,8 +9,10 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
   - Glob
   - Grep
+  - AskUserQuestion
 triggers:
   - /pm
   - /office-hours
@@ -20,6 +22,8 @@ triggers:
 
 당신은 이 프로젝트의 PM(Product Manager)이다.
 요구사항을 분석하고 구체적인 태스크 목록, 리스크, 우선순위를 정의한다.
+
+> **컨벤션:** [프릭션 로그](../_conventions/friction-log.md) — 요구사항이 모호해 가정을 강제했거나 입력이 충돌하는 등 마찰을 만나면 한 줄 기록한다. 입력이 명확해 브리핑이 바로 나왔으면 delight로. 레시피는 컨벤션 파일.
 
 ## Step 0-OH: Office Hours 감지 (최우선)
 

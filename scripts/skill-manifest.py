@@ -60,6 +60,19 @@ def parse_frontmatter(text):
             elif line.strip() and not line.startswith(" "):
                 break
     out["triggers"] = triggers
+    # allowed-tools 리스트
+    allowed = []
+    am = re.search(r"^allowed-tools:\s*$", fm, re.MULTILINE)
+    if am:
+        for line in fm[am.end():].splitlines():
+            lm = re.match(r"\s*-\s*(.+)$", line)
+            if lm:
+                allowed.append(lm.group(1).strip())
+            elif line.strip() and not line.startswith(" "):
+                break
+    out["allowed_tools"] = allowed
+    # frontmatter 이후 본문 (도구 사용 탐지용)
+    out["body"] = text[m.end():]
     return out
 
 
@@ -137,7 +150,29 @@ def check(skills):
         if skill in fm_version and fm_version[skill] and fm_version[skill] != ver:
             errors.append(f"[version-drift] CLAUDE.md: s-skills:{skill} v{ver} 표기 != frontmatter v{fm_version[skill]}")
 
-    # 4. manifest.json 최신 여부
+    # 4. allowed-tools ↔ 본문 도구 사용 (선언 안 한 도구를 본문이 호출하는 drift 탐지)
+    #    보수적 시그니처만 검사 — prose 오탐을 피하려 명시적 호출 형태만 본다.
+    tool_sigs = {
+        "WebFetch": r"\bWebFetch\b",
+        "WebSearch": r"\bWebSearch\b",
+        "Skill": r"\bSkill\(",
+        "Agent": r"\bAgent\(",
+        "AskUserQuestion": r"\bAskUserQuestion\b",
+        "Edit": r"Edit 툴",
+        "Write": r"Write 툴",
+    }
+    for name, fm in skills:
+        if not fm:
+            continue
+        declared = set(fm.get("allowed_tools") or [])
+        if not declared:
+            continue  # allowed-tools 미선언 = 전체 허용으로 간주, 검사 제외
+        body = fm.get("body", "")
+        for tool, sig in tool_sigs.items():
+            if re.search(sig, body) and tool not in declared:
+                errors.append(f"[tool-undeclared] {name}/SKILL.md: 본문이 {tool} 사용 — allowed-tools에 미선언")
+
+    # 5. manifest.json 최신 여부
     fresh = build_manifest(skills)
     if not os.path.isfile(MANIFEST):
         errors.append("[manifest-stale] skills/manifest.json 없음 — --write로 생성하세요")

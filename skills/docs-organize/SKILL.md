@@ -16,6 +16,7 @@ allowed-tools:
   - Glob
   - Grep
   - AskUserQuestion
+  - Skill
 triggers:
   - /docs-organize
   - docs 정리

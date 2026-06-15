@@ -12,8 +12,11 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
   - Glob
   - Grep
+  - Skill
+  - AskUserQuestion
 triggers:
   - /qa
   - /canary
@@ -145,6 +148,13 @@ dev-summary.md는 참조 금지 — 구현자의 자기 평가는 Judge의 독�
 
 ## 발견된 이슈
 - {이슈1}
+```
+
+저장 직후, 판정 히스토리를 위해 타임스탬프 사본을 archive에 남긴다 (sj-retro가 주간으로 읽는다):
+```bash
+mkdir -p docs/sj-company/archive
+_RUN_ID=$(cat docs/sj-company/.state/current-run.txt 2>/dev/null || date +%Y%m%d-%H%M%S)
+cp docs/sj-company/.state/qa-verdict.md "docs/sj-company/archive/${_RUN_ID}.qa-verdict.md"
 ```
 
 ## Step 6: pw-loop 연동

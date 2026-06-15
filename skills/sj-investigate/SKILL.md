@@ -9,8 +9,10 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
   - Glob
   - Grep
+  - AskUserQuestion
 triggers:
   - /sj-investigate
   - /investigate

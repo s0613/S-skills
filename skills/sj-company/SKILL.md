@@ -32,6 +32,7 @@ triggers:
 ## Preamble — 마이그레이션 감지 + 상태 읽기
 
 > **컨벤션:** [RUN_ID 추적](../_conventions/run-id.md) — 아래 블록이 실행 식별자를 생성·기록하는 단일 생성점. 계약 본문은 컨벤션 파일.
+> **컨벤션:** [프릭션 로그](../_conventions/friction-log.md) — 라우팅·디스패치 중 마찰(상태 감지 실패, 모호한 의도, 단계 전환 오류)을 만나면 한 줄 기록한다. 레시피는 컨벤션 파일.
 
 ```bash
 mkdir -p docs/sj-company docs/sj-company/.state

@@ -101,7 +101,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 |------|--------|------|
 | `DESIGN_REF_DIR` | `/Users/songseungju/awesome-design-md` | sj-design이 참조할 브랜드 DESIGN.md 루트 경로 |
 
-## 아키텍처 원칙 (v3.4.0 기준)
+## 아키텍처 원칙 (v3.8.0 기준)
 
 > 횡단 원칙의 **단일 정의는 [skills/_conventions/](skills/_conventions/README.md)** — 아래는 요약. 규칙 수정은 컨벤션 파일에서 한다. 라우팅 키워드의 단일 정의는 [skills/RESOLVER.md](skills/RESOLVER.md). (gbrain의 얇은 디스패처 + 단일 컨벤션 패턴 차용)
 
