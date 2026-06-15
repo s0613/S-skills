@@ -18,6 +18,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SKILLS_DIR = os.path.join(ROOT, "skills")
 MANIFEST = os.path.join(SKILLS_DIR, "manifest.json")
+MARKETPLACE = os.path.join(ROOT, ".claude-plugin", "marketplace.json")
 RESOLVER = os.path.join(SKILLS_DIR, "RESOLVER.md")
 CLAUDE_MD = os.path.join(ROOT, "CLAUDE.md")
 PACKAGE_JSON = os.path.join(ROOT, "package.json")
@@ -181,6 +182,20 @@ def check(skills):
             current = json.load(f)
         if current != fresh:
             errors.append("[manifest-stale] skills/manifest.json이 frontmatter와 불일치 — --write로 재생성하세요")
+
+    # 6. .claude-plugin/marketplace.json 플러그인 버전 ↔ package.json (설치 버전 drift 방지)
+    pkg_ver = plugin_version()
+    if os.path.isfile(MARKETPLACE) and pkg_ver:
+        try:
+            with open(MARKETPLACE, encoding="utf-8") as f:
+                mkt = json.load(f)
+            for p in mkt.get("plugins", []):
+                if p.get("name") == "s-skills" and p.get("version") != pkg_ver:
+                    errors.append(
+                        f"[plugin-version-drift] marketplace.json s-skills v{p.get('version')} != package.json v{pkg_ver} — 릴리즈 시 함께 범프"
+                    )
+        except Exception as e:
+            errors.append(f"[marketplace] .claude-plugin/marketplace.json 파싱 실패: {e}")
 
     return errors
 
