@@ -85,6 +85,8 @@ find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.py" 
 > - NEEDS_REWORK: Critical 2개 이상, 또는 보안 Critical
 > - REQUEST_CHANGES: Critical 1개 또는 High 3개 이상
 > - APPROVED_WITH_NOTES: Critical 없고 High 2개 이하
+>
+> **심각도 보정** ([리뷰어 다양성](../skills/_conventions/reviewer-diversity.md)): AI 리뷰어는 사소한 이슈를 과대평가하기 쉽다. 스타일·취향·"이렇게 했으면 더…"는 Critical/High가 아니라 Low/Nit. Critical/High는 실제 버그·보안·요구사항 미충족에만.
 
 ### 🔴 Critical (이대로 진행 불가 — 즉시 수정)
 

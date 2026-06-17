@@ -91,6 +91,8 @@ find . -type f \( -name "*.tsx" -o -name "*.vue" -o -name "*.svelte" \) \
 > - NEEDS_REWORK: Critical 2개 이상, 또는 접근성 Critical
 > - REQUEST_CHANGES: Critical 1개 또는 High 3개 이상
 > - APPROVED_WITH_NOTES: Critical 없고 High 2개 이하
+>
+> **심각도 보정** ([리뷰어 다양성](../skills/_conventions/reviewer-diversity.md)): AI 리뷰어는 사소한 이슈를 과대평가하기 쉽다. 취향 차이는 Critical/High가 아니라 Low/Nit. Critical/High는 실제 UX 결함·접근성 위반·일관성 붕괴에만.
 
 ### 리뷰 대상
 - {파일/명세명}: {한 줄 설명}

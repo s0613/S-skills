@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 2.3.0
+version: 2.4.0
 description: |
   Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,
@@ -334,6 +334,8 @@ done
 ---
 
 ## Step 7: Cross-cutting 리뷰
+
+> **컨벤션:** [리뷰어 다양성](../_conventions/reviewer-diversity.md) — 다중 리뷰는 복제 말고 렌즈로 분리(7a-1이 이 패턴), 다수결 판정. 단일 리뷰(7a)·기술 리뷰(Step 6)에는 심각도 보정 적용: FAIL은 실제 결함에만, 스타일·취향은 LOW/NOTE로 통과. 단 7a-1 CRITICAL 적대 검증은 의도적 FAIL-편향(반박 패턴)이라 예외.
 
 ### 7a. Security cross-review (항상)
 

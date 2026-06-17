@@ -1,6 +1,6 @@
 ---
 name: sj-retro
-version: 1.1.0
+version: 1.2.0
 description: |
   주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·프로세스 마찰·성장 기회를 분석한다.
   "회고", "retro", "이번 주 정리", "retrospective", "지난주 리뷰" 요청에 반응.
@@ -179,6 +179,34 @@ PY
 
 ---
 
+## Step 5b: 하네스 변경 검증 게이트 (Self-Harness)
+
+> **컨벤션:** [셀프-하네스 게이트](../_conventions/self-harness.md) — 하네스 변경은 마이닝된 약점에서 출발해 최소 편집으로 제안하고, **회귀가 녹색일 때만 채택**한다. 검증 없이 SKILL.md를 고치지 않는다.
+
+Improve/Try 항목 중 **하네스 자체를 바꾸는 것**(스킬·프롬프트·컨벤션 수정)은 산문 권고로 끝내지 않고 3단계 게이트에 태운다. 단순 작업 권고(예: "이번 주 테스트 더 써라")는 게이트 대상이 아니다.
+
+1. **약점 마이닝** — Step 4b의 반복 friction + Step 3의 반복 QA FAIL에서, **2회 이상** 반복된 것만 후보.
+2. **하네스 제안** — 약점 1건 ↔ 변경 1건. 어느 파일 어느 섹션을 무엇으로 바꾸는지 diff 수준으로.
+3. **제안 검증** — 채택 전 회귀를 실제로 돌려 녹색을 확인한다:
+
+```bash
+# 회귀 세트 — 이 프로젝트에 실제로 있는 것만 돌린다 (sj-retro는 임의 프로젝트에서 실행됨)
+[ -f scripts/skill-manifest.py ] \
+  && { python3 scripts/skill-manifest.py --check && echo "manifest OK" || echo "manifest 회귀 — 채택 보류"; } \
+  || echo "manifest 검사: 해당 없음 (이 프로젝트는 s-skills 레포가 아님)"
+[ -f package.json ] && npm test 2>&1 | tail -3
+ls docs/sj-company/loops/*-state.md 2>/dev/null | head -1   # 과거 통과 시나리오 존재 확인
+```
+
+**한계 (over-claim 금지):** 이 회귀는 **구조·빌드 회귀**(매니페스트 정합·테스트 통과)만 잡는다. 프롬프트·문서를 바꾸는 하네스 변경이 *행동*을 어떻게 바꾸는지는 `npm test`로 안 잡힌다 — 그런 제안은 `test-scenario`로 동작을 재확인하거나, 잡히지 않는 회귀임을 명시하고 사람 검토로 넘긴다.
+
+- 회귀 통과 → 보고서에 **"채택 후보"**로 표시(실제 편집·머지는 사람 게이트).
+- 회귀 실패 / 회귀 세트 없음 → 채택하지 말고 `docs/sj-company/triage-inbox.md`에 `- [ ] {날짜} [retro] {제안 + 미검증 사유}` append.
+
+채택(SKILL.md 실제 편집)은 자동화하지 않는다 — 게이트는 "검증된 제안"까지만 만든다.
+
+---
+
 ## Step 6: 보고서 출력
 
 ```
@@ -205,6 +233,10 @@ friction {N}건 (blocker:{N} error:{N} confused:{N}) / delight {N}건
 ✅ Keep: {잘 된 것}
 🔧 Improve: {개선할 것}
 🧪 Try: {실험할 것}
+
+## 하네스 변경 (Self-Harness 게이트)
+🟢 채택 후보(회귀 통과): {제안 + 대상 파일} | 사람 승인 대기
+🔴 보류(회귀 실패·미검증): {제안} → triage-inbox
 ```
 
 ---
