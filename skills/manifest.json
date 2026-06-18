@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "3.9.0",
+  "version": "3.10.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -112,6 +112,17 @@
       "description": "SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 견적서 + DDD 도메인 맵을 작성한다.",
       "triggers": [
         "/sj-dev-si"
+      ]
+    },
+    {
+      "name": "sj-gpt",
+      "path": "skills/sj-gpt/SKILL.md",
+      "version": "1.0.0",
+      "description": "GPT(ChatGPT/OpenAI) 자문 위임 전문가. codex MCP를 통해 GPT 모델에게",
+      "triggers": [
+        "/gpt",
+        "/ask-gpt",
+        "/chatgpt"
       ]
     },
     {
@@ -229,7 +240,7 @@
     {
       "name": "sj-tech-lead",
       "path": "skills/sj-tech-lead/SKILL.md",
-      "version": "2.4.0",
+      "version": "2.5.0",
       "description": "Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트",
       "triggers": [
         "/tech-lead"

@@ -4,6 +4,18 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.10.0] - 2026-06-18
+
+GPT(OpenAI) 교차모델 자문을 하네스에 배선. 같은 모델의 렌즈는 훈련 분포가 같아 공통 맹점을 공유한다 — 다른 모델을 한 표 더하면 가장 강한 다양성이 생긴다. codex MCP(`codex mcp-server`)를 통해 위임하며, 단일 AI 리뷰어는 차단하지 않는다(보완재, 최종 게이트는 사람).
+
+### Added
+- **skills/sj-gpt** v1.0.0 — GPT 자문 위임 스킬. codex MCP `codex` 도구로 리서치·세컨드 오피니언·브레인스토밍·대안적 추론을 위임하고 Claude 관점과 교차 종합. 안전 기본값(`sandbox=read-only`·`approval-policy=never`), 리서치 시 `tools.web_search` 활성화, GPT 답을 덤프하지 않고 합의/이견을 신호로 드러냄. Bash 폴백(`codex exec`) 내장. 이미지 생성(DALL-E)·플러그인 브라우징 미지원 명시.
+- **RESOLVER #24** — GPT 자문 라우팅 행(GPT·세컨드 오피니언·리서치·브레인스토밍 키워드, 이미지·이 레포 코드/버그는 비대상).
+
+### Changed
+- **sj-tech-lead** v2.5.0 — 7a-1 다관점 적대 검증(CRITICAL 영역 한정)에 `7a-1-gpt` 교차모델 렌즈 추가. Claude 3렌즈 + GPT = 최대 4표, 2명 이상 FAIL 시 재디스패치. GPT 단독 FAIL은 차단하지 않고 HIGH 기록(리뷰어 다양성 컨벤션). codex 불가 시 best-effort로 건너뛰고 미수행 로깅(누락 은폐 금지).
+- **CLAUDE.md** — GPT 자문 스킬 등록, 버전 표기 동기화.
+
 ## [3.9.0] - 2026-06-15
 
 DietrichGebert/ponytail(MIT)의 "lazy senior dev" 룰을 횡단 컨벤션으로 차용 + 하네스 전수 리뷰(5개 병렬 에이전트) 후속 수정. 가장 좋은 코드는 끝내 쓰지 않은 코드다 — 그리고 산문이 아니라 가드가 drift를 막는다.

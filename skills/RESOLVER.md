@@ -41,6 +41,7 @@ sj-company Step 0이 런타임에 이 테이블을 읽어 디스패치하고, CL
 | 21 | 문서 정리 | 문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize | `점수 올려`, `치유`, `remediate`, `N점까지`, `target` 포함 시 → docs-organize **remediate 모드**(REMEDIATE.md): 목표 점수까지 치유 플랜→승인→단계 실행 | `Skill("s-skills:docs-organize")` |
 | 22 | Loop | 루프 만들어, 루프 돌려, 루프 프롬프트, 루프 설계, 반복 자동화, 계속 돌려줘, 야간에 알아서, 주기적으로 실행, 무인으로 돌려, 스케줄로 돌려, sj-loop | Playwright 테스트 반복은 #20이 먼저 매치되므로 여기 오지 않음 | `Skill("s-skills:sj-loop")` |
 | 23 | 리뷰 | 리뷰/검토/점검/검수 성격의 태스크 | | sj-company **리뷰 경로 (Step R)** — 대상 자동 감지 후 리뷰어 병렬 디스패치 |
+| 24 | GPT 자문 | GPT, ChatGPT, 지피티, GPT한테, GPT에 물어, GPT한테 물어봐, ChatGPT에 시켜, 다른 의견, 다른 모델, 딴 모델, 세컨드 오피니언, second opinion, 교차 검증, 브레인스토밍, 아이디어 발산, 리서치 해줘, 조사해줘, 최신 정보 | 이미지 생성(DALL-E)·이 레포 코드/버그 질문은 비대상(각각 미지원 안내·sj-investigate). "디버깅/에러 원인"은 #7이 먼저 매치 | `Skill("s-skills:sj-gpt")` |
 
 ## 모호성 해소 규칙
 

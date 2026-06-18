@@ -18,6 +18,7 @@
 | **PC 자동화** | `/automation`, `/auto`, `/ui-auto` | 스크립트·UI 조작·네이티브 앱 제작 |
 | **루프 엔지니어링** | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | **에이전트 개발** | `/agent-dev`, `/agent-review` | AI 에이전트 설계·심사 |
+| **GPT 자문** | `/gpt` | codex MCP로 GPT에 리서치·세컨드 오피니언·브레인스토밍 위임 |
 | **외주 핸드오프** | `/outsource`, `/외주` | 막힌 작업 전문가 위임 리포트 생성 |
 | **비서** | `/secretary` | 프로젝트 상태 보고(목표 대비 단계·다음 할 일), 우선순위 정렬 |
 | **SI 문서** | `/sj-dev-si` | 제안서·WBS·결과보고서 6종 작성 |
@@ -39,7 +40,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v3.8.0. 라우팅 키워드의 단일 사실은 [skills/RESOLVER.md](skills/RESOLVER.md) — Step 0이 런타임에 읽어 디스패치 (23개 라우팅 행). RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
 - **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석. AskUserQuestion 최대 1회, 모호해도 가정으로 진행. PII 마스킹 적용.
 - **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v3.2.3. 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
-- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.4.0. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용. 리뷰어 다양성 컨벤션(렌즈 분리 + 심각도 보정) 적용.
+- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v2.5.0. RUN_ID 연결. learned 패턴 자동 로딩. [SPEC:] 참조 자동 인식. PII 마스킹 적용. 리뷰어 다양성 컨벤션(렌즈 분리 + 심각도 보정) 적용. 7a-1 CRITICAL 적대 검증에 GPT 교차모델 렌즈(codex MCP, best-effort) 추가 — 단일 AI 리뷰어 비차단.
 - **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v2.3.0. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 자체 검토 루프 최대 2회. 심각도 보정 — FAIL은 실제 결함에만, 취향은 LOW.
 - **s-skills:sj-secretary** (`/secretary`) — 프로젝트 상태 보고 전문. 전체 프로젝트 PROJECT.md를 탐색해 목표·현재 단계(progress)·다음 할 일을 긴급/진행/대기/완료별 우선순위로 정렬 출력. 읽기 전용, 파일 수정 없음.
 - **s-skills:sj-dev-si** (`/sj-dev-si`) — SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 도메인 맵 직접 작성
@@ -69,6 +70,10 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 
 - **s-skills:sj-agent-dev** (`/sj-agent-dev`, `/agent-dev`) — 비즈니스 에이전트 개발 전문가. 런타임 루프, 오케스트레이션, 역할 분리, 도구 계층화, 컨텍스트 관리, 가드레일, 옵저버빌리티, 메모리 계층, 평가·자기반성, 그래프 토폴로지의 10가지 축으로 실무 AI 에이전트 설계 및 구현 안내
 - **s-skills:sj-agent-review** (`/sj-agent-review`, `/agent-review`) — 비즈니스 에이전트 리뷰어. 에이전트 파일·폴더 구조를 탐색하고 10가지 설계 축 준수 여부를 비판적으로 심사. 축별 점수(0~10)·PASS/WARN/FAIL 판정·개선 액션 아이템 산출
+
+## GPT 자문
+
+- **s-skills:sj-gpt** (`/gpt`, `/ask-gpt`, `/chatgpt`) — GPT 자문 위임 전문가 v1.0.0. codex MCP(`codex mcp-server`)를 통해 GPT 모델에 리서치·세컨드 오피니언·브레인스토밍·대안적 추론을 위임하고 Claude 관점과 교차 종합한다. `sandbox=read-only`·`approval-policy=never` 안전 기본값, 리서치 시 `tools.web_search` 활성화. GPT 답을 그대로 덤프하지 않고 두 모델의 합의/이견을 신호로 드러냄. 이미지 생성(DALL-E)·플러그인 브라우징은 미지원. 사전 등록: `claude mcp add codex --scope user -- codex mcp-server`.
 
 ## 외주 핸드오프
 
@@ -101,7 +106,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 |------|--------|------|
 | `DESIGN_REF_DIR` | `/Users/songseungju/awesome-design-md` | sj-design이 참조할 브랜드 DESIGN.md 루트 경로 |
 
-## 아키텍처 원칙 (v3.9.0 기준)
+## 아키텍처 원칙 (v3.10.0 기준)
 
 > 횡단 원칙의 **단일 정의는 [skills/_conventions/](skills/_conventions/README.md)** — 아래는 요약. 규칙 수정은 컨벤션 파일에서 한다. 라우팅 키워드의 단일 정의는 [skills/RESOLVER.md](skills/RESOLVER.md). (gbrain의 얇은 디스패처 + 단일 컨벤션 패턴 차용)
 

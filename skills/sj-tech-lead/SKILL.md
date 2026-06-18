@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 2.4.0
+version: 2.5.0
 description: |
   Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,
@@ -350,7 +350,7 @@ Agent(subagent_type="sj-dev-security",
 
 ### 7a-1. 다관점 적대 검증 (CRITICAL 영역 한정)
 
-변경이 **인증·권한·결제·암호화·개인정보(PII)** 중 하나라도 건드리면 단일 리뷰로 부족하다. 서로 다른 렌즈를 가진 리뷰어 3명을 **단일 메시지에서 병렬 호출**하고, 각자 독립적으로 결함을 *반박(refute) 시도*하게 한다:
+변경이 **인증·권한·결제·암호화·개인정보(PII)** 중 하나라도 건드리면 단일 리뷰로 부족하다. 서로 다른 렌즈를 가진 Claude 리뷰어 3명을 **단일 메시지에서 병렬 호출**하고, 각자 독립적으로 결함을 *반박(refute) 시도*하게 한다:
 
 ```
 Agent(subagent_type="sj-dev-security", prompt="MODE=review LENS=correctness. 논리·계약 정합성 관점에서 결함을 찾아라. 확신이 없으면 FAIL로 판정.")
@@ -358,9 +358,21 @@ Agent(subagent_type="sj-dev-security", prompt="MODE=review LENS=security.    공
 Agent(subagent_type="sj-dev-security", prompt="MODE=review LENS=reproduce.   실제 재현 가능한 실패 경로(입력→결과)를 찾아라. 확신이 없으면 FAIL로 판정.")
 ```
 
-**판정 규칙:** 3명 중 **2명 이상 FAIL → Step 8 재디스패치**. 1명만 FAIL이면 해당 이슈를 dev-summary에 HIGH로 기록하고 통과시킨다.
+#### 7a-1-gpt. 교차모델 렌즈 (GPT, best-effort)
 
-CRITICAL 영역이 아니면 이 단계를 **건너뛴다** (7a 단일 리뷰만 수행 — 모든 태스크에 3배 비용을 쓰지 않는다).
+같은 모델의 렌즈 3개는 *훈련 분포가 같아* 공통 맹점을 공유한다. **다른 모델(GPT)을 4번째 리뷰어**로 추가하면 가장 강한 다양성이 생긴다. codex MCP로 호출한다 — GPT는 read-only로 저장소를 직접 읽으므로 변경 맥락을 스스로 수집한다.
+
+```
+mcp__codex__codex(prompt="당신은 적대적 코드 리뷰어다. 이 저장소에서 `git diff`와 docs/sj-company/.state/dev/ 아래 결과 파일·거기 언급된 변경 파일을 읽어라. 인증·권한·결제·암호화·PII 관점에서 재현 가능한 결함을 *반박(refute) 시도*로 찾아라. 확신이 없으면 FAIL로 판정. 출력: 첫 줄에 PASS 또는 FAIL, 그 아래 결함 목록(파일:라인 — 근거 1줄).",
+                     sandbox="read-only", **{"approval-policy": "never"})
+```
+
+- 도구가 컨텍스트에 없으면 먼저 `ToolSearch("select:mcp__codex__codex")`. Bash 폴백: `codex exec --sandbox read-only "<위 프롬프트>"`.
+- **codex 미사용 가능 시(미등록·인증 실패) 이 렌즈를 건너뛰고**, dev-summary.md에 `7a-1 GPT 교차검증 미수행(codex 불가)` 한 줄을 남긴다 — 누락을 은폐하지 않는다([셀프-하네스/로깅 원칙](../_conventions/README.md)).
+
+**판정 규칙 (Claude 3렌즈 + GPT = 최대 4표):** **2명 이상 FAIL → Step 8 재디스패치**. **1명만 FAIL이면**(GPT 단독 FAIL 포함) 해당 이슈를 dev-summary에 HIGH로 기록하고 통과시킨다 — [리뷰어 다양성 컨벤션](../_conventions/reviewer-diversity.md): 단일 AI 리뷰어는 차단하지 않는다(보완재, 최종 게이트는 사람). GPT 렌즈를 건너뛴 경우 Claude 3표만으로 2-of-3 판정.
+
+CRITICAL 영역이 아니면 이 단계를 **건너뛴다** (7a 단일 리뷰만 수행 — 모든 태스크에 4배 비용을 쓰지 않는다).
 
 ### 7b. Design 시각 리뷰 (Frontend 포함 시에만)
 
