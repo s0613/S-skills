@@ -1,6 +1,6 @@
 ---
 name: sj-retro
-version: 1.2.0
+version: 1.2.1
 description: |
   주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·프로세스 마찰·성장 기회를 분석한다.
   "회고", "retro", "이번 주 정리", "retrospective", "지난주 리뷰" 요청에 반응.
@@ -29,11 +29,14 @@ SINCE=$(date -v-7d +%Y-%m-%d 2>/dev/null || date -d "7 days ago" +%Y-%m-%d 2>/de
 UNTIL=$(date +%Y-%m-%d)
 echo "회고 범위: $SINCE ~ $UNTIL"
 
-# 프로젝트 목록 (docs/sj-company가 있는 디렉토리들)
-find ~ -name "PROJECT.md" -path "*/sj-company/*" 2>/dev/null | head -10
+# 기본: 현재 프로젝트(cwd)만 — 프라이버시·성능을 위해 홈 전체를 뒤지지 않는다
+ls docs/sj-company/PROJECT.md 2>/dev/null && echo "(현재 프로젝트)" || echo "현재 디렉토리에 sj-company 프로젝트 없음"
 ```
 
-`/retro global` 호출 시: 모든 프로젝트를 집계. 기본은 현재 프로젝트.
+**`/retro global` 호출 시에만** 사용자에게 알린 뒤 홈 전체를 탐색한다 (그 외에는 위 cwd 한정):
+```bash
+find ~ -name "PROJECT.md" -path "*/sj-company/*" 2>/dev/null | head -10
+```
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.8.0
+version: 3.8.1
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
@@ -14,6 +14,8 @@ allowed-tools:
   - Grep
   - Skill
   - AskUserQuestion
+  - Agent
+  - Workflow
 triggers:
   - /sj-company
 ---
@@ -105,7 +107,12 @@ for f in pm-output.md design-output.md dev-output.md qa-output.md report.md; do
   [ -f "docs/sj-company/$f" ] && mv "docs/sj-company/$f" "docs/sj-company/archive/$f"
 done
 [ -d "docs/sj-company/.state" ] && mv "docs/sj-company/.state" "docs/sj-company/archive/.state"
-echo "구파일 → archive/ 이동 완료"
+# RUN_ID 추적 계약 유지: .state가 통째로 archive됐으므로 활성 위치에 current-run.txt 복원
+# (복원하지 않으면 하위 스킬이 RUN_ID를 못 읽어 폴백 ID를 새로 만들고 "실행당 1회" 계약이 깨진다)
+mkdir -p docs/sj-company/.state
+cp "docs/sj-company/archive/.state/current-run.txt" "docs/sj-company/.state/current-run.txt" 2>/dev/null \
+  || echo "$(date +%Y%m%d-%H%M%S)-$$" > docs/sj-company/.state/current-run.txt
+echo "구파일 → archive/ 이동 완료 (current-run.txt 복원)"
 ```
 
 사용자에게 알림:
@@ -386,6 +393,7 @@ PM 브리핑:
 - 요구사항: {2~3줄}
 - 엣지케이스: {1~2개}
 - 리스크: {1개}
+- 완료 조건: {기계 검증 가능한 조건 1~2개 — QA가 1:1 실행·대조한다}
 ```
 
 2. 역할 힌트 판단 (태스크 내용 기반):
@@ -409,6 +417,20 @@ PM 브리핑:
 - 요구사항: {1에서 생성한 요구사항}
 - 엣지케이스: {1에서 생성한 엣지케이스}
 - 리스크: {1에서 생성한 리스크}
+- 완료 조건: {1에서 생성한 완료 조건}
+```
+
+3b. QA 완료조건 게이트용 `pm-brief.md` 생성 (QA Step 3이 1:1 대조하는 정식 입력 — Medium도 Large와 동일 스키마를 갖춰야 QA가 PASS 판정 가능):
+
+Write 툴로 `docs/sj-company/.state/pm-brief.md` 작성:
+```markdown
+# PM Brief — {태스크}
+
+## 태스크 목록
+- {요구사항을 검증 가능한 항목으로 분해}
+
+## 완료 조건
+- {1에서 생성한 완료 조건 — 기계 검증 가능하게}
 ```
 
 4. 실행 분기:

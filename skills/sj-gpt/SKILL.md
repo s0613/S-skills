@@ -1,6 +1,6 @@
 ---
 name: sj-gpt
-version: 1.0.0
+version: 1.0.1
 description: |
   GPT(ChatGPT/OpenAI) 자문 위임 전문가. codex MCP를 통해 GPT 모델에게
   리서치·아이디어 발산·세컨드 오피니언을 맡긴다. Claude와 다른 관점이
@@ -10,6 +10,8 @@ description: |
   이미지 생성(DALL-E)·ChatGPT 플러그인 브라우징은 미지원.
 allowed-tools:
   - Bash
+  - ToolSearch
+  - mcp__codex__codex
 triggers:
   - /gpt
   - /ask-gpt

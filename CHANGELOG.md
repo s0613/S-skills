@@ -4,6 +4,24 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.11.0] - 2026-06-20
+
+codex(GPT) 교차모델 리뷰로 하네스를 전수 점검하고, 발견을 Claude가 코드로 검증해 실재하는 파이프라인 계약 빈틈을 수정. 핵심 진단: 원칙은 문서에 있으나 **기계로 강제되지 않던** 지점들 — 완료조건 게이트·PII 마스킹·RUN_ID 추적·커버리지 차단이 산문 선언에 그쳤다. 산문이 아니라 가드가 계약을 지킨다.
+
+### Fixed
+- **sj-company** v3.8.1 — (1) Medium 경로가 `pm-brief.md`(완료 조건 포함)를 생성하지 않아 QA 완료조건 게이트가 통째로 스킵되던 문제 수정 — 이제 Large와 동일 스키마로 생성. (2) 마이그레이션 블록이 `.state`를 통째 archive하며 방금 만든 `current-run.txt`까지 삭제해 RUN_ID 추적이 끊기던 문제 — archive 후 활성 위치에 복원.
+- **sj-qa** v2.3.1 — (1) `pm-brief`/완료 조건이 없으면 PASS 불가(CONDITIONAL 상한) 게이트 추가 — 검증 기준 없는 PASS 차단. (2) verdict를 pw-loop보다 먼저 확정해 Playwright 실패가 판정에 반영되지 않던 문제 — pw 결과→verdict 역전이(미달=CONDITIONAL, 실패=FAIL, archive 재생성) 강제.
+- **sj-ship** v1.0.3 — "커버리지 미달 시 예외 없이 block" 선언과 실제 "그냥 진행 묻기"가 정면 충돌하던 문제 — 커버리지 수치 파싱(파싱 실패=미달 간주) + 기본 차단 + 예외는 사람 승인·사유 기록 시에만 진행으로 선언·실행 일치.
+- **sj-retro** v1.2.1 — "기본은 현재 프로젝트"라면서 `find ~`로 홈 전체를 탐색하던 모순 — 기본 cwd 한정, `/retro global`일 때만 홈 탐색(프라이버시·성능).
+- **_conventions/friction-log** — PII 마스킹이 주석 선언만 있고 canonical 레시피 코드엔 없던 문제 — 실제 `redact()`(Bearer·secret·token·JWT·email) 삽입, message/hint에 강제 적용.
+
+### Changed
+- **sj-gpt** v1.0.1 — `allowed-tools`에 `ToolSearch`·`mcp__codex__codex` 선언 추가(본문 주경로가 MCP인데 Bash만 선언돼 있던 drift 해소).
+- **sj-company** — `allowed-tools`에 `Agent`·`Workflow` 추가(리뷰 경로 병렬 디스패치·xLarge 워크플로우가 미선언이던 문제).
+- **_conventions/context-curation** — "통과 항목 없으면 0줄 append가 정상" 우선 규칙 명시(형식 채우기용 학습 로그 방지, 개별 스킬 append 단계보다 우선).
+- **_conventions/run-id** — `current-run.txt` 동시·스케줄 실행 덮어쓰기 한계 + 마이그레이션 복원 계약 문서화.
+- **CLAUDE.md / 버전 표기** — 변경 스킬 버전 동기화, plugin 3.10.0 → 3.11.0.
+
 ## [3.10.0] - 2026-06-18
 
 GPT(OpenAI) 교차모델 자문을 하네스에 배선. 같은 모델의 렌즈는 훈련 분포가 같아 공통 맹점을 공유한다 — 다른 모델을 한 표 더하면 가장 강한 다양성이 생긴다. codex MCP(`codex mcp-server`)를 통해 위임하며, 단일 AI 리뷰어는 차단하지 않는다(보완재, 최종 게이트는 사람).

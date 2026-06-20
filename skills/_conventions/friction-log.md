@@ -51,16 +51,24 @@ argv + heredoc 방식 — message에 따옴표·특수문자가 있어도 안전
 
 ```bash
 python3 - "sj-tech-lead" "dispatch" "friction" "confused" "막힌 상황 한 줄" "개선 힌트(선택)" <<'PY'
-import json, sys, os, datetime
+import json, sys, os, re, datetime
 state = "docs/sj-company/.state/current-run.txt"
 rid = open(state).read().strip() if os.path.exists(state) else "standalone"
+
+def redact(s):  # PII 마스킹을 선언이 아니라 코드로 강제 (영속 write 직전 필수)
+    s = re.sub(r'(?i)\bbearer\s+[A-Za-z0-9._\-]+', 'Bearer [REDACTED]', s)
+    s = re.sub(r'(?i)\b(password|passwd|secret|token|api[_-]?key|auth)\b(["\s:=]+)\S+', r'\1\2[REDACTED]', s)
+    s = re.sub(r'\beyJ[A-Za-z0-9._\-]{10,}', '[JWT]', s)
+    s = re.sub(r'[\w.+\-]+@[\w\-]+\.[\w.\-]+', '[EMAIL]', s)
+    return s
+
 rec = {
     "ts": datetime.datetime.now().isoformat(timespec="seconds"),
     "run_id": rid, "skill": sys.argv[1], "phase": sys.argv[2],
-    "kind": sys.argv[3], "severity": sys.argv[4], "message": sys.argv[5],
+    "kind": sys.argv[3], "severity": sys.argv[4], "message": redact(sys.argv[5]),
 }
 if len(sys.argv) > 6 and sys.argv[6]:
-    rec["hint"] = sys.argv[6]
+    rec["hint"] = redact(sys.argv[6])
 os.makedirs("docs/sj-company", exist_ok=True)
 with open("docs/sj-company/friction.jsonl", "a", encoding="utf-8") as f:
     f.write(json.dumps(rec, ensure_ascii=False) + "\n")

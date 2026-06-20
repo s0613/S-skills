@@ -1,6 +1,6 @@
 ---
 name: sj-qa
-version: 2.3.0
+version: 2.3.1
 description: |
   QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.
   dev-summary.md(구현자 자기 평가) 참조 금지 — Judge 독립성 원칙.
@@ -112,6 +112,7 @@ dev-summary.md는 참조 금지 — 구현자의 자기 평가는 Judge의 독�
 - 테스트 케이스 목록 작성
 - 엣지 케이스 식별
 - pm-brief에 `## 완료 조건` 섹션이 있으면 **각 조건을 실제로 실행·관찰해 충족 여부를 1:1 대조**한다 (판정의 1차 근거)
+- **완료조건 게이트:** `.state/pm-brief.md`가 없거나 `## 완료 조건` 섹션이 비어 있으면 **PASS를 줄 수 없다.** 검증 기준이 없는 상태이므로 최선이어도 `CONDITIONAL`로 판정하고, 사유에 "완료 조건 부재 — pm-brief 보강 필요"를 명시한다 (Tiny/Small 경로처럼 pm-brief가 원래 없는 경우는 변경 파일 기준으로 검증하되 동일하게 CONDITIONAL 상한을 적용)
 - 최종 판정 (PASS / FAIL / CONDITIONAL)
 
 > **컨벤션:** [리뷰어 다양성](../_conventions/reviewer-diversity.md) — AI 단일 judge는 사소한 이슈에 과도하게 비판적이기 쉽다. **FAIL은 실제 결함**(버그·보안·완료 조건 미충족)에만. 스타일·취향·"이렇게 했으면 더…"는 FAIL 사유가 아니라 `## 발견된 이슈`에 LOW로 적고 통과시킨다. 장문·다파일에 걸쳐 확신이 안 서면 단정 대신 CONDITIONAL로 사람 게이트에 넘긴다.
@@ -168,6 +169,11 @@ echo "Playwright: $_HAS_PW"
 
 `_HAS_PW=yes`이면: `docs/sj-company/PROJECT.md`의 `pw_target` 필드를 읽어 목표 수치를 파악하고 (없으면 80) `Skill("s-skills:pw-loop")` 호출.
 `_HAS_PW=no`이면: 빌드 확인으로 대체.
+
+> **pw 결과 → verdict 역전이 (필수):** pw-loop은 QA의 최종 게이트 일부다. Step 5에서 저장한 verdict는 pw 결과를 아직 모르므로, 결과가 나오면 **반드시 verdict에 반영**한다:
+> - pw가 목표 미달이지만 근접·일부 통과 → `## 판정:`을 `CONDITIONAL`로 갱신 (이미 FAIL이면 유지)
+> - pw가 전면 실패·실행 불가 → `## 판정:`을 `FAIL`로 갱신
+> - 갱신 시 `qa-verdict.md`를 다시 쓰고 **archive 사본도 재생성**(Step 5의 cp 재실행)한 뒤 Step 7로 진행한다. verdict 갱신 없이 PASS를 유지하면 안 된다.
 
 ## Step 7: PROJECT.md 업데이트
 

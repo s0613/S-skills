@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "3.10.0",
+  "version": "3.11.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -78,7 +78,7 @@
     {
       "name": "sj-company",
       "path": "skills/sj-company/SKILL.md",
-      "version": "3.8.0",
+      "version": "3.8.1",
       "description": "SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.",
       "triggers": [
         "/sj-company"
@@ -117,7 +117,7 @@
     {
       "name": "sj-gpt",
       "path": "skills/sj-gpt/SKILL.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "GPT(ChatGPT/OpenAI) 자문 위임 전문가. codex MCP를 통해 GPT 모델에게",
       "triggers": [
         "/gpt",
@@ -180,7 +180,7 @@
     {
       "name": "sj-qa",
       "path": "skills/sj-qa/SKILL.md",
-      "version": "2.3.0",
+      "version": "2.3.1",
       "description": "QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.",
       "triggers": [
         "/qa",
@@ -191,7 +191,7 @@
     {
       "name": "sj-retro",
       "path": "skills/sj-retro/SKILL.md",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "description": "주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·프로세스 마찰·성장 기회를 분석한다.",
       "triggers": [
         "/sj-retro",
@@ -220,7 +220,7 @@
     {
       "name": "sj-ship",
       "path": "skills/sj-ship/SKILL.md",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "description": "릴리즈 엔지니어 자동화 에이전트. 테스트 → 커버리지 감사 → PR 오픈까지 한 번에.",
       "triggers": [
         "/sj-ship",
