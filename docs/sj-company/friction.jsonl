@@ -1,1 +1,2 @@
 {"ts": "2026-06-17T10:44:46", "run_id": "standalone", "skill": "sj-retro", "phase": "step5b-gate", "kind": "delight", "severity": "nit", "message": "Self-Harness 게이트가 첫 시도에 녹색 통과·적색 차단·존재가드 3분기 모두 의도대로 동작"}
+{"ts":"2026-06-22T10:08:30","run":"20260622-100258-38515","kind":"friction","where":"sj-company/routing","note":"옵시디언 키워드(#1 writer)와 평가 의도(#23 review)가 충돌 — 의도가 verb(평가)에 있어 review로 라우팅. 키워드 단독 매칭이 의도를 놓칠 수 있음"}

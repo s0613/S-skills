@@ -26,7 +26,7 @@
     {
       "name": "obsidian-writer",
       "path": "skills/obsidian-writer/SKILL.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Obsidian 문서 작성 전문가.",
       "triggers": [
         "/obsidian",
@@ -108,7 +108,7 @@
     {
       "name": "sj-dev-si",
       "path": "skills/sj-dev-si/SKILL.md",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "description": "SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 견적서 + DDD 도메인 맵을 작성한다.",
       "triggers": [
         "/sj-dev-si"
@@ -117,7 +117,7 @@
     {
       "name": "sj-gpt",
       "path": "skills/sj-gpt/SKILL.md",
-      "version": "1.0.1",
+      "version": "1.1.0",
       "description": "GPT(ChatGPT/OpenAI) 자문 위임 전문가. codex MCP를 통해 GPT 모델에게",
       "triggers": [
         "/gpt",
@@ -147,7 +147,7 @@
     {
       "name": "sj-marketing",
       "path": "skills/sj-marketing/SKILL.md",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "description": "SNS + 블로그 마케팅 콘텐츠 전문가.",
       "triggers": [
         "/sj-marketing",
@@ -210,7 +210,7 @@
     {
       "name": "sj-seo",
       "path": "skills/sj-seo/SKILL.md",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Google Search Console + Naver Search Advisor 색인 자동화 전문가.",
       "triggers": [
         "/sj-seo",
@@ -240,7 +240,7 @@
     {
       "name": "sj-tech-lead",
       "path": "skills/sj-tech-lead/SKILL.md",
-      "version": "2.5.0",
+      "version": "2.5.1",
       "description": "Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트",
       "triggers": [
         "/tech-lead"

@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 2.5.0
+version: 2.5.1
 description: |
   Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,
@@ -368,7 +368,7 @@ mcp__codex__codex(prompt="당신은 적대적 코드 리뷰어다. 이 저장소
 ```
 
 - 도구가 컨텍스트에 없으면 먼저 `ToolSearch("select:mcp__codex__codex")`. Bash 폴백: `codex exec --sandbox read-only "<위 프롬프트>"`.
-- **codex 미사용 가능 시(미등록·인증 실패) 이 렌즈를 건너뛰고**, dev-summary.md에 `7a-1 GPT 교차검증 미수행(codex 불가)` 한 줄을 남긴다 — 누락을 은폐하지 않는다([셀프-하네스/로깅 원칙](../_conventions/README.md)).
+- **codex 미사용 가능 시(미등록·인증 실패) 이 렌즈를 건너뛰고**, dev-summary.md에 `7a-1 GPT 교차검증 미수행(codex 불가)` 한 줄을 남긴다 — 누락을 은폐하지 않는다([정직 산출 계약](../_conventions/honest-report.md) 커널 ②).
 
 **판정 규칙 (Claude 3렌즈 + GPT = 최대 4표):** **2명 이상 FAIL → Step 8 재디스패치**. **1명만 FAIL이면**(GPT 단독 FAIL 포함) 해당 이슈를 dev-summary에 HIGH로 기록하고 통과시킨다 — [리뷰어 다양성 컨벤션](../_conventions/reviewer-diversity.md): 단일 AI 리뷰어는 차단하지 않는다(보완재, 최종 게이트는 사람). GPT 렌즈를 건너뛴 경우 Claude 3표만으로 2-of-3 판정.
 
