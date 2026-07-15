@@ -3,8 +3,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.8.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.12.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
+  <a href="#옵시디언-연동--하네스의-장기-기억"><img src="https://img.shields.io/badge/Obsidian-long--term%20memory-7c3aed?style=flat-square&logo=obsidian&logoColor=white&labelColor=0d0d0d" alt="obsidian"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
 
@@ -26,7 +27,8 @@
 
 <p align="center">
   PM, 디자이너, 개발자, QA, 보안 전문가가<br>
-  Claude Code 안에서 팀처럼 움직입니다.
+  Claude Code 안에서 팀처럼 움직입니다.<br>
+  <sub>그리고 모든 지식과 보고서는 옵시디언 볼트에 쌓입니다 — <strong>하네스 + 장기 기억</strong>.</sub>
 </p>
 
 <br>
@@ -38,6 +40,8 @@
 S-skills는 **역할 기반 AI 개발 오케스트레이터**입니다.
 
 요구사항 분석부터 설계, 구현, 리뷰, 배포까지 — 태스크를 말로 설명하면 필요한 전문가가 자동으로 투입됩니다. 사람처럼 협력하고, 결과만 돌려줍니다.
+
+그리고 세션이 끝나도 일은 사라지지 않습니다. 작업 전에는 옵시디언 볼트의 축적된 지식을 읽고, 작업 후에는 보고서를 볼트에 정리해 남깁니다 — **하네스가 실행하고, 옵시디언이 기억합니다.**
 
 ```
 /sj-company 로그인 기능 만들어줘
@@ -79,6 +83,10 @@ S-skills는 **역할 기반 AI 개발 오케스트레이터**입니다.
 
 QA는 구현자가 작성한 요약 문서를 읽지 않습니다. PM 브리프와 실제 파일을 직접 탐색해 편향 없이 검증합니다.
 
+**세션이 끝나도 남는 장기 기억**
+
+작업 전에 옵시디언 볼트의 지식을 읽고, 작업 후에 보고서를 볼트에 남깁니다. 세션은 휘발되지만 이해는 축적됩니다.
+
 ---
 
 ## 하네스 설계 — gbrain에서 가져온 6가지
@@ -95,6 +103,47 @@ QA는 구현자가 작성한 요약 문서를 읽지 않습니다. PM 브리프�
 | 6 | **점수 치유 루프** | `/docs-organize remediate`가 목표 점수까지 치유 플랜→승인→단계 실행·재측정. 자동 도달 불가 점수는 천장에서 멈추고 위임 |
 
 > 전 과정에서 **사람 게이트**는 불변입니다 — PR 머지·프로덕션 배포 승인은 항상 사람이 합니다. *build the loop, stay the engineer.*
+
+---
+
+## 옵시디언 연동 — 하네스의 장기 기억
+
+**옵시디언 볼트가 있을 때 이 하네스는 최상의 작업 능력을 냅니다.**
+
+세션은 휘발되지만 볼트는 남습니다. 하네스와 볼트는 양방향으로 순환합니다:
+
+```
+        ┌── 읽기 (작업 전) ──  도메인 지식 1~3개 참조 → 산출물에 [OBSIDIAN: 경로]
+하네스 ─┤
+        └── 쓰기 (작업 후) ──  보고서 정리본 저장 → 40_프로젝트/{프로젝트}/보고서/
+```
+
+**읽기** — 작업을 시작하기 전에 볼트에서 태스크 도메인의 축적된 지식(디자인 시스템, 설계 원칙, 기술 결정 가이드, 프로젝트 경험)을 먼저 읽습니다. 매 작업이 과거의 결정과 지식 위에서 시작됩니다.
+
+| 역할 | 작업 전 참조하는 볼트 폴더 |
+|------|---------------------------|
+| 라우팅·기술 스택 판단 (sj-company) | `00_SYSTEM/` — 프로젝트 라우터, 기술 결정 가이드 |
+| 요구사항·기획 (sj-pm) | `10_지식/02_기획`, `40_프로젝트` |
+| 디자인 (sj-design) | `10_지식/04_디자인` — 축적된 디자인 시스템·스타일 문서 |
+| 구현 (sj-tech-lead) | `10_지식/03_설계` + 해당 도메인(프론트엔드~인프라) |
+
+**쓰기** — 사용자가 읽는 보고서는 전부 볼트에 그 자체로 읽히는 정리본으로 저장됩니다. 나중에 찾아 읽고, 위키링크로 연결하고, 팀(미래의 나 포함)이 같은 정신 모형을 다시 로드할 수 있습니다.
+
+| 역할 | 볼트에 남기는 보고서 |
+|------|---------------------|
+| Tech Lead | 완료 보고 — 서술식(배경→의도→읽기 순서→세부) |
+| QA | 판정 정리본 (PASS/FAIL/CONDITIONAL + 완료 조건 대조) |
+| Retro | 주간 회고 |
+| Investigate | 조사 결과 (루트코즈·증거·재발 방지) |
+| CSO | 보안 감사 요약 |
+| Ship | 릴리즈 보고 |
+
+- 볼트 경로는 `OBSIDIAN_VAULT_DIR` 환경 변수로 지정합니다 (기본: `$HOME/obsidian-vaults/AI 에이전트`).
+- 볼트 접근은 파일 도구(Read/Grep)로 직접 — MCP를 경유하지 않아 멈춤 없이 빠릅니다.
+- **볼트가 없어도 하네스는 정상 동작합니다** — 참조·저장만 건너뛰고 산출물에 `미수행:`으로 정직하게 기록합니다. 다만 장기 기억 없이 일하는 셈이라, 볼트를 갖추는 것을 권장합니다.
+- 지식 문서를 직접 작성하는 것은 `/obsidian`(obsidian-writer)의 몫 — 읽기(전 스킬)·보고서 쓰기(자동)·지식 쓰기(obsidian-writer)가 순환하며 하네스가 점점 똑똑해집니다.
+
+규칙 본문: [`_conventions/obsidian-context.md`](skills/_conventions/obsidian-context.md) (읽기) · [`_conventions/obsidian-output.md`](skills/_conventions/obsidian-output.md) (쓰기)
 
 ---
 

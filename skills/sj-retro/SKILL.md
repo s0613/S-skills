@@ -1,6 +1,6 @@
 ---
 name: sj-retro
-version: 1.2.1
+version: 1.4.0
 description: |
   주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·프로세스 마찰·성장 기회를 분석한다.
   "회고", "retro", "이번 주 정리", "retrospective", "지난주 리뷰" 요청에 반응.
@@ -161,6 +161,27 @@ PY
 
 ---
 
+## Step 4c: 디자인 취향 프로필 신선도
+
+> 볼트 `10_지식/04_디자인/00_취향 프로필.md`는 디자인 취향의 단일 사실 소스다 — 이번 주의 승인/거부 발화가 반영되지 않으면 낡는다. **이 스텝은 직접 편집하지 않는다**: 승격 후보 나열까지만 (채택은 사람 게이트, 반영은 프로필의 갱신 규칙대로).
+
+```bash
+_VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
+_PROFILE="$_VAULT/10_지식/04_디자인/00_취향 프로필.md"
+if [ -f "$_PROFILE" ]; then
+  grep -m1 "last-reviewed:" "$_PROFILE"
+  # 이번 주 디자인 신호: 프로젝트 봉인 갱신 + 디자인 friction
+  find docs/sj-company -name "design-banned.md" -newermt "$SINCE" 2>/dev/null
+  grep -i 'sj-design' docs/sj-company/friction.jsonl 2>/dev/null | tail -5
+else
+  echo "미수행: 취향 프로필 없음 — 스킵"
+fi
+```
+
+판정: 이번 주 디자인 거부/승인 신호(위 출력 + Step 3의 디자인 관련 FAIL)가 있는데 프로필 `last-reviewed`가 그보다 과거면, 각 신호를 **승격 후보**로 보고서 "취향 프로필" 줄에 나열한다.
+
+---
+
 ## Step 5: 성장 기회 분석
 
 데이터를 바탕으로 패턴을 도출한다:
@@ -232,6 +253,9 @@ PASS: {N} | CONDITIONAL: {N} | FAIL: {N}
 friction {N}건 (blocker:{N} error:{N} confused:{N}) / delight {N}건
 최다 마찰: {skill/phase} x{N}
 
+## 취향 프로필 신선도
+{최신 ✅ | 승격 후보 {N}건: {신호 요약}} (last-reviewed: {날짜})
+
 ## 이번 주 요약
 ✅ Keep: {잘 된 것}
 🔧 Improve: {개선할 것}
@@ -241,6 +265,8 @@ friction {N}건 (blocker:{N} error:{N} confused:{N}) / delight {N}건
 🟢 채택 후보(회귀 통과): {제안 + 대상 파일} | 사람 승인 대기
 🔴 보류(회귀 실패·미검증): {제안} → triage-inbox
 ```
+
+> **컨벤션:** [보고서 옵시디언 정리](../_conventions/obsidian-output.md) — 볼트가 있으면 위 회고 보고서를 `{볼트}/40_프로젝트/{프로젝트}/보고서/{YYYY-MM-DD} 회고.md`로 저장한다 (PII 마스킹, 같은 날 중복 시 ` -2`). 볼트 없으면 보고서 출력에 `미수행: 옵시디언 볼트 없음` 한 줄 — 비차단.
 
 ---
 

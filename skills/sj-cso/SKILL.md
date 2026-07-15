@@ -1,6 +1,6 @@
 ---
 name: sj-cso
-version: 1.0.0
+version: 1.1.0
 description: |
   CSO(Chief Security Officer) 역할 보안 감사 에이전트.
   OWASP Top 10 + STRIDE 위협 모델링을 체계적으로 수행한다.
@@ -246,6 +246,8 @@ grep -rn "fetch(\|axios\.\|http\.get\|requests\.get" \
 ## 통과 항목
 - OWASP A0{N}: ✅ 이미 완화됨
 ```
+
+> **컨벤션:** [보고서 옵시디언 정리](../_conventions/obsidian-output.md) — 볼트가 있으면 감사 보고서 정리본(등급·CRITICAL/HIGH 요약·수정 방향, 공격 시나리오 상세는 원본 참조로)을 `{볼트}/40_프로젝트/{프로젝트}/보고서/{YYYY-MM-DD} 보안 감사.md`로 저장한다 (PII 마스킹 필수, 같은 날 중복 시 ` -2`, 마지막 줄에 cso-report.md 경로 연결). 볼트 없으면 완료 메시지에 `미수행: 옵시디언 볼트 없음` 한 줄 — 비차단.
 
 ---
 

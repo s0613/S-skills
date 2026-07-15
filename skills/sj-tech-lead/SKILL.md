@@ -1,6 +1,6 @@
 ---
 name: sj-tech-lead
-version: 2.5.1
+version: 2.8.0
 description: |
   Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트
   (frontend/backend/database/devops/security/data/si)를 식별·병렬 디스패치하고,
@@ -26,6 +26,7 @@ triggers:
 `.state/pm-brief.md`를 받아 **필요한 전문 개발 서브에이전트만** 골라 병렬로 디스패치하고, 결과를 통합·리뷰해 `.state/dev-summary.md`로 집계한다.
 
 > **컨벤션:** [프릭션 로그](../_conventions/friction-log.md) — 디스패치·통합 중 마찰(서브에이전트 실패, 모호한 결과, 파일 충돌)을 만나면 한 줄 기록한다. 레시피는 컨벤션 파일.
+> **컨벤션:** [옵시디언 지식 참조](../_conventions/obsidian-context.md) — 디스패치 전 볼트의 `10_지식/03_설계` + 해당 도메인 폴더(`05_프론트엔드`~`08_인프라`)에서 관련 문서 1~3개를 확인하고, 참조 경로를 Dispatch Card에 `[OBSIDIAN: 경로]`로 포함해 서브에이전트에 전파한다. 볼트 없으면 비차단 진행.
 
 ## Base Guidelines (Karpathy)
 
@@ -228,6 +229,7 @@ EOF
 - Dev Ctx     : docs/sj-company/dev-context.md         (항상 cat)
 - Design Ctx  : docs/sj-company/design-context.md      (있으면 직접 cat — 누적 히스토리)
 - Design Handoff: docs/sj-company/.state/design-handoff.md (있으면 직접 cat — 승인된 목업 경로 + 정확한 CSS 변수값. frontend는 이 파일의 값을 한 글자도 바꾸지 않고 그대로 사용)
+- Taste Profile : "${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}/10_지식/04_디자인/00_취향 프로필.md" (frontend 역할만: 있으면 직접 cat — 전역 디자인 실행 계약(금지·모드·게이트). 없으면 비차단)
 - Prior       : docs/sj-company/.state/dev/{deps}.md   (의존 역할만 명시)
 
 [LANGUAGE]
@@ -562,13 +564,41 @@ fi
 
 ---
 
-## Step 10: 사용자에게 완료 보고
+## Step 10: 사용자에게 완료 보고 (서술식)
 
-`.state/dev-summary.md`의 통합 요약 + 다음 단계(Large 경로면 QA) 제안을 짧게 출력한다.
+> **컨벤션:** [서술식 완료 보고](../_conventions/literate-report.md) — 배경(변경 전 동작 2~4줄) → 의도(한 문장) → 읽기 순서(이해 순서로, 파일명 순 금지) → 세부. diff·파일 나열은 보고가 아니다.
+
+`.state/dev-summary.md`를 근거로, 이 변경을 처음 보는 사람이 이해할 수 있는 순서로 보고한다:
 
 ```
 Tech Lead 완료. 참여 역할: backend, database, frontend
-변경 파일 12개, 리뷰 1회 재디스패치 후 PASS.
+
+## 배경
+{변경 전 이 영역이 어떻게 동작했는지 2~4줄}
+
+## 의도
+{이번 변경이 무엇을 바꾸는지 한 문장}
+
+## 읽기 순서
+1. `{파일}` — {왜 이 파일부터 보는지 / 전체에서 맡는 역할}
+2. `{파일}` — ...
+
+## 세부
+변경 파일 {N}개, 리뷰 {재디스패치 이력 요약} 후 PASS.
 요약: docs/sj-company/.state/dev-summary.md
 다음 단계: QA 실행 (`Skill("s-skills:sj-qa")`) — Large 경로만
 ```
+
+배경+의도 합쳐 6줄 이내, 방금 대화한 컨텍스트 반복 금지.
+
+### 10b. 옵시디언 정리본 저장
+
+> **컨벤션:** [보고서 옵시디언 정리](../_conventions/obsidian-output.md) — 사용자 대상 보고서는 볼트에 정리본으로 저장(비차단).
+
+```bash
+_VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
+[ -d "$_VAULT" ] || echo "미수행: 옵시디언 볼트 없음"
+ls "$_VAULT/40_프로젝트/" 2>/dev/null   # 기존 폴더 매칭 → 없으면 새 폴더
+```
+
+프로젝트 폴더는 컨벤션의 매칭 규칙대로 — 기존 폴더 우선(디렉토리명·PROJECT.md 프로젝트명·영문↔한글 표기 차이 포함), 명확한 매칭 없으면 `40_프로젝트/{저장소 디렉토리명}/` 신규 생성. 볼트가 있으면 위 서술식 보고를 `40_프로젝트/{프로젝트 폴더}/보고서/{YYYY-MM-DD} 완료 보고.md`로 저장한다 (frontmatter: date/run/skill/kind, 같은 날 중복 시 ` -2`, PII 마스킹 적용, 마지막 줄에 dev-summary 경로 연결). 없으면 완료 보고에 `미수행: 옵시디언 볼트 없음` 한 줄을 남기고 진행한다.

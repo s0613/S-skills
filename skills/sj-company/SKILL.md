@@ -1,10 +1,10 @@
 ---
 name: sj-company
-version: 3.8.1
+version: 3.9.0
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
-  인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 크기 자동 판정 후 실행.
-  Tiny/Small: 즉시 구현. Medium: PM브리핑+TechLead+pw-loop. Large: PM+계획+단계별실행. xLarge: ultracode 멀티에이전트 워크플로우.
+  새 기능·수정·구현 태스크를 시작할 때, 또는 진행 중인 프로젝트를 이어서 진행할 때 사용.
+  인자 없이 호출하면 프로젝트 브리핑, 인자와 함께 호출하면 태스크 실행.
 allowed-tools:
   - Bash
   - Read
@@ -35,6 +35,7 @@ triggers:
 
 > **컨벤션:** [RUN_ID 추적](../_conventions/run-id.md) — 아래 블록이 실행 식별자를 생성·기록하는 단일 생성점. 계약 본문은 컨벤션 파일.
 > **컨벤션:** [프릭션 로그](../_conventions/friction-log.md) — 라우팅·디스패치 중 마찰(상태 감지 실패, 모호한 의도, 단계 전환 오류)을 만나면 한 줄 기록한다. 레시피는 컨벤션 파일.
+> **컨벤션:** [옵시디언 지식 참조](../_conventions/obsidian-context.md) — 볼트가 있으면(아래 OBSIDIAN=present) 태스크 도메인의 지식 문서 1~3개를 파일 도구로 직접 읽고(`Read`/`Grep`, MCP 경유 금지) 디스패치에 `[OBSIDIAN: 경로]`로 전달한다. 볼트 없으면 비차단 진행. 도메인→폴더 맵은 컨벤션 파일.
 
 ```bash
 mkdir -p docs/sj-company docs/sj-company/.state
@@ -44,16 +45,28 @@ _RUN_ID="$(date +%Y%m%d-%H%M%S)-$$"
 echo "$_RUN_ID" > docs/sj-company/.state/current-run.txt
 echo "RUN_ID: $_RUN_ID"
 
+# 옵시디언 볼트 감지 (컨벤션: obsidian-context.md — 있으면 최상의 작업 능력, 없으면 비차단)
+_VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
+[ -d "$_VAULT" ] && echo "OBSIDIAN=present ($_VAULT)" || echo "OBSIDIAN=absent"
+
 # 마이그레이션 감지: PROJECT.md 없고 구파일 있으면 자동 마이그레이션
 _HAS_PROJECT=$([ -f "docs/sj-company/PROJECT.md" ] && echo "yes" || echo "no")
 # v2 잔재 감지(아래 자동 이주 블록은 PROJECT.md가 없는 신규/구버전 워크스페이스에서만 일회성으로 트리거된다)
-_HAS_OLD=$([ -f "docs/sj-company/.state/stage.txt" ] && echo "yes" || [ -f "docs/sj-company/pm-output.md" ] && echo "yes" || echo "no")
+# 주의: && ||를 한 줄로 엮으면 좌결합 때문에 "yes"가 두 번 echo되는 버그가 있었다 — if로 풀어 쓴다
+_HAS_OLD="no"
+if [ -f "docs/sj-company/.state/stage.txt" ] || [ -f "docs/sj-company/pm-output.md" ]; then _HAS_OLD="yes"; fi
 
 if [ "$_HAS_PROJECT" = "no" ] && [ "$_HAS_OLD" = "yes" ]; then
   echo "MIGRATION_NEEDED=yes"
 else
   echo "MIGRATION_NEEDED=no"
 fi
+
+# context.md 큐레이션 점검 — 200줄 초과 파일만 통합 대상 (규칙 본문: 중요 규칙 > context.md 큐레이션 트리거)
+for _C in pm design dev qa; do
+  _CF="docs/sj-company/${_C}-context.md"
+  if [ -f "$_CF" ] && [ "$(wc -l < "$_CF" | tr -d ' ')" -gt 200 ]; then echo "CURATE_NEEDED=$_CF"; fi
+done
 ```
 
 **MIGRATION_NEEDED=yes인 경우:** 아래 Python으로 PROJECT.md 자동 생성 후 구파일 아카이브:
@@ -312,10 +325,10 @@ done
 판정 결과를 한 줄로 출력:
 ```
 [{SIZE}] "{태스크}"
-크기가 다르면 조정: Tiny / Small / Medium / Large / xLarge (엔터: 그대로 진행)
 ```
 
-AskUserQuestion으로 크기 확인 (기본값: 자동 판정).
+- **Tiny 판정** → 확인 없이 바로 실행한다. 오판이어도 diff가 작아 되돌리기 쉽다 (Simplicity First — 과정 의식 금지).
+- **그 외** → AskUserQuestion으로 크기 확인. 첫 옵션은 자동 판정 크기 유지(권장), 나머지는 인접 크기.
 
 ### Step 2: 크기별 실행
 
@@ -552,16 +565,6 @@ _F="docs/sj-company/PROJECT.md"   # 또는 *-context.md
 
 ### context.md 큐레이션 트리거 (지연 발동)
 
-영속 학습 파일은 무한 누적된다. **임계값을 넘기 전까지는 손대지 않는다.** Preamble에서 크기를 점검하고, 임계 초과 시에만 통합(consolidate)한다.
-
-```bash
-# Preamble 또는 사이클 종료 시 점검
-for _C in pm design dev qa; do
-  _CF="docs/sj-company/${_C}-context.md"
-  [ -f "$_CF" ] || continue
-  _N=$(wc -l < "$_CF" | tr -d ' ')
-  [ "$_N" -gt 200 ] && echo "CURATE_NEEDED=$_CF ($_N줄)"
-done
-```
+영속 학습 파일은 무한 누적된다. **임계값을 넘기 전까지는 손대지 않는다.** 점검 커널은 Preamble bash 블록에 있다(`CURATE_NEEDED` 출력) — 여기는 규칙 본문만 둔다.
 
 `CURATE_NEEDED`가 출력된 파일만: archive-only 불변식으로 백업한 뒤, `## 히스토리`의 오래된 항목을 **요약 1~3줄로 압축**하고 중복·낡은 인사이트를 통합한다. 200줄 이하 파일은 **건드리지 않는다**(오버엔지니어링 금지).

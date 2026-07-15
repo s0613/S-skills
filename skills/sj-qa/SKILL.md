@@ -1,6 +1,6 @@
 ---
 name: sj-qa
-version: 2.3.1
+version: 2.4.0
 description: |
   QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.
   dev-summary.md(구현자 자기 평가) 참조 금지 — Judge 독립성 원칙.
@@ -198,6 +198,8 @@ append 전 [PII 마스킹](../_conventions/pii-masking.md): `password|token|secr
 ## Step 9: 완료 보고
 
 전체 파이프라인 결과를 사용자에게 요약해서 출력한다.
+
+> **컨벤션:** [보고서 옵시디언 정리](../_conventions/obsidian-output.md) — 볼트가 있으면 QA 판정 정리본(판정·완료 조건 대조 결과·핵심 발견, 로그 덤프 금지)을 `{볼트}/40_프로젝트/{프로젝트}/보고서/{YYYY-MM-DD} QA 판정.md`로 저장한다 (PII 마스킹, 같은 날 중복 시 ` -2`, 마지막 줄에 qa-verdict.md 경로 연결). 볼트 없으면 완료 보고에 `미수행: 옵시디언 볼트 없음` 한 줄 — 비차단.
 
 ---
 

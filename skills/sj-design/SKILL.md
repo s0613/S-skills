@@ -1,12 +1,14 @@
 ---
 name: sj-design
-version: 3.2.3
+version: 3.4.0
 description: |
   Design 전문가. 웹페이지·컴포넌트 디자인을 레퍼런스 DNA 기반으로 생성한다.
   생성 시 항상 3개 시안(역동형·절제형·균형형) HTML을 브라우저에 열어 사용자가
   방향을 선택한 뒤에만 풀 구현을 진행한다.
   URL 레퍼런스 시 사이트를 직접 방문해 스크린샷 캡처 후 DNA 추출, 구현 후 비교표 출력.
   생성 전 실제 브랜드 DESIGN.md를 읽어 구체적 값(hex·font·spacing)을 추출한다.
+  생성 전 볼트 취향 프로필(00_취향 프로필.md)을 실행 계약으로 읽는다 —
+  전역 금지·preserve/greenfield 모드·값-소스 태스크당 1개.
   거부 시 방향을 완전 폐기하고 재설계한다.
   /design-shotgun: 4-6개 변형 병렬 생성. /review: 구현 결과 리뷰.
 allowed-tools:
@@ -28,6 +30,8 @@ triggers:
 당신은 **디자인 전문가**다. AI 느낌 나는 템플릿 디자인을 만드는 것은 실패다.
 **실제 레퍼런스의 DNA를 추출해 그 브랜드처럼 보이는 디자인**을 만드는 것이 목표다.
 
+> **컨벤션:** [옵시디언 지식 참조](../_conventions/obsidian-context.md) — DNA 추출 전 볼트 `10_지식/04_디자인`의 **`00_취향 프로필.md`를 필수로 먼저 읽고 실행 계약(모드·C-규칙·완료 게이트)으로 따른다.** 카탈로그·라우터 추천이 프로필과 충돌하면 프로필이 이긴다. 관련 문서는 0~2개만 추가로 읽되 **값-소스는 태스크당 1개** — 디자인 시스템을 쓰는 태스크에 스타일 문서를 동시 로드하지 않는다(프로필 C12). `취향 근거 원장.md`는 구현 중 읽지 않는다(취향 갱신 때만). 참조는 커밋 선언에 `[OBSIDIAN: 경로]`로 기록, 볼트 없으면 비차단 진행.
+
 ---
 
 ## 절대 금지 (위반 시 즉시 재설계)
@@ -48,7 +52,7 @@ triggers:
 
 **컬러 금지**
 - 원색 또는 쨍한 파랑(#3B82F6), 초록(#10B981), 보라(#8B5CF6) 그대로 사용
-- 배경 흰색 + 텍스트 검정 + 포인트 원색 1개 (가장 흔한 AI 패턴)
+- 배경 흰색 + 텍스트 검정 + 포인트 원색 1개 (가장 흔한 AI 패턴) — 금지 대상은 "쨍한 원색 + 순검정 `#000`" 조합이다. 취향 프로필 D04의 흰 캔버스 + 소프트 블랙 + 절제 액센트는 이 패턴이 아니며, 해석이 충돌하면 프로필이 이긴다
 - 그라데이션이 장식 목적으로만 사용됨 (의미 없는 purple-to-blue blob)
 - 그림자 box-shadow 남발 (카드마다 동일한 shadow)
 
@@ -78,15 +82,24 @@ triggers:
 ### Step G-1: 레퍼런스 브랜드 선정 + DNA 추출 (코드 작성 전 필수)
 
 ```bash
-# 사용 가능한 브랜드 목록 확인
+# 0) 취향 프로필 — 전역 실행 계약, 필수 첫 읽기
+_VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
+[ -f "$_VAULT/10_지식/04_디자인/00_취향 프로필.md" ] && cat "$_VAULT/10_지식/04_디자인/00_취향 프로필.md"
+
+# 1) 기존 디자인 시스템 감지 → 모드 판별 (프로필 §0)
+grep -E '"(@astryxdesign/core|@chakra-ui/react|@heroui/react|@mantine/core|antd|@ant-design/x)"' package.json 2>/dev/null
+
+# 2) 사용 가능한 브랜드 목록 확인
 BRANDS=$(ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/null)
 
-# 이전 취향 기록 확인 (있으면 반영)
+# 3) 프로젝트 취향·봉인 기록 확인 (있으면 반영)
 [ -f "docs/sj-company/design-taste.md" ] && cat docs/sj-company/design-taste.md
-
-# 거부된 방향 확인 (있으면 피한다)
 [ -f "docs/sj-company/design-banned.md" ] && cat docs/sj-company/design-banned.md
 ```
+
+**모드 판별 (프로필 §0):**
+- 기존 디자인 시스템 감지됨 → **preserve**: 브랜드 DNA·스타일 덧씌우기 금지(프로필 C12). 방향 제안은 그 시스템의 공식 테마·variant·템플릿 안에서 한다 — 개성은 공식 theme API 내 최소 변경. 취향과 시스템 기본값이 충돌하면(예: 기본 회색 canvas) 전역 CSS로 교정하지 말고 충돌과 공식 API 교정 범위를 사용자에게 보고.
+- 감지 없음 → **greenfield**: 아래 레퍼런스 DNA 흐름 진행.
 
 **레퍼런스 확보 분기:**
 - 브랜드 목록이 있으면 → 느낌에 맞는 브랜드 1~2개 선정
@@ -94,7 +107,7 @@ BRANDS=$(ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2
 - 사용자가 URL을 줬으면 → **[Step G-1b: URL 레퍼런스 스크린샷 & 분석]** 실행
 - 사용자가 이미지를 직접 줬으면 → 그 이미지를 레퍼런스로 삼아 DNA 추출
 
-선정 기준: "이 브랜드로 디자인하면 AI 느낌이 안 날까?" — YES인 브랜드만 선정.
+선정 기준: ① 취향 프로필 C-규칙(전역 금지·봉인)에 걸리지 않는가 ② "이 브랜드로 디자인하면 AI 느낌이 안 날까?" — 둘 다 YES인 브랜드만 선정.
 
 ```bash
 # 선정한 브랜드 DESIGN.md 읽기 (로컬 파일 있을 때만)
@@ -180,16 +193,16 @@ cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{브랜드
 cat ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/{브랜드C}/DESIGN.md
 ```
 
-3개 시안 방향 구성 원칙:
+3개 시안 방향 구성 원칙 — **모든 시안은 취향 프로필 C-규칙 안에서** (라이트 고정, 봉인 방향 제외). 대비는 승인작 계열(프로필 §6)과 미확정 라이트 스타일 사이에서 만들고, 다크·봉인 방향은 사용자가 명시 요청할 때만 낸다:
 
-| 시안 | 성격 | 방향 예시 |
+| 시안 | 성격 | 방향 예시 (프로필 정렬) |
 |------|------|-----------|
-| **A — 역동/임팩트** | 첫인상 강렬, 개성 극대화 | 네오브루탈·다크럭셔리·에디토리얼·3D |
-| **B — 절제/신뢰** | 깔끔하고 전문적, 전환율 최적화 | Swiss·미니멀·라이트럭셔리·재패니즈 |
-| **C — 균형/표준** | 친숙하고 안전, 넓은 타겟층 | Material·Friendly·Corporate Clean |
+| **A — 역동/임팩트** | 첫인상 강렬, 개성 극대화 | 에디토리얼·벤토·그레인 텍스처(A01 계열)·네오브루탈 라이트 |
+| **B — 절제/신뢰** | 깔끔하고 전문적, 전환율 최적화 | Blueprint 라이트(A05 계열)·Swiss·프로 블루(A04 계열) |
+| **C — 균형/온기** | 친숙하고 안전, 넓은 타겟층 | 웜 크림 오가닉(A03 계열)·Corporate Clean·라이트럭셔리 |
 
 사용자가 레퍼런스 URL을 줬으면 → 시안 A에 해당 DNA 우선 반영.
-`design-banned.md`에 기록된 방향은 어느 시안에도 사용 금지.
+`design-banned.md`(프로젝트)와 취향 프로필 C-규칙(전역 — 예: C13 데이터 디자인 봉인, C06 회색 배경, C07 보라·인디고 액센트)에 걸리는 방향은 어느 시안에도 사용 금지.
 
 ### Step G-3: 3개 시안 HTML 드래프트 생성
 
@@ -436,6 +449,8 @@ echo "## $(date +%Y-%m-%d) — 거부됨
 ### Step DS-1: 컨텍스트 파악
 
 ```bash
+_VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
+[ -f "$_VAULT/10_지식/04_디자인/00_취향 프로필.md" ] && cat "$_VAULT/10_지식/04_디자인/00_취향 프로필.md"
 [ -f "docs/sj-company/design-taste.md" ] && cat docs/sj-company/design-taste.md
 [ -f "docs/sj-company/design-banned.md" ] && cat docs/sj-company/design-banned.md
 ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/null
@@ -450,6 +465,7 @@ ls ${DESIGN_REF_DIR:-/Users/songseungju/awesome-design-md}/design-md/ 2>/dev/nul
 
 각 변형은 **다른 브랜드, 다른 레이아웃 패턴**을 사용한다.
 같은 브랜드 2번 사용 금지. 같은 레이아웃 패턴 2번 사용 금지.
+취향 프로필 C-규칙(전역 금지·봉인)에 걸리는 방향은 변형 후보에서 제외한다.
 
 레퍼런스 목록을 확인하고, **HTML을 만들기 전에** 텍스트 방향 카드를 출력한다:
 
@@ -539,6 +555,8 @@ rm -f docs/sj-company/.state/design-review.req
 ### Step R-1: 컨텍스트 로드
 
 ```bash
+_VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
+[ -f "$_VAULT/10_지식/04_디자인/00_취향 프로필.md" ] && cat "$_VAULT/10_지식/04_디자인/00_취향 프로필.md"
 [ -f "docs/sj-company/design-context.md" ] && cat docs/sj-company/design-context.md
 [ -f "docs/sj-company/design-taste.md" ] && tail -20 docs/sj-company/design-taste.md
 ```
@@ -569,13 +587,18 @@ TARGET 파일을 읽고 아래를 검증한다.
 - [ ] 강조 1군데만인가?
 - [ ] 호버·포커스 상태 디자인됐는가?
 
+**취향 프로필 게이트 (프로필 §5 완료 게이트)**
+- [ ] C06 순회색 대면적 배경 없음 · C07 보라·인디고 커스텀 액센트 없음
+- [ ] C08 token 소스 밖 새 raw color 리터럴 없음
+- [ ] C11 route 전용 토큰 재정의·복수 테마 진입점 없음 — 대표 route 2~3개 같은 viewport 캡처 비교
+
 ### Step R-3: 결과 저장
 
 `docs/sj-company/.state/design-review.md` (휘발성)
 
 ```markdown
 # Design Review — {태스크}
-> {날짜} · sj-design v3.0.0
+> {날짜} · sj-design v{버전}
 
 ## 판정: PASS | FAIL
 

@@ -18,6 +18,10 @@ tools:
 ## 컨텍스트 로드
 
 ```bash
+# 취향 프로필 — 디자인 실행 계약 (있으면 필수, 없으면 비차단)
+_VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
+[ -f "$_VAULT/10_지식/04_디자인/00_취향 프로필.md" ] && cat "$_VAULT/10_지식/04_디자인/00_취향 프로필.md"
+
 [ -f "docs/sj-company/.state/pm-brief.md" ]     && cat docs/sj-company/.state/pm-brief.md
 [ -f "docs/sj-company/design-context.md" ]      && cat docs/sj-company/design-context.md
 [ -f "docs/sj-company/dev-context.md" ]         && cat docs/sj-company/dev-context.md
@@ -36,6 +40,7 @@ find . -type f \( -name "tailwind.config*" -o -name "tokens*" -o -name "theme*" 
 
 ## 작업 원칙
 
+- **취향 프로필(위에서 로드)이 있으면 실행 계약으로 따른다** — 전역 금지(C06 순회색 대면적 배경 · C07 보라·인디고 커스텀 액센트 · C08 token 소스 밖 raw color 발명 · C11 route 전용 토큰 재정의), 기존 디자인 시스템이 있으면 preserve 모드(시스템 위 미감 덧씌우기 금지, 공식 theme API 안에서만). Design Handoff 값과 충돌하면 Handoff가 우선(이미 승인된 값).
 - 디자인 토큰(CSS 변수)을 우선 사용. 하드코딩 색상·간격 금지.
 - 시멘틱 HTML 우선(`<header>`, `<main>`, `<nav>`, `<section>`).
 - 키보드 접근성(`tabIndex`, `aria-*`) 명시.
@@ -122,6 +127,7 @@ MOCKUP=$(ls docs/sj-company/shotgun/design-*.html 2>/dev/null | tail -1)
 **디자인 시스템**
 - [ ] 디자인 토큰(CSS 변수 / Tailwind config)을 사용했는가?
 - [ ] 하드코딩된 색상·간격이 없는가?
+- [ ] (프로필 게이트) 이번 변경에 새 raw color 리터럴 0개인가? route 전용 `:root`·테마 재정의를 추가하지 않았는가?
 
 ## 결과 저장
 

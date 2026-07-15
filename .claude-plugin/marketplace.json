@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "s-skills",
-      "version": "3.11.0",
+      "version": "3.12.0",
       "description": "Harness + docs-organize + test-scenario + sj-company skills",
       "author": {
         "name": "songseungju"
