@@ -32,7 +32,7 @@ _VAULT="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
 
 | 작업 | 우선 참조 |
 |------|----------|
-| 라우팅·기술 스택 판단 (sj-company) | `00_SYSTEM/` (PROJECT-ROUTER, TECHNOLOGY-DECISION-GUIDE) |
+| 라우팅·기술 스택 판단 (sj-company) | `00_SYSTEM/` (START-HERE — 진입점·라우터·볼트 지도 통합, TECHNOLOGY-DECISION-GUIDE) |
 | 요구사항·기획 (sj-pm) | `10_지식/02_기획`, `40_프로젝트` |
 | 디자인 (sj-design) | `10_지식/04_디자인` — `00_취향 프로필.md` 필수 선행, `취향 근거 원장.md`는 구현 중 제외 |
 | 구현 (sj-tech-lead → sj-dev-*) | `10_지식/03_설계` + 해당 도메인(`05_프론트엔드`~`08_인프라`) |

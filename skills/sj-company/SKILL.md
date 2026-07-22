@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 3.9.0
+version: 3.9.1
 description: |
   SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.
   새 기능·수정·구현 태스크를 시작할 때, 또는 진행 중인 프로젝트를 이어서 진행할 때 사용.
@@ -470,6 +470,14 @@ if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then _HAS_PW=
 [Large] PM 분석 + 구현 계획 후 진행합니다.
 ```
 
+0. **task.txt 갱신 (필수).** Large는 pm-brief.md를 주 입력으로 쓰지만, sj-pm·Tech Lead는 `task.txt`도 입력 계약으로 읽는다. 갱신하지 않으면 **직전 Medium 사이클의 `[HINT:]`·`[SPEC:]`가 이번 Dispatch Card에 그대로 주입**된다. Write 툴로 이번 태스크 한 줄만 남긴다 (HINT는 쓰지 않는다 — Large는 Tech Lead가 역할을 판단):
+
+   ```
+   {이번 태스크}
+   ```
+
+   sj-spec을 거쳤다면 `[SPEC: 경로]` 줄만 함께 남긴다.
+
 1. `Skill("s-skills:sj-pm")` 호출
    - PM이 PROJECT.md의 goal/next를 업데이트
 
@@ -510,6 +518,8 @@ Workflow 도구는 사용자의 명시적 opt-in이 있어야 켜진다. 현재 
 여기서 Case B를 종료한다. (사용자가 ultracode 붙여 재요청하면 2부터 진행.)
 
 **2. PM 분석 선행**
+
+먼저 Large와 동일하게 **`docs/sj-company/.state/task.txt`를 이번 태스크로 덮어쓴다** — 갱신하지 않으면 직전 Medium 사이클의 `[HINT:]`·`[SPEC:]`가 그대로 남아 sj-pm·서브에이전트 입력을 오염시킨다.
 
 `Skill("s-skills:sj-pm")` 호출 — goal/next 갱신, 요구사항·리스크 도출. PM 브리핑을 워크플로우 입력으로 쓴다.
 

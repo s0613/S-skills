@@ -1,4 +1,15 @@
 .DS_Store
 .gstack/
 node_modules/
+
+# 파이프라인 휘발 상태
 docs/sj-company/.state/
+
+# 루프 런타임 상태 (sj-loop이 매 반복마다 갱신 — 커밋 대상 아님)
+docs/sj-company/loops/*-state.md
+
+# 디자인 드래프트 (sj-design G-3 산출, 선택 후 버려짐)
+docs/sj-company/drafts/
+
+# archive 백업 (archive-only 불변식이 만드는 타임스탬프 사본)
+docs/sj-company/archive/*.bak

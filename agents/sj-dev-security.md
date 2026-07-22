@@ -59,7 +59,12 @@ Tech Lead가 모드를 프롬프트로 명시한다.
 ```bash
 ls docs/sj-company/.state/dev/
 for f in docs/sj-company/.state/dev/*.md; do
-  [ "$(basename $f)" != "security.md" ] && echo "=== $f ===" && cat "$f"
+  [ -f "$f" ] || continue
+  # 다른 역할의 Result Card만 읽는다.
+  # `_` 프리픽스(팀 채널·다른 렌즈의 리뷰 산출)는 제외 — 다른 리뷰어의 결론을 보면
+  # 7a-1 3렌즈 다수결이 독립 표가 아니게 된다(같은 결론을 베끼는 앵커링).
+  case "$(basename "$f")" in _*|security.md) continue ;; esac
+  echo "=== $f ===" && cat "$f"
 done
 ```
 
@@ -103,7 +108,13 @@ done
 mkdir -p docs/sj-company/.state/dev
 ```
 
-`docs/sj-company/.state/dev/security.md` (Result Card):
+저장 경로는 **프롬프트의 `OUT=` 값이 있으면 그것**, 없으면 기본 `docs/sj-company/.state/dev/security.md`.
+
+- `MODE=implement` → 항상 기본 경로(`security.md`). 이것이 이 사이클의 Result Card다.
+- `MODE=review` → Tech Lead가 `OUT=docs/sj-company/.state/dev/_review-security[-{LENS}].md`를 지정한다. **기본 경로에 쓰지 않는다** — 같은 사이클의 구현자 Result Card를 덮어써 변경 파일 목록이 소실되고, 병렬 3렌즈끼리도 서로를 지운다.
+- `_` 프리픽스 파일은 Result Card가 아니라 리뷰 산출이다. 참여 역할 집계·Result Card 순회에서 제외된다.
+
+Result Card 형식:
 
 ```markdown
 # Security Output — {태스크 요약}
@@ -123,6 +134,9 @@ mkdir -p docs/sj-company/.state/dev
 ### MEDIUM / LOW — 후속 작업
 
 ## 판정: PASS | FAIL
+
+## 알려진 제약 / 후속 작업
+- {요구사항을 막는 미해결 항목 — 없으면 `없음`}
 ```
 
 완료 후 팀 채널(`docs/sj-company/.state/dev/_channel.md`)에 결과 요약을 append한다.

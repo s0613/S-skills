@@ -1,6 +1,6 @@
 ---
 name: harness
-version: 2.4.2
+version: 2.5.0
 description: |
   S-skills 하네스. 프로젝트 상태를 감지하고 docs-organize, test-scenario, pw-loop 스킬을
   오케스트레이션한다. /s-skills 하나로 지금 무엇이 필요한지 판단해 적절한 스킬을 호출.
@@ -57,13 +57,14 @@ if [ -d "docs/test-scenarios" ]; then
   _TS_THRESHOLD="${_TS_THRESHOLD_RAW:-80}"
   case "$_TS_THRESHOLD" in ''|*[!0-9]*) _TS_THRESHOLD=80 ;; esac
 
-  # 시나리오 파일 수
-  _SCENARIO_COUNT=$(find "docs/test-scenarios/" -maxdepth 1 -name "*.md" ! -name "README.md" 2>/dev/null | wc -l | tr -d ' ')
+  # 시나리오는 단일 고정 파일 docs/test-scenarios/scenarios/scenarios.md (test-scenario v2 계약)
+  _SCENARIO_COUNT=$(find "docs/test-scenarios/scenarios" -maxdepth 1 -name "scenarios.md" 2>/dev/null | wc -l | tr -d ' ')
 
   # 현재 사이클 보고서 카운트
   if [ "$_TS_CYCLE" -gt 0 ]; then
     _TOTAL=$(find "docs/test-scenarios/reports/" -maxdepth 1 -name "*-c${_TS_CYCLE}-*.md" 2>/dev/null | wc -l | tr -d ' ')
-    _PASS=$(grep -rl "판정: PASS" "docs/test-scenarios/reports/" 2>/dev/null | grep -c -- "-c${_TS_CYCLE}-" || echo 0)
+    _PASS=$(grep -rl "판정: PASS" "docs/test-scenarios/reports/" 2>/dev/null | grep -c -- "-c${_TS_CYCLE}-" | tr -d '[:space:]')
+    case "$_PASS" in ''|*[!0-9]*) _PASS=0 ;; esac
   else
     _TOTAL=0
     _PASS=0
@@ -86,31 +87,34 @@ if [ -d "docs/test-scenarios" ]; then
   fi
 fi
 
-# ── pw-loop 상태 ──
-_PW_CYCLE="0"
-_PW_RATE="0"
+# ── pw-loop 상태 (pw-loop v2 계약: 기능·시나리오 단위. 사이클/통과율 파일 없음) ──
+_PW_STATE="docs/pw-loop/.state"
+_PW_FEATURE=""
+_PW_FEATURE_NUM="0"
+_PW_SCENARIO_IDX="0"
+_PW_SCENARIO_STATUS="none"
+_PW_QUEUE_COUNT="0"
 _PW_STATUS="NOT_STARTED"
-_PW_THRESHOLD="80"
 
 if [ -d "docs/pw-loop" ]; then
-  _PW_CYCLE_RAW=$(cat "docs/pw-loop/.state/cycle.txt" 2>/dev/null)
-  _PW_CYCLE="${_PW_CYCLE_RAW:-0}"
-  case "$_PW_CYCLE" in ''|*[!0-9]*) _PW_CYCLE=0 ;; esac
+  _PW_FEATURE=$(cat "$_PW_STATE/current-feature.txt" 2>/dev/null | tr -d '\n')
 
-  _PW_THRESHOLD_RAW=$(cat "docs/pw-loop/.state/threshold.txt" 2>/dev/null)
-  _PW_THRESHOLD="${_PW_THRESHOLD_RAW:-80}"
-  case "$_PW_THRESHOLD" in ''|*[!0-9]*) _PW_THRESHOLD=80 ;; esac
+  _PW_FEATURE_NUM=$(cat "$_PW_STATE/feature-num.txt" 2>/dev/null | tr -d '[:space:]')
+  case "$_PW_FEATURE_NUM" in ''|*[!0-9]*) _PW_FEATURE_NUM=0 ;; esac
 
-  if [ "$_PW_CYCLE" -gt 0 ]; then
-    _PW_RATE_RAW=$(python3 -c "import json; d=json.load(open('docs/pw-loop/reports/cycle-${_PW_CYCLE}-summary.json')); print(d.get('rate',0))" 2>/dev/null || echo 0)
-    _PW_RATE="${_PW_RATE_RAW:-0}"
-    case "$_PW_RATE" in ''|*[!0-9]*) _PW_RATE=0 ;; esac
+  _PW_SCENARIO_IDX=$(cat "$_PW_STATE/scenario-index.txt" 2>/dev/null | tr -d '[:space:]')
+  case "$_PW_SCENARIO_IDX" in ''|*[!0-9]*) _PW_SCENARIO_IDX=0 ;; esac
 
-    if [ "$_PW_RATE" -ge "$_PW_THRESHOLD" ]; then
-      _PW_STATUS="COMPLETE"
-    else
-      _PW_STATUS="IN_PROGRESS"
-    fi
+  _PW_SCENARIO_STATUS=$(cat "$_PW_STATE/scenario-status.txt" 2>/dev/null | tr -d '[:space:]')
+  _PW_SCENARIO_STATUS="${_PW_SCENARIO_STATUS:-none}"
+
+  _PW_QUEUE_COUNT=$(grep -c . "$_PW_STATE/feature-queue.txt" 2>/dev/null | tr -d '[:space:]')
+  case "$_PW_QUEUE_COUNT" in ''|*[!0-9]*) _PW_QUEUE_COUNT=0 ;; esac
+
+  if [ -n "$_PW_FEATURE" ] || [ "$_PW_QUEUE_COUNT" -gt 0 ]; then
+    _PW_STATUS="IN_PROGRESS"
+  elif [ "$_PW_FEATURE_NUM" -gt 0 ]; then
+    _PW_STATUS="COMPLETE"
   fi
 fi
 
@@ -146,9 +150,10 @@ echo "TS_CYCLE: $_TS_CYCLE"
 echo "TS_PASS_RATE: $_TS_PASS_RATE%"
 echo "TS_STATUS: $_TS_STATUS"
 echo "SCENARIO_COUNT: ${_SCENARIO_COUNT:-0}"
-echo "PW_CYCLE: $_PW_CYCLE"
-echo "PW_PASS_RATE: $_PW_RATE%"
 echo "PW_STATUS: $_PW_STATUS"
+echo "PW_FEATURE: ${_PW_FEATURE:-(없음)} (#${_PW_FEATURE_NUM})"
+echo "PW_SCENARIO: ${_PW_SCENARIO_IDX} / ${_PW_SCENARIO_STATUS}"
+echo "PW_QUEUE_COUNT: $_PW_QUEUE_COUNT"
 echo "SJ_STAGE: $_SJ_STAGE"
 echo "SJ_TASK: ${_SJ_TASK:-없음}"
 echo "AGENT_MODE: $_AGENT_MODE"
@@ -163,8 +168,9 @@ _SS_LOCAL_VER="${_SS_LOCAL_VER:-unknown}"
 
 _SS_REMOTE_VER=$(timeout 3 git ls-remote --tags \
   https://github.com/s0613/S-skills.git 2>/dev/null \
-  | grep -oE 'refs/tags/[0-9]+\.[0-9]+\.[0-9]+$' \
+  | grep -oE 'refs/tags/v?[0-9]+\.[0-9]+\.[0-9]+(\^\{\})?$' \
   | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' \
+  | sort -u \
   | sort -t. -k1,1n -k2,2n -k3,3n | tail -1 || true)
 
 echo "S_SKILLS_VERSION: ${_SS_LOCAL_VER}"
@@ -256,13 +262,14 @@ echo "" > docs/sj-company/.state/task.txt
 
 ### Case 6: pw-loop 진행 중 (`PW_STATUS=IN_PROGRESS`)
 
-Case 5 다음에 확인. pw-loop 사이클이 진행 중(목표 미달)이면 처리.
+Case 5 다음에 확인. 진행 중인 기능이 있거나 대기열이 남아 있으면 처리.
 
 AskUserQuestion:
 
 ```
-pw-loop Cycle {PW_CYCLE} 진행 중입니다.
-현재 통과율: {PW_RATE}% / 목표: {PW_THRESHOLD}%
+pw-loop 진행 중입니다.
+기능 #{PW_FEATURE_NUM}: {PW_FEATURE}
+시나리오 {PW_SCENARIO_IDX} ({PW_SCENARIO_STATUS}) / 대기열 {PW_QUEUE_COUNT}개
 ```
 
 옵션:
@@ -343,7 +350,7 @@ echo "threshold" > docs/test-scenarios/.state/pending-mode.txt
 테스트 완료.
 - 문서 점수: {DOC_SCORE}/100
 - 테스트 통과율: {TS_PASS_RATE}% (test-scenario, {TS_CYCLE}사이클)
-- Playwright 통과율: {PW_RATE}% (pw-loop, {PW_CYCLE}사이클)
+- Playwright: {PW_STATUS} (pw-loop, 기능 {PW_FEATURE_NUM}개 완료 / 대기열 {PW_QUEUE_COUNT}개)
 ```
 
 AskUserQuestion:
@@ -403,7 +410,7 @@ S-skills 상태 요약
 ──────────────────
 문서        : {HAS_DOCS}  (점수: {DOC_SCORE}/100)
 test-scenario: {TS_STATUS} (사이클: {TS_CYCLE}, 통과율: {TS_PASS_RATE}%)
-pw-loop     : {PW_STATUS} (사이클: {PW_CYCLE}, 통과율: {PW_RATE}%)
+pw-loop     : {PW_STATUS} (기능: {PW_FEATURE}, 시나리오: {PW_SCENARIO_IDX}, 대기열: {PW_QUEUE_COUNT})
 SJ Company  : {SJ_STAGE}  (태스크: {SJ_TASK})
 에이전트    : {AGENT_MODE} (에이전트 {AGENT_COUNT}개 / 로컬 스킬 {LOCAL_SKILL_COUNT}개)
 다음 추천   : {다음 액션 한 줄}

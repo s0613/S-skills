@@ -1,6 +1,6 @@
 ---
 name: sj-qa
-version: 2.4.0
+version: 2.5.0
 description: |
   QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.
   dev-summary.md(구현자 자기 평가) 참조 금지 — Judge 독립성 원칙.
@@ -39,6 +39,18 @@ triggers:
 2. **Simplicity First** — 요청된 것 이상 추가하지 않는다. 더 단순한 방법이 있으면 말한다.
 3. **Surgical Changes** — 꼭 필요한 것만 건드린다. 변경된 모든 줄은 요청으로 추적 가능해야 한다.
 4. **Goal-Driven Execution** — 성공 기준을 정의하고 검증될 때까지 루프한다.
+
+## Step 0: 모드 분기 (최우선)
+
+Step 1로 내려가기 **전에** 판단한다:
+
+| 조건 | 진입 |
+|------|------|
+| 트리거 `/canary`, 또는 "배포 후 확인·프로덕션 체크·배포 모니터링·잘 올라갔어" | → **[Canary 모드](#canary-모드-canary)** (Step 1~9 건너뜀) |
+| 트리거 `/benchmark`, 또는 "성능 측정·벤치마크·Core Web Vitals·lighthouse·로드 타임" | → **[Benchmark 모드](#benchmark-모드-benchmark)** (Step 1~9 건너뜀) |
+| 그 외 (sj-company 파이프라인 호출 포함) | → Step 1부터 정상 진행 |
+
+Canary·Benchmark는 **배포된 프로덕션을 관찰**하는 모드다. 구현 검증 파이프라인(Step 1~9)을 먼저 타면 존재하지 않는 pm-brief를 찾다 헛돈다.
 
 ## Step 1: 프로젝트 뇌(Brain) 로드
 
@@ -101,7 +113,10 @@ echo "=== 최근 변경 파일 (직접 탐색) ==="
 git diff --name-only HEAD~1 HEAD 2>/dev/null | grep -vE '\.md$' | head -20
 # Result Card는 참조용으로만 (판정 근거로 쓰지 않음)
 for f in docs/sj-company/.state/dev/*.md; do
-  [ -f "$f" ] && [[ "$f" != *"_channel"* ]] && echo "=== Result Card: $(basename $f) ===" && grep "^## 변경 파일" -A 10 "$f"
+  # `_` 프리픽스는 팀 채널·리뷰 산출 — Result Card 아님
+  [ -f "$f" ] || continue
+  case "$(basename "$f")" in _*) continue ;; esac
+  echo "=== Result Card: $(basename "$f") ===" && grep "^## 변경 파일" -A 10 "$f"
 done
 ```
 
@@ -229,24 +244,28 @@ done
 ### Canary Step 3: 콘솔 에러 체크 (Playwright 있을 때)
 
 ```bash
-if [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; then
-  echo "Playwright 감지됨 — 브라우저 에러 체크 가능"
-  # 설치된 환경에서 실행
-  cat > /tmp/canary-check.ts << 'EOF'
+if { [ -f "playwright.config.ts" ] || [ -f "playwright.config.js" ]; } && [ -n "$PROD_URL" ]; then
+  # 프로젝트 루트에 .mjs로 쓴다 — node_modules 해석과 top-level await 둘 다 필요
+  cat > .canary-check.mjs << 'EOF'
 import { chromium } from '@playwright/test';
 const browser = await chromium.launch();
 const page = await browser.newPage();
 const errors = [];
-page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
-page.on('pageerror', err => errors.push(err.message));
-await page.goto(process.env.PROD_URL || '');
-await page.waitForTimeout(3000);
-console.log(JSON.stringify({ errors, url: page.url() }));
+page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+page.on('pageerror', e => errors.push(e.message));
+await page.goto(process.env.PROD_URL, { waitUntil: 'networkidle', timeout: 30000 });
+console.log(JSON.stringify({ url: page.url(), errors }, null, 2));
 await browser.close();
 EOF
-  npx ts-node /tmp/canary-check.ts 2>/dev/null | head -20 || echo "Playwright 실행 스킵"
+  PROD_URL="$PROD_URL" node .canary-check.mjs 2>&1 | head -20 \
+    || echo "미수행: Playwright 콘솔 체크 실행 실패 (위 출력 참조)"
+  rm -f .canary-check.mjs
+else
+  echo "미수행: Playwright 콘솔 체크 (playwright.config 없음 또는 PROD_URL 미확인)"
 fi
 ```
+
+> 실행하지 못했으면 Step 4 보고에 그 `미수행:` 줄을 그대로 옮긴다 — 콘솔 에러 0건과 "체크 안 함"은 다르다([정직 산출 계약](../_conventions/honest-report.md) 커널 ②).
 
 ### Canary Step 4: 결과 보고
 

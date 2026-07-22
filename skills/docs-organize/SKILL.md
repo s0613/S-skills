@@ -1,6 +1,6 @@
 ---
 name: docs-organize
-version: 1.1.1
+version: 1.2.0
 description: |
   Analyzes a project codebase, interviews the user for missing context, and
   generates a standardized docs/ structure: prd.md, architecture.md,
@@ -383,12 +383,20 @@ docs-organize complete.
    [List any dimension that scored 0 with a one-line reason, or "none" if all scored]
 ```
 
-### Phase 7: SJ Company 투입
+### Phase 7: 다음 단계 제안 (사람 게이트)
 
-Final Report 출력 직후, 자동으로 sj-company를 투입한다:
+Final Report 출력 직후, **자동 투입하지 않는다.** "문서만 정리해줘"라는 요청이 매번 전체 개발 파이프라인 기동으로 이어지면 안 되고, harness가 이 스킬을 호출한 경우엔 harness로 돌아가야 라우팅이 이어진다.
+
+AskUserQuestion으로 묻는다:
 
 ```
-SJ Company를 투입합니다...
+질문: "문서 정리가 끝났습니다. 다음은?"
+옵션:
+  A. 여기서 종료 — 문서만 필요했음 (추천)
+  B. 낮은 점수 항목 치유 — remediate 모드로 목표 점수까지
+  C. 개발 진행 — sj-company 투입
 ```
 
-`Skill("s-skills:sj-company")` 호출.
+- A → 종료. **harness가 호출한 경우엔 A와 무관하게 harness로 복귀**하고 harness가 다음 액션을 판단한다.
+- B → REMEDIATE.md 흐름 진입.
+- C → `Skill("s-skills:sj-company")` 호출.

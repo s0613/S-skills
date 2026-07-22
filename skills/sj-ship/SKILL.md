@@ -1,6 +1,6 @@
 ---
 name: sj-ship
-version: 1.1.0
+version: 1.2.0
 description: |
   릴리즈 엔지니어 자동화 에이전트. 테스트 → 커버리지 감사 → PR 오픈까지 한 번에.
   "배포해줘", "PR 올려줘", "릴리즈", "ship", "머지해줘" 요청에 반응.
@@ -8,6 +8,8 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
+  - Skill
   - AskUserQuestion
 triggers:
   - /sj-ship
@@ -148,11 +150,11 @@ fi
 ```
 ⚠️ 커버리지 {N}% — 목표 {PW_TARGET}% 미달. PR 생성을 차단합니다.
 [중단] 커버리지를 높인 뒤 다시 실행 (권장)
-[예외 승인] 사유 입력 시 이번 1회 진행 — 사유는 PR 본문·ship 로그에 기록
+[예외 승인] 사유 입력 시 이번 1회 진행 — 사유는 PR 본문과 ship 로그에 기록
 ```
 
 - **중단** 선택 → Step 4(PR 생성)로 진행하지 않고 종료한다.
-- **예외 승인** 선택 → 사유를 입력받아 PR 본문 `## ⚠️ 커버리지 예외` 섹션과 ship 로그에 기록한 뒤에만 Step 4로 진행한다.
+- **예외 승인** 선택 → 사유를 입력받아 PR 본문 `## ⚠️ 커버리지 예외` 섹션과 **ship 로그**(`docs/sj-company/ship-log.md` — 없으면 생성, `- {날짜} [{브랜치}] 커버리지 {N}% 예외 승인: {사유}` 한 줄 append)에 기록한 뒤에만 Step 4로 진행한다.
 
 ---
 
@@ -253,25 +255,17 @@ PR: {PR URL}
 
 다음 단계:
 - 코드 리뷰 후 merge
-- merge 후 /sj-canary로 배포 모니터링
+- merge 후 `/canary`로 배포 모니터링 (sj-qa Canary 모드)
 ```
 
 > **컨벤션:** [보고서 옵시디언 정리](../_conventions/obsidian-output.md) — 볼트가 있으면 릴리즈 보고(PR 본문의 배경·의도·읽기 순서 + PR URL·커버리지)를 `{볼트}/40_프로젝트/{프로젝트}/보고서/{YYYY-MM-DD} 릴리즈.md`로 저장한다 (PII 마스킹, 같은 날 중복 시 ` -2`). 볼트 없으면 완료 보고에 `미수행: 옵시디언 볼트 없음` 한 줄 — 비차단.
 
 ---
 
-## 배포 후 빠른 체크 (`/sj-ship canary`)
+## 배포 후 확인은 sj-qa Canary 모드로
 
-"canary" 키워드 감지 시:
-1. 프로덕션 URL 확인 (PROJECT.md 또는 입력)
-2. 주요 엔드포인트 상태 코드 확인:
-```bash
-curl -s -o /dev/null -w "%{http_code}" {PROD_URL} 2>/dev/null
-curl -s -o /dev/null -w "%{http_code}" {PROD_URL}/api/health 2>/dev/null
+`/sj-ship canary`는 제공하지 않는다. 배포 후 상태 확인은 **sj-qa의 Canary 모드**(`/canary`)가 단일 창구다 — 상태 코드·콘솔 에러·미수행 보고까지 한 곳에서 처리한다. 여기서 축약판을 따로 돌리면 두 경로의 판정이 갈린다.
+
 ```
-3. 결과 보고:
-```
-✅ 프로덕션 상태 정상
-/ → 200
-/api/health → 200
+Skill("s-skills:sj-qa")   # 트리거: /canary
 ```

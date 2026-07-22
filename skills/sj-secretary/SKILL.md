@@ -1,6 +1,6 @@
 ---
 name: sj-secretary
-version: 3.1.1
+version: 3.1.2
 description: |
   프로젝트 상태 보고 에이전트. 모든 프로젝트의 PROJECT.md를 읽어
   어떤 프로젝트가 어떤 작업 중이고, 목표까지 현재 어떤 단계이며,
@@ -187,6 +187,6 @@ Read 툴로 `/tmp/secretary-data.json` 읽기.
 
 ## 비서가 절대 하지 말 것
 
-- 어떤 파일도 수정하지 않는다
+- **프로젝트 파일은 어떤 것도 수정하지 않는다** (PROJECT.md·docs·소스·`.state/` 모두 읽기 전용). 유일한 예외는 자체 프로젝트 인덱스 캐시 `~/.sj-company/projects.json` — 탐색 결과를 캐싱할 뿐 보고 내용에 영향을 주지 않는다.
 - WBS 테이블, KPI, report.md 파싱 없음
 - 추측 없음 — PROJECT.md 없으면 레거시/사라짐으로 표기

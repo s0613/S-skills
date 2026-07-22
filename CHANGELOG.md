@@ -4,6 +4,75 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [3.13.0] - 2026-07-22
+
+전체 스킬 리뷰(2026-07-22, 61건 발견)의 HIGH 14건 + 주요 MEDIUM을 수정. 진단된 공통 원인은 **층간 drift** — 스킬 본문은 진화했는데 그것을 참조하는 주변부(라우터 키워드, 상태 파일 경로, frontmatter, 가드 스크립트)가 따라가지 못한 것. 이번 릴리즈는 그 drift를 메우고, 같은 drift가 다시 생기지 않도록 가드를 넓혔다.
+
+### Fixed — 파이프라인 계약
+- **sj-tech-lead** v2.9.0 — 7a-1 적대 검증 3렌즈가 모두 `.state/dev/security.md`에 써서 서로를 덮어쓰고, security가 구현자로도 참여한 사이클이면 Result Card(변경 파일 목록)까지 소실되던 문제. 리뷰 산출을 `_review-security[-{lens}].md`로 분리하고, `.state/dev/`의 `_` 프리픽스 파일은 Result Card가 아니라는 규약을 명문화(Result Card 순회·참여 역할 집계·재진입 스킵·sj-qa 참조 모두 반영).
+- **sj-company** v3.9.1 — Large·xLarge 경로가 `task.txt`를 갱신하지 않아 직전 Medium 사이클의 `[HINT:]`·`[SPEC:]`가 이번 Dispatch Card에 주입되던 문제. 두 경로 모두 태스크 시작 시 갱신 단계 추가.
+- **work-card-protocol.md** — dev-summary 소비자로 sj-qa를 명시해 Judge 독립성 컨벤션과 모순되던 표 수정 + `_` 프리픽스 규약·리뷰 산출 파일 등재.
+
+### Fixed — harness 상태 감지
+- **harness** v2.5.0 — (1) pw-loop 상태를 존재하지 않는 `cycle.txt`에서 읽어 항상 `NOT_STARTED`이던 문제를 pw-loop v2 계약(기능·시나리오 단위)으로 재배선. (2) 원격 태그 regex가 `v` 프리픽스 태그(실제 전부)를 못 잡아 업그레이드 감지가 죽어 있던 문제 수정 — 실측 검증. (3) 시나리오 카운트가 `maxdepth 1`을 봐서 `GENERATED` 상태에 도달 불가하던 문제를 `scenarios/scenarios.md` 단일 파일 계약으로 수정. (4) `grep -c … || echo 0` 이중 출력 제거.
+- **skills/VERSION** — 3.3.1에 정체돼 설치 버전을 오보고하던 파일을 릴리즈 범프 대상으로 편입.
+
+### Fixed — 라우팅
+- **RESOLVER** — (1) sj-loop(#22) 트리거가 상위 PC 자동화(#3)에 항상 선점돼 도달 불가하던 문제: #3에 루프 제외 조건 + 두 행의 구분 기준(일회성 스크립트 vs 판단하며 반복하는 루프) 명시. (2) #13 Canary의 "상태 확인"이 과광범해 "프로젝트 상태 확인"이 프로덕션 모니터링으로 가던 문제: 배포·프로덕션 맥락 한정으로 축소하고 #18(비서)에 이관.
+- **sj-marketing** v1.2.1 — frontmatter가 폐기된 totaro-seo로 라우팅을 선언해 본문·RESOLVER와 어긋나던 문제 수정.
+
+### Fixed — 계약 충돌·도구 선언
+- **sj-design** v3.5.0 — (1) 거부 프로토콜 REJ-2가 다크 방향을 강제해 "라이트 고정" 프로필과 정면 충돌하던 문제: 대비를 라이트 안에서 만들도록 수정. (2) preserve 모드가 판별만 하고 실행 경로가 없어 무조건 타 브랜드 DNA 3종 시안(C12 덧씌우기 금지 위반)으로 흐르던 문제: 공식 API 내 최소 변경 3안 경로 추가. (3) 신규 요청 "새로 디자인해줘"가 거부로 오인돼 `design-banned.md`를 오염시키던 문제: 선행 시안 존재를 전제 조건으로 명시.
+- **sj-seo** v1.1.0 — allowed-tools에 브라우저 계열이 없어 "브라우저 열고 클릭·제출"이 도구 계약상 실행 불가하던 문제: 선언 보강 + MCP 도구 런타임 로드(ToolSearch) 절차 명시, 실패 시 수동 절차 전환.
+- **obsidian-writer** v1.1.0 — 하네스 정본 볼트(`$OBSIDIAN_VAULT_DIR`)를 탐지 후보에 넣지 않아 읽기(obsidian-context)와 쓰기가 다른 볼트를 향하던 순환 단절 수정.
+- **docs-organize** v1.2.0 — Phase 7이 승인 없이 sj-company를 자동 투입해 "문서만 정리해줘"가 매번 전체 파이프라인을 기동하고 harness 귀환과 충돌하던 문제: 사람 게이트(종료/치유/개발 3지 선택)로 전환.
+
+### Fixed — 정직성·안전
+- **sj-cso** v1.2.0 — 보고서에 `## 미수행 검사` 슬롯이 없어 스킵이 통과처럼 읽히던 문제(정직 산출 계약 커널 ② 미배선) 수정.
+- **sj-qa** v2.5.0 — (1) canary/benchmark 모드에 최우선 진입 게이트가 없어 Step 1~9를 먼저 탈 위험 제거. (2) Canary Step 3 콘솔 체크가 env 미전달·모듈 해석·top-level await 3중 문제로 죽은 코드이던 것을 실행 가능하게 수정하고 미수행 보고 경로 추가.
+- **sj-investigate** v1.1.1 — 커밋되는 영속 파일 `investigate-log.md`에 PII 마스킹이 미배선이라 토큰이 git 이력에 영구 잔류할 수 있던 문제 수정.
+- **untrusted-content 배선** — README가 선언한 5개 중 실제 참조는 2개뿐이던 공백을 메움: test-scenario(외부 `[결과]` 블록 파싱), pw-loop(DOM·콘솔), sj-marketing(레퍼런스 수집), sj-tech-lead 7a-1-gpt(GPT 응답은 1표와 결함 목록만, 결함은 저장소에서 실재 확인 후 기록).
+- **friction-log** — redact()가 `private_key`·`Bearer` 토큰을 놓치던 패턴 보강.
+
+### Fixed — 문구·구조
+- **sj-secretary** v3.1.2 — "어떤 파일도 수정하지 않는다" 오버클레임 정정(자체 인덱스 캐시는 예외로 명시).
+- **sj-ship** v1.2.0 — 존재하지 않는 `/sj-canary` 안내를 `/canary`로 정정, 정의되지 않던 "ship 로그" 실체 지정(`ship-log.md`), sj-qa canary와 중복인 도달 불가 canary 섹션 제거.
+- **sj-spec** v1.1.0 — 6문항을 AskUserQuestion 1회로 받게 해 도구 한도(4문항)상 실행 불가하던 절차를 평문 제시 + 필요 시 4문항 확인으로 수정.
+- **sj-automation** v2.0.1 — `uname -s`로 Windows를 감지하려던 오류를 `platform.system()` 우선으로 수정.
+- **sj-retro** v1.4.1 — Step 5b가 `loops/*-state.md`(루프 런타임 상태)를 "과거 통과 시나리오"로 착각하던 경로 수정.
+
+### Fixed — 중복·블로트 (LOW)
+- **sj-dev-si 이중 관리 해소** — `skills/sj-dev-si/SKILL.md`와 `agents/sj-dev-si.md`가 각각 850줄짜리 문서 템플릿 사본을 들고 있었고, 2026-05-21의 두 갈래 커밋이 한쪽에만 적용되며 같은 문서 유형의 스키마가 갈렸다(`a5da54a`는 agent에만 → requirements 필드 확장·demo 핀 어노테이션·SLA, `9a94a02`+`3f9baf2`는 skill에만 → 결과보고서 재구성·내부 경로 노출 방지, `f91b9cf`는 skill에만 → 견적서). 커밋 출처대로 통합해 `skills/sj-dev-si/references/document-templates.md` 단일 사실로 추출하고 양쪽이 참조하도록 변경. 함께 어긋나 있던 Self-Review 체크리스트도 같은 파일로 통합 — 템플릿과 체크리스트는 같이 움직이는 지식이다. 두 파일 합계 2110줄 → 283줄.
+- **sj-automation 인라인 템플릿 추출** — Step 3의 OS별 구현 템플릿 459줄을 `references/templates-{script,ui,native-app}.md`로 분리하고 카테고리별 라우터만 남김(745줄 → 298줄). Swift 5.6에서 제거된 `swift package generate-xcodeproj` 정정.
+- **Result Card 헤더 스키마 이원화** — 명세(`# {role} Result —`, `## 미해결 이슈`)와 실제 에이전트 7종이 쓰는 형식(`# {Role} Output —`, `## 알려진 제약 / 후속 작업`)이 달라, Tech Lead 재디스패치 판단이 존재하지 않는 섹션을 찾고 있었다. 명세를 실물에 맞추고, 그 섹션이 없던 4개 에이전트(data·database·security·si)에 추가해 계약을 실재하게 만듦.
+- **sj-dev-security 리뷰어 모드 독립성** — 리뷰 대상 로드가 `security.md`만 제외해, 새로 분리된 `_review-security-{lens}.md`를 읽으면 7a-1 3렌즈가 서로의 결론을 보게 되는 앵커링 위험. `_` 프리픽스 전체 제외로 수정.
+- **sj-design `/review` 트리거 충돌** — 범용 `/review`(GitHub PR 리뷰)와 이름이 겹쳐 디자인 리뷰 의도가 빨려가던 것을 `/design-review`로 변경.
+- **sj-retro 회고 창 계산** — (1) `HEAD~7`은 "커밋 7개 전"이지 "7일 전"이 아니라 회고 기간과 어긋나던 것을 기간 경계 커밋 기준으로 수정. (2) `git --since`가 시각 없는 날짜를 "그 날짜의 현재 시각"으로 해석해 경계일 오전 커밋이 통째로 누락되던 문제를 자정 고정으로 수정(실측 재현·검증). (3) 정의되지 않은 채 보고서 템플릿에만 있던 `{PW_TARGET}`을 PROJECT.md `pw_target`에서 읽도록 정의.
+- **sj-agent-dev** — 빈 `scripts/`·`assets/` 디렉토리 제거.
+- **CLAUDE.md** — sj-dev-si 설명 3곳에서 누락돼 있던 견적서·주간 보고서 보강.
+
+### Added
+- **scripts/skill-manifest.py** — `skills/VERSION` ↔ `package.json` 정합 검사 추가. 이번 리뷰에서 발견된 drift 중 가드 사각지대였던 항목부터 메움.
+- **.gitignore** — 루프 런타임 상태·디자인 드래프트·archive 백업을 무시 대상에 추가(그동안 untracked 방치).
+- **CHANGELOG** — 누락돼 있던 v3.12.0 항목을 릴리즈 커밋에서 복원.
+
+## [3.12.0] - 2026-07-15
+
+사람이 읽는 산출물의 품질을 계약으로 만든 릴리즈. 완료 보고가 diff 나열이면 사람 게이트는 고무도장이 되고, 판정·회고가 `.state/`에만 남으면 다음 사이클이 그걸 못 읽는다.
+
+### Added
+- **literate-report 컨벤션** — 완료 보고·PR 본문은 배경(변경 전 동작)→의도(한 문장)→읽기 순서→세부 순으로 쓴다. sj-tech-lead Step 10·sj-ship PR 본문 배선.
+- **obsidian-output 컨벤션** — 사용자가 읽는 보고서형 산출물을 볼트 `40_프로젝트/{프로젝트}/보고서/`에 정리본으로 저장. 기존 프로젝트 폴더 매칭(영문↔한글 표기 차이 포함) 우선, 없으면 신규 생성. sj-tech-lead·sj-qa·sj-retro·sj-investigate·sj-cso·sj-ship 배선.
+- **sj-investigate Step 4b 이해 도구 옵션(마이크로월드)** — 상태 변화 추적형 문제·검증 반복 실패 시 사람이 직접 탐색할 일회용 도구 제작을 1회 제안.
+- **sj-design v3.4.0** — 볼트 취향 프로필을 실행 계약으로 필수 선행, 리뷰 모드에 프로필 §5 게이트.
+- **sj-retro v1.4.0 Step 4c** — 취향 프로필 신선도 점검(이번 주 디자인 거부/승인의 프로필 승격 후보 나열, 편집은 사람 게이트).
+
+### Changed
+- README에 옵시디언 배지 + "하네스 + 옵시디언(읽기/쓰기 순환)" 정체성 반영.
+- 버전: tech-lead 2.8.0 / qa 2.4.0 / retro 1.4.0 / ship·investigate·cso 1.1.0.
+
+> 이 항목은 v3.13.0 작업 중 누락이 확인되어 릴리즈 커밋(`6b34432`)에서 복원했다.
+
 ## [3.11.0] - 2026-06-20
 
 codex(GPT) 교차모델 리뷰로 하네스를 전수 점검하고, 발견을 Claude가 코드로 검증해 실재하는 파이프라인 계약 빈틈을 수정. 핵심 진단: 원칙은 문서에 있으나 **기계로 강제되지 않던** 지점들 — 완료조건 게이트·PII 마스킹·RUN_ID 추적·커버리지 차단이 산문 선언에 그쳤다. 산문이 아니라 가드가 계약을 지킨다.

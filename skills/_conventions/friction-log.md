@@ -57,7 +57,8 @@ rid = open(state).read().strip() if os.path.exists(state) else "standalone"
 
 def redact(s):  # PII 마스킹을 선언이 아니라 코드로 강제 (영속 write 직전 필수)
     s = re.sub(r'(?i)\bbearer\s+[A-Za-z0-9._\-]+', 'Bearer [REDACTED]', s)
-    s = re.sub(r'(?i)\b(password|passwd|secret|token|api[_-]?key|auth)\b(["\s:=]+)\S+', r'\1\2[REDACTED]', s)
+    s = re.sub(r'(?i)\b(password|passwd|secret|token|api[_-]?key|private[_-]?key|access[_-]?key|auth)\b(["\s:=]+)\S+', r'\1\2[REDACTED]', s)
+    s = re.sub(r'(?i)\bBearer\s+\S+', 'Bearer [REDACTED]', s)
     s = re.sub(r'\beyJ[A-Za-z0-9._\-]{10,}', '[JWT]', s)
     s = re.sub(r'[\w.+\-]+@[\w\-]+\.[\w.\-]+', '[EMAIL]', s)
     return s

@@ -83,6 +83,9 @@ mkdir -p docs/sj-company/.state/dev
 
 ## 롤백 절차
 1. ...
+
+## 알려진 제약 / 후속 작업
+- {요구사항을 막는 미해결 항목 — 없으면 `없음`}
 ```
 
 완료 후 팀 채널(`docs/sj-company/.state/dev/_channel.md`)에 결과 요약을 append한다.

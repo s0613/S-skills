@@ -22,3 +22,4 @@
 - **sj-seo** — 방문한 페이지·Search Console 화면에서 읽은 텍스트.
 - **pw-loop / test-scenario** — 테스트 대상 페이지가 출력한 콘솔·DOM 텍스트.
 - **sj-marketing** — 레퍼런스로 수집한 외부 글.
+- **sj-tech-lead 7a-1-gpt** — 교차모델(GPT) 리뷰 응답. PASS/FAIL 1표와 결함 목록만 취하고, 결함은 저장소에서 실재 확인 후에만 기록한다.

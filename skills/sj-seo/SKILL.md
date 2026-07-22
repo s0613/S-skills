@@ -1,6 +1,6 @@
 ---
 name: sj-seo
-version: 1.0.1
+version: 1.1.0
 description: |
   Google Search Console + Naver Search Advisor 색인 자동화 전문가.
   "색인 등록", "검색에 안 나와", "Search Console 등록", "네이버 색인",
@@ -10,7 +10,12 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
+  - Glob
+  - Grep
   - AskUserQuestion
+  - WebFetch
+  - ToolSearch
 triggers:
   - /sj-seo
   - /seo
@@ -121,6 +126,14 @@ claude mcp add playwright npx @playwright/mcp@latest --scope user
 설치 후 "Claude 세션 재시작 후 `/sj-seo` 다시 실행하세요" 안내.
 
 ### 도구 있을 때 — 즉시 브라우저 열기
+
+> **브라우저 도구는 MCP 경유로 런타임에 로드한다.** Playwright MCP가 설치돼 있어도 스킬 컨텍스트에는 스키마가 없다. Step 3~5B의 클릭·입력·제출 전에 먼저:
+>
+> ```
+> ToolSearch("playwright browser navigate click")
+> ```
+>
+> 로 `mcp__playwright__*` 스키마를 불러온 뒤 호출한다. 로드 실패 시 브라우저 자동 진행을 중단하고 수동 절차(URL·클릭 위치 안내)로 전환한다 — 실패를 은폐하지 않는다([정직 산출 계약](../_conventions/honest-report.md)).
 
 Google 선택 시 `https://search.google.com/search-console/` 자동 오픈.
 

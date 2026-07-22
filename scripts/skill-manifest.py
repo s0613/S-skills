@@ -197,6 +197,19 @@ def check(skills):
         except Exception as e:
             errors.append(f"[marketplace] .claude-plugin/marketplace.json 파싱 실패: {e}")
 
+    # 7. skills/VERSION ↔ package.json (harness가 설치 버전·업그레이드 안내에 읽는 파일)
+    version_file = os.path.join(SKILLS_DIR, "VERSION")
+    if pkg_ver:
+        if not os.path.isfile(version_file):
+            errors.append("[version-file] skills/VERSION 없음 — harness가 설치 버전을 unknown으로 보고함")
+        else:
+            with open(version_file, encoding="utf-8") as f:
+                file_ver = f.read().strip()
+            if file_ver != pkg_ver:
+                errors.append(
+                    f"[version-file-drift] skills/VERSION v{file_ver} != package.json v{pkg_ver} — 릴리즈 시 함께 범프"
+                )
+
     return errors
 
 

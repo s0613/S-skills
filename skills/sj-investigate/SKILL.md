@@ -1,6 +1,6 @@
 ---
 name: sj-investigate
-version: 1.1.0
+version: 1.1.1
 description: |
   체계적 루트코즈 디버깅 전문가. "고쳐줘" 전에 원인을 반드시 추적한다.
   버그, 에러, 예상과 다른 동작, "왜 이러지?" 요청에 반응.
@@ -215,6 +215,8 @@ grep -rn "{핵심_키워드}" \
 ```
 
 `docs/sj-company/investigate-log.md`에 append (다음 세션에서 같은 유형의 버그 빠르게 해결):
+
+append 전 [PII 마스킹](../_conventions/pii-masking.md): `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]`로 치환. investigate-log.md는 **git에 커밋되는 영속 파일**이라, 로그·스택트레이스·요청 덤프에서 딸려온 자격 증명이 한 번 들어가면 이력에서 지워지지 않는다 — 조사 과정에서 본 실제 토큰·비밀번호는 절대 원문으로 옮기지 않는다.
 
 ```bash
 echo "## {날짜} — {버그 제목}

@@ -170,8 +170,13 @@ Tech Lead           Database            Backend             Frontend
 | `.state/dev/{role}.md` | 각 Sub-agent | Tech Lead, 후속 Sub-agents | 사이클마다 덮어쓰기 |
 | `.state/dev/_channel.md` | Tech Lead(초기화) + Sub-agents(append) | 후속 Sub-agents, Tech Lead | Step 9에서 archive 후 삭제 |
 | `.state/dev/_channel.archive.md` | Tech Lead(Step 9) | 감사·디버깅 | 영속 보존 |
-| `.state/dev-summary.md` | Tech Lead | sj-qa, sj-company | 사이클마다 덮어쓰기 |
+| `.state/dev/_review-security[-{lens}].md` | sj-dev-security (MODE=review) | Tech Lead(Step 7a·7a-1) | 사이클마다 덮어쓰기 |
+| `.state/dev-summary.md` | Tech Lead | sj-company | 사이클마다 덮어쓰기 |
 | `.state/design-review.req` | Tech Lead | sj-design | 소비 후 삭제 |
 | `.state/design-review.md` | sj-design | Tech Lead | 사이클마다 덮어쓰기 |
 | `.state/review-iterations.txt` | Tech Lead | Tech Lead | Step 9에서 삭제 |
 | `dev-context.md` | Tech Lead | 모든 Sub-agents | 영속 누적 |
+
+> **`_` 프리픽스 규약**: `.state/dev/` 안에서 `_`로 시작하는 파일은 Result Card가 **아니다**(팀 채널·리뷰 산출). Result Card 순회·참여 역할 집계는 모두 이 프리픽스를 제외한다.
+>
+> **sj-qa는 `dev-summary.md`의 소비자가 아니다** — [Judge 독립성](../../_conventions/README.md) 원칙상 구현자의 자기 요약을 읽지 않고 `pm-brief.md` + 실제 변경 파일을 직접 탐색한다. Result Card는 참조용으로만 열람하며 판정 근거로 쓰지 않는다.

@@ -1,6 +1,6 @@
 ---
 name: sj-retro
-version: 1.4.0
+version: 1.5.0
 description: |
   주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·프로세스 마찰·성장 기회를 분석한다.
   "회고", "retro", "이번 주 정리", "retrospective", "지난주 리뷰" 요청에 반응.
@@ -25,8 +25,10 @@ triggers:
 
 ```bash
 # 기본값: 지난 7일
-SINCE=$(date -v-7d +%Y-%m-%d 2>/dev/null || date -d "7 days ago" +%Y-%m-%d 2>/dev/null || echo "1 week ago")
-UNTIL=$(date +%Y-%m-%d)
+# 시각을 붙여 자정으로 고정한다 — git의 approxidate는 시각 없는 날짜를 "그 날짜의 현재 시각"으로
+# 해석해, 경계일 오전 커밋이 통째로 누락된다(오후에 회고를 돌리면 최대 하루가 잘려나감).
+SINCE="$(date -v-7d +%Y-%m-%d 2>/dev/null || date -d '7 days ago' +%Y-%m-%d 2>/dev/null || echo '1 week ago') 00:00:00"
+UNTIL="$(date +%Y-%m-%d) 23:59:59"
 echo "회고 범위: $SINCE ~ $UNTIL"
 
 # 기본: 현재 프로젝트(cwd)만 — 프라이버시·성능을 위해 홈 전체를 뒤지지 않는다
@@ -65,11 +67,18 @@ git log --format="%s" --since="$SINCE" --until="$UNTIL" 2>/dev/null | \
     print "other:", other+0
   }'
 
-# 변경된 파일 수
-git diff --name-only HEAD~7 HEAD 2>/dev/null | wc -l
+# 기간 경계 커밋 (HEAD~7은 "커밋 7개 전"이지 "7일 전"이 아니다 — 회고 창과 어긋난다)
+_BASE=$(git log --format=%H --since="$SINCE" --until="$UNTIL" 2>/dev/null | tail -1)
+_BASE_PARENT=$([ -n "$_BASE" ] && git rev-parse "${_BASE}^" 2>/dev/null || echo "")
 
-# 라인 변경
-git diff --stat HEAD~7 HEAD 2>/dev/null | tail -1
+if [ -n "$_BASE_PARENT" ]; then
+  # 변경된 파일 수
+  git diff --name-only "$_BASE_PARENT" HEAD 2>/dev/null | wc -l
+  # 라인 변경
+  git diff --stat "$_BASE_PARENT" HEAD 2>/dev/null | tail -1
+else
+  echo "미수행: 기간 내 커밋 없음 또는 최초 커밋 — 파일·라인 변경 집계 불가"
+fi
 ```
 
 ---
@@ -90,10 +99,17 @@ elif [ -f "go.mod" ]; then
   go test ./... 2>&1 | grep -E "ok|FAIL" | head -10
 fi
 
+# 커버리지 목표 — PROJECT.md의 pw_target, 없으면 80
+PW_TARGET=$(grep "^pw_target:" docs/sj-company/PROJECT.md 2>/dev/null | awk '{print $2}' | tr -d '[:space:]%')
+case "$PW_TARGET" in ''|*[!0-9]*) PW_TARGET=80 ;; esac
+echo "커버리지 목표: ${PW_TARGET}%"
+
 # 커버리지 트렌드 (이전 보고서 대비)
 [ -f "docs/sj-company/retro-history.md" ] && \
   grep "커버리지:" docs/sj-company/retro-history.md | tail -3
 ```
+
+커버리지 실측값을 얻지 못하면 보고서에 `커버리지: 미수행 — {이유}`로 적는다. 목표만 적고 실측을 비워 두면 달성 여부가 있는 것처럼 읽힌다.
 
 ---
 
@@ -219,7 +235,7 @@ Improve/Try 항목 중 **하네스 자체를 바꾸는 것**(스킬·프롬프�
   && { python3 scripts/skill-manifest.py --check && echo "manifest OK" || echo "manifest 회귀 — 채택 보류"; } \
   || echo "manifest 검사: 해당 없음 (이 프로젝트는 s-skills 레포가 아님)"
 [ -f package.json ] && npm test 2>&1 | tail -3
-ls docs/sj-company/loops/*-state.md 2>/dev/null | head -1   # 과거 통과 시나리오 존재 확인
+ls docs/test-scenarios/scenarios/scenarios.md 2>/dev/null   # 과거 통과 시나리오 존재 확인 (있으면 행동 회귀 재확인 가능)
 ```
 
 **한계 (over-claim 금지):** 이 회귀는 **구조·빌드 회귀**(매니페스트 정합·테스트 통과)만 잡는다. 프롬프트·문서를 바꾸는 하네스 변경이 *행동*을 어떻게 바꾸는지는 `npm test`로 안 잡힌다 — 그런 제안은 `test-scenario`로 동작을 재확인하거나, 잡히지 않는 회귀임을 명시하고 사람 검토로 넘긴다.

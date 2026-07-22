@@ -1,6 +1,6 @@
 ---
 name: obsidian-writer
-version: 1.0.1
+version: 1.1.0
 description: |
   Obsidian 문서 작성 전문가.
   기능, 작업, 프로젝트 전체에 대한 정보를 받아 Obsidian 볼트에
@@ -26,24 +26,30 @@ triggers:
 아래 명령으로 사용 가능한 볼트를 탐지한다.
 
 ```bash
+# 하네스 정본 볼트 (읽기 측 obsidian-context와 같은 경로 — 쓰기/읽기 순환의 기준)
+HARNESS_BASE="${OBSIDIAN_VAULT_DIR:-$HOME/obsidian-vaults/AI 에이전트}"
 ICLOUD_BASE="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents"
 LOCAL_BASE="$HOME/Documents/Obsidian Vault"
 
+HARNESS_OK=false
 ICLOUD_OK=false
 LOCAL_OK=false
 
+[ -d "$HARNESS_BASE" ] && HARNESS_OK=true
 [ -d "$ICLOUD_BASE" ] && ICLOUD_OK=true
 [ -d "$LOCAL_BASE" ] && LOCAL_OK=true
 
+echo "HARNESS=$HARNESS_OK"
+echo "HARNESS_PATH=$HARNESS_BASE"
 echo "ICLOUD=$ICLOUD_OK"
 echo "ICLOUD_PATH=$ICLOUD_BASE"
 echo "LOCAL=$LOCAL_OK"
 echo "LOCAL_PATH=$LOCAL_BASE"
 ```
 
+- **하네스 정본 볼트** (`$OBSIDIAN_VAULT_DIR`, 기본 `~/obsidian-vaults/AI 에이전트`): 하네스가 작업 전 읽는 장기 기억 볼트. **감지되면 기본 후보이자 추천 선택지**로 제시한다 — 읽기(obsidian-context)와 쓰기(여기)가 같은 볼트를 향해야 지식이 순환한다.
 - **iCloud 경로** (일반적): `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/`
   - 하위 볼트: `sj/` — 프로젝트·작업 기록 용도
-  - 하위 볼트: `AI 에이전트/` — AI 에이전트 지식베이스
 - **로컬 경로** (일반적): `~/Documents/Obsidian Vault/`
   - 하위 폴더: `Projects/` — 클로드맴 마이그레이션 기록
 
@@ -54,10 +60,12 @@ echo "LOCAL_PATH=$LOCAL_BASE"
 ```
 질문: "어느 볼트에 저장할까요?"
 옵션:
-  A. iCloud (sj/) — 모든 기기에서 접근 가능
-  B. 로컬 (Projects/) — 이 맥에서만 접근
-  C. 둘 다 — iCloud + 로컬 모두 저장
+  A. 하네스 볼트 (AI 에이전트) — 하네스가 다음 작업에서 읽는 곳 (추천)
+  B. iCloud (sj/) — 모든 기기에서 접근 가능
+  C. 로컬 (Projects/) — 이 맥에서만 접근
 ```
+
+`HARNESS=false`면 A를 빼고 묻는다. 탐지된 경로가 1개면 묻지 않고 그곳에 저장한다.
 
 선택 결과를 기억해 이 세션 내에서는 같은 문서 저장에 재사용한다.
 
