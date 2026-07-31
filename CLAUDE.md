@@ -19,6 +19,7 @@
 | **루프 엔지니어링** | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | **에이전트 개발** | `/agent-dev`, `/agent-review` | AI 에이전트 설계·심사 |
 | **GPT 자문** | `/gpt` | codex MCP로 GPT에 리서치·세컨드 오피니언·브레인스토밍 위임 |
+| **법령 조회** | `/law` | 법제처 DB에서 법령·판례 원문 조회 + 인용 조문 실존 검증 |
 | **외주 핸드오프** | `/outsource`, `/외주` | 막힌 작업 전문가 위임 리포트 생성 |
 | **비서** | `/secretary` | 프로젝트 상태 보고(목표 대비 단계·다음 할 일), 우선순위 정렬 |
 | **SI 문서** | `/sj-dev-si` | 제안서·WBS·결과보고서 6종 + 주간 보고서·견적서·도메인 맵 |
@@ -74,6 +75,10 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 ## GPT 자문
 
 - **s-skills:sj-gpt** (`/gpt`, `/ask-gpt`, `/chatgpt`) — GPT 자문 위임 전문가 v1.1.0. codex MCP(`codex mcp-server`)를 통해 GPT 모델에 리서치·세컨드 오피니언·브레인스토밍·대안적 추론을 위임하고 Claude 관점과 교차 종합한다. 미인식 개체(모르는 제품·버전·용어)·컷오프 이후 바뀌었을 수 있는 사실 확인도 위임 대상. `sandbox=read-only`·`approval-policy=never` 안전 기본값, 리서치 시 `tools.web_search` 활성화. GPT 답을 그대로 덤프하지 않고 두 모델의 합의/이견을 신호로 드러냄. 이미지 생성(DALL-E)·플러그인 브라우징은 미지원. 사전 등록: `claude mcp add codex --scope user -- codex mcp-server`.
+
+## 법령 조회
+
+- **s-skills:sj-law** (`/law`, `/sj-law`, `/법령`) — 한국 법령 조회 전문가 v1.0.0. [korean-law MCP](https://github.com/chrisryugj/korean-law-mcp)(법제처 42개 API → 10개 도구)로 법령·판례·행정규칙·자치법규·조약·해석례를 **원문으로** 조회한다. 기억으로 조문을 지어내지 않는 것이 존재 이유 — 산출물에 들어가는 인용은 내보내기 전 `legal_analysis(mode=verify_citations)` 환각 게이트를 통과시키고, `⚠ 법령명 불명확`(검증 미가동)을 통과로 읽지 않는다. 판례는 `cite_check`로 생사 확인, 조례는 `ordinance_radar`로 상위법 개정 대조. 인용 한도는 법령·판결 **원문에 미적용**(저작권법 제7조 비보호 대상) — 2차 저작물에만 적용. 사전 등록: `claude mcp add korean-law --scope user --env LAW_OC=<법제처 인증키> -- npx -y korean-law-mcp@latest` (키 무료 발급: open.law.go.kr). 법률 자문 아님 — 면책 문구 필수.
 
 ## 외주 핸드오프
 

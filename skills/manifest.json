@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "3.13.0",
+  "version": "3.14.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -133,6 +133,17 @@
       "triggers": [
         "/sj-investigate",
         "/investigate"
+      ]
+    },
+    {
+      "name": "sj-law",
+      "path": "skills/sj-law/SKILL.md",
+      "version": "1.0.0",
+      "description": "한국 법령 조회 전문가. korean-law MCP(법제처 Open API)를 통해 법령·판례·행정규칙·",
+      "triggers": [
+        "/law",
+        "/sj-law",
+        "/법령"
       ]
     },
     {
