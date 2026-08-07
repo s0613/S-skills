@@ -4,6 +4,21 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [4.0.0] - 2026-08-07
+
+**옵시디언 중심 하네스 전환** — 역할 스킬의 절차 정본을 SKILL.md에서 옵시디언 볼트로 옮긴 구조 전환(메이저). 지식·절차·경험이 볼트 한 곳에서 순환하고, 절차 수정은 재배포 없이 플레이북 편집으로 끝난다.
+
+### Changed — 플레이북 구조 (breaking)
+- **역할 스킬 13개를 얇은 디스패처로 전환** (sj-company v4.0.0 · sj-pm v3.0.0 · sj-design v4.0.0 · sj-tech-lead v3.0.0 · sj-qa v3.0.0 · sj-spec v2.0.0 · sj-investigate v2.0.0 · sj-cso v2.0.0 · sj-ship v2.0.0 · sj-retro v2.0.0 · sj-secretary v4.0.0 · sj-marketing v2.0.0 · sj-dev-si v2.0.0). SKILL.md 합계 약 4,600줄 → 약 700줄. 각 SKILL.md에는 플레이북 로드 커널 + 불변 산출물 계약 + 최소 계약 폴백(볼트 부재 시 비차단)만 남는다.
+- **절차 정본은 볼트 `20_실행/플레이북/{스킬}.md`** (13개 신설, 기존 절차 충실 이관). 역할→플레이북+지식 폴더 라우팅은 볼트 `00_SYSTEM/START-HERE.md` "하네스 역할 라우팅" 섹션이 정본.
+- **학습 환류 볼트 일원화** — `*-context.md`(pm/dev/qa/design) 신규 append 폐지(읽기만 허용). 인사이트는 볼트 `30_경험/검증된패턴|실패사례|ADR`(범용)·`40_프로젝트/{프로젝트}/`(프로젝트 한정)로. notability 게이트·`[run:RUN_ID]` 인용 형식·PII 마스킹 유지. tech-lead의 `~/.claude/skills/learned/` 신규 기록도 볼트 30_경험으로 통합(레거시는 폴백 읽기).
+- **컨벤션 개정**: context-curation(볼트 일원화), obsidian-context(플레이북 로드 규칙 + 플레이북은 신뢰된 절차 문서 예외 — 단 SKILL.md 불변 계약을 뒤집을 수 없음), pii-masking(적용 지점 갱신).
+- 불변: 파이프라인 계약(`.state/` 산출물 경로·형식, RUN_ID, Judge 독립성, 사람 게이트, archive-only), RESOLVER 라우팅 키워드, 도구 배선형 스킬 13개(law·gpt·seo·automation·loop·agent-* 등)는 기존 구조 유지.
+
+### Added — 자기개선 하네스 원칙 (Lilian Weng harness engineering 반영)
+- **self-harness 컨벤션 확장**: 약점의 단일 파일 귀속(AHE 구성 요소 관찰 가능성), 편집 기록 5필드(실패 증거·추정 원인·수정 대상·예상 개선·회귀 위험), **제안 원장**(볼트 `40_프로젝트/S-skills/하네스-제안-원장.md` — 기각 후보도 보존, 재제안 금지), **편집 금지 표면**(평가기·QA 판정 규칙·사람 게이트 문구는 루프 밖 — 보상 해킹 차단).
+- **sj-qa Fail-closed 게이트**: 실행 못 한 완료 조건 항목이 하나라도 있으면 PASS 불가 — `미수행: {이유}` 명시 후 CONDITIONAL 상한. 불완전한 검사가 전체 성공으로 보고되는 경로 차단.
+
 ## [3.14.0] - 2026-07-31
 
 ### Added — sj-law (한국 법령 조회)
