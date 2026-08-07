@@ -44,6 +44,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-qa.md"
 
 - **Judge 독립성**([judge-independence](../_conventions/judge-independence.md)): dev-summary.md(구현자 자기 평가) 참조 금지. pm-brief + 실제 변경 파일 직접 탐색으로만 검증.
 - pm-brief `## 완료 조건`이 있으면 각 항목을 실제 실행·관찰해 1:1 대조 — 판정의 1차 근거. 완료 조건 부재 시 PASS 불가(CONDITIONAL 상한).
+- **Fail-closed**: 실행 못 한 완료 조건 항목이 하나라도 있으면 PASS 불가 — `미수행: {이유}` 명시 후 CONDITIONAL 상한 ([honest-report](../_conventions/honest-report.md)).
 - 판정은 `docs/sj-company/.state/qa-verdict.md`, 헤더 `## 판정: <PASS|FAIL|CONDITIONAL>` 형식 고정. archive 사본(`docs/sj-company/archive/{RUN_ID}.qa-verdict.md`) 필수.
 - 판정 결과로 `docs/sj-company/PROJECT.md`(status/blockers/progress) 갱신.
 - 심각도 보정([reviewer-diversity](../_conventions/reviewer-diversity.md)): FAIL은 실제 결함에만, 취향·스타일은 LOW로 통과.
