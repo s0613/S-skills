@@ -16,7 +16,7 @@ S-skills의 모든 스킬에 적용되는 공통 규칙. **규칙 본문은 여�
 | [judge-independence.md](judge-independence.md) | 검증자는 구현자의 자기 평가를 읽지 않는다 | sj-qa |
 | [run-id.md](run-id.md) | 파이프라인 실행 식별자 생성·전파 계약 | sj-company, sj-tech-lead |
 | [friction-log.md](friction-log.md) | 스킬 실행 중 마찰·기쁨을 한 줄 기록 → sj-retro가 주간 소비 | sj-company·sj-pm·sj-tech-lead·sj-qa·sj-loop (기록), sj-retro (소비) |
-| [context-curation.md](context-curation.md) | *-context.md append는 notability 게이트 통과 항목만, 인용 형식으로 | sj-pm, sj-tech-lead, sj-qa, sj-design |
+| [context-curation.md](context-curation.md) | 학습 환류는 볼트 30_경험·40_프로젝트로 — notability 게이트 통과 항목만, 인용 형식으로 (레거시 *-context.md는 읽기만) | 역할 스킬 플레이북 전부 |
 | [minimal-code.md](minimal-code.md) | 코드 쓰기 전 안 써도 되는 길부터 — 게으름 사다리 6칸, 단순화는 `ponytail:` 표시 | sj-tech-lead, sj-dev-*, sj-company |
 | [self-harness.md](self-harness.md) | 하네스 변경은 마이닝된 약점→최소 제안→회귀 통과 시에만 채택 (채택은 사람 게이트) | sj-retro, sj-loop |
 | [reviewer-diversity.md](reviewer-diversity.md) | 리뷰어 다중화는 복제 말고 서로 다른 렌즈로 — AI는 보완재, 사소한 이슈로 차단 금지 | sj-tech-lead, sj-qa, sj-reviewer-* |

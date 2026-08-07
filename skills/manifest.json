@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "3.14.0",
+  "version": "4.0.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -78,8 +78,8 @@
     {
       "name": "sj-company",
       "path": "skills/sj-company/SKILL.md",
-      "version": "3.9.1",
-      "description": "SJ Company 하네스 v3. PROJECT.md 기반 컨텍스트 지속성.",
+      "version": "4.0.0",
+      "description": "SJ Company 하네스 v4 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-company.md).",
       "triggers": [
         "/sj-company"
       ]
@@ -87,8 +87,8 @@
     {
       "name": "sj-cso",
       "path": "skills/sj-cso/SKILL.md",
-      "version": "1.2.0",
-      "description": "CSO(Chief Security Officer) 역할 보안 감사 에이전트.",
+      "version": "2.0.0",
+      "description": "CSO(Chief Security Officer) 역할 보안 감사 에이전트 — 얇은 디스패처. 절차 정본은",
       "triggers": [
         "/sj-cso",
         "/cso"
@@ -97,8 +97,8 @@
     {
       "name": "sj-design",
       "path": "skills/sj-design/SKILL.md",
-      "version": "3.5.1",
-      "description": "Design 전문가. 웹페이지·컴포넌트 디자인을 레퍼런스 DNA 기반으로 생성한다.",
+      "version": "4.0.0",
+      "description": "Design 전문가 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-design.md).",
       "triggers": [
         "/design",
         "/design-shotgun",
@@ -108,8 +108,8 @@
     {
       "name": "sj-dev-si",
       "path": "skills/sj-dev-si/SKILL.md",
-      "version": "1.2.0",
-      "description": "SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 견적서 + SLA 정책 + DDD 도메인 맵을 작성한다.",
+      "version": "2.0.0",
+      "description": "SI 문서 전문가 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-dev-si.md).",
       "triggers": [
         "/sj-dev-si"
       ]
@@ -128,8 +128,8 @@
     {
       "name": "sj-investigate",
       "path": "skills/sj-investigate/SKILL.md",
-      "version": "1.1.1",
-      "description": "체계적 루트코즈 디버깅 전문가. \"고쳐줘\" 전에 원인을 반드시 추적한다.",
+      "version": "2.0.0",
+      "description": "체계적 루트코즈 디버깅 전문가 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북",
       "triggers": [
         "/sj-investigate",
         "/investigate"
@@ -158,8 +158,8 @@
     {
       "name": "sj-marketing",
       "path": "skills/sj-marketing/SKILL.md",
-      "version": "1.2.1",
-      "description": "SNS + 블로그 마케팅 콘텐츠 전문가.",
+      "version": "2.0.0",
+      "description": "SNS + 블로그 마케팅 콘텐츠 전문가 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-marketing.md).",
       "triggers": [
         "/sj-marketing",
         "/marketing",
@@ -181,8 +181,8 @@
     {
       "name": "sj-pm",
       "path": "skills/sj-pm/SKILL.md",
-      "version": "2.2.0",
-      "description": "PM 역할 에이전트. 태스크를 분석하고 요구사항, 리스크, 우선순위, 역할 힌트를 정의한다.",
+      "version": "3.0.0",
+      "description": "PM 역할 에이전트 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-pm.md).",
       "triggers": [
         "/pm",
         "/office-hours"
@@ -191,8 +191,8 @@
     {
       "name": "sj-qa",
       "path": "skills/sj-qa/SKILL.md",
-      "version": "2.5.0",
-      "description": "QA 역할 에이전트. pm-brief(요구사항 원본)과 실제 변경 파일을 직접 탐색해 독립 검증한다.",
+      "version": "3.0.0",
+      "description": "QA 역할 에이전트 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-qa.md).",
       "triggers": [
         "/qa",
         "/canary",
@@ -202,8 +202,8 @@
     {
       "name": "sj-retro",
       "path": "skills/sj-retro/SKILL.md",
-      "version": "1.5.0",
-      "description": "주간 엔지니어링 회고 에이전트. 프로젝트별 배송 지표·테스트 건강도·프로세스 마찰·성장 기회를 분석한다.",
+      "version": "2.0.0",
+      "description": "주간 엔지니어링 회고 에이전트 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-retro.md).",
       "triggers": [
         "/sj-retro",
         "/retro"
@@ -212,8 +212,8 @@
     {
       "name": "sj-secretary",
       "path": "skills/sj-secretary/SKILL.md",
-      "version": "3.1.2",
-      "description": "프로젝트 상태 보고 에이전트. 모든 프로젝트의 PROJECT.md를 읽어",
+      "version": "4.0.0",
+      "description": "프로젝트 상태 보고 에이전트 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-secretary.md).",
       "triggers": [
         "/secretary"
       ]
@@ -231,8 +231,8 @@
     {
       "name": "sj-ship",
       "path": "skills/sj-ship/SKILL.md",
-      "version": "1.2.0",
-      "description": "릴리즈 엔지니어 자동화 에이전트. 테스트 → 커버리지 감사 → PR 오픈까지 한 번에.",
+      "version": "2.0.0",
+      "description": "릴리즈 엔지니어 자동화 에이전트 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-ship.md).",
       "triggers": [
         "/sj-ship",
         "/ship"
@@ -241,8 +241,8 @@
     {
       "name": "sj-spec",
       "path": "skills/sj-spec/SKILL.md",
-      "version": "1.1.0",
-      "description": "스펙 작성 전문가. 모호한 의도를 5단계(why·scope·technical·draft·file)를 거쳐",
+      "version": "2.0.0",
+      "description": "스펙 작성 전문가 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-spec.md).",
       "triggers": [
         "/sj-spec",
         "/spec"
@@ -251,8 +251,8 @@
     {
       "name": "sj-tech-lead",
       "path": "skills/sj-tech-lead/SKILL.md",
-      "version": "2.9.1",
-      "description": "Tech Lead 역할. .state/pm-brief.md를 받아 필요한 전문 개발 서브에이전트",
+      "version": "3.0.0",
+      "description": "Tech Lead 역할 에이전트 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-tech-lead.md).",
       "triggers": [
         "/tech-lead"
       ]

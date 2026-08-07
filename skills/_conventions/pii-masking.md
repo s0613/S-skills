@@ -17,10 +17,7 @@ password|token|secret|api.?key|Bearer|private.?key
 
 | 스킬 | 지점 |
 |------|------|
-| sj-pm | pm-context.md `## 히스토리` append 전 |
-| sj-tech-lead | dev-context.md append 전 |
-| sj-qa | qa-context.md append 전 |
-| sj-design | design-context.md append 전 |
+| 역할 스킬 전부 (sj-pm·sj-tech-lead·sj-qa·sj-design 등) | 볼트 학습 환류(`30_경험`·`40_프로젝트`) append 전 — [context-curation](context-curation.md) |
 | sj-outsource | 외주 리포트(.md) 작성 전 — 외부로 나가는 문서이므로 가장 엄격하게 |
 | sj-agent-dev / sj-agent-review | 에이전트 메모리 설계·심사 기준 (장기 메모리에 PII 무방비 저장 금지) |
 
