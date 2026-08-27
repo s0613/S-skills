@@ -222,6 +222,11 @@ def check(skills):
             r"^\|\s*(F\d+)\s*\|[^|]*\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|",
             fmap, re.M,
         )
+        raw_row_count = len(re.findall(r"^\|\s*F\d+", fmap, re.M))
+        if raw_row_count != len(rows):
+            errors.append(
+                f"[feature-map-row] F로 시작하는 행 {raw_row_count}개 중 {len(rows)}개만 파싱됨 — 칼럼 수가 어긋난 행이 있다"
+            )
         row_ids = {r[0] for r in rows}
         for rid, entry, core, test, _dep in rows:
             for cell in (entry, core, test):

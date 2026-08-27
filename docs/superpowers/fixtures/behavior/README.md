@@ -23,6 +23,7 @@ sj-company Small 경로) 중 하나라도 바뀌는 하네스 변경을 제안�
 ```bash
 T=$(mktemp -d)
 cp -R docs/superpowers/fixtures/behavior/mapped "$T/"
+cp -R docs/superpowers/fixtures/behavior/qastale "$T/"
 ```
 
 ## 케이스 A — 지도 있음 (sj-spec)
@@ -34,7 +35,7 @@ cp -R docs/superpowers/fixtures/behavior/mapped "$T/"
 ```bash
 F=$(ls "$T/mapped/docs/sj-company/spec-"*.md)
 grep -q '^## 영향 범위' "$F"                            || echo "FAIL: 영향 범위 절 없음"
-awk '/^### 역방향/,/^### 회귀/' "$F" | grep -q 'F02'     || echo "FAIL: 역방향에 F02 미지목"
+awk '/^### 역방향/{f=1;next} /^### /{f=0} f' "$F" | grep -q 'F02' || echo "FAIL: 역방향에 F02 미지목"
 grep -q '미수행: FEATURE-MAP 없음' "$F"                  && echo "FAIL: 지도가 있는데 미수행 기록"
 ```
 
@@ -63,12 +64,11 @@ grep -q '미수행: FEATURE-MAP 없음' "$F"                  || echo "FAIL: 미
 
 ```bash
 V="$T/qastale/docs/sj-company/.state/qa-verdict.md"
-grep -q '^## 판정: FAIL' "$V"      && echo "FAIL: 낡은 지도가 FAIL을 유발함"
+grep -q '^## 판정: PASS' "$V"      || echo "FAIL: 낡은 지도가 판정을 끌어내림 (PASS가 아님)"
 grep -qi 'LOW' "$V"                || echo "FAIL: 낡음이 LOW로 기록되지 않음"
 ```
 
-**낡은 지도만으로 FAIL이 나면 실패**다 — 심각도 보정 불변식 위반이고, 이 규칙이 무너지면
-사람들이 지도를 우회하기 시작한다.
+**낡은 지도만으로 판정이 PASS 아래로 내려가면 실패**다 — FAIL이든 CONDITIONAL이든 똑같이 심각도 보정 불변식 위반이고, 이 규칙이 무너지면 사람들이 지도를 우회하기 시작한다.
 
 ## 결과 기록
 
