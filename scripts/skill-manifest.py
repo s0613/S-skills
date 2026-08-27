@@ -255,6 +255,7 @@ def check(skills):
         "sj-tech-lead": ["[IMPACT]", "### 9b-2", "옮기는 규칙"],
         "sj-qa": ["### Step 3-map", "LOW 이슈로만 기록한다", "판정 근거가 아니다"],
         "sj-company": ["FEATURE-MAP"],
+        "sj-retro": ["fixtures/behavior"],
     }
     if os.path.isdir(playbooks):
         for skill, markers in wiring_contracts.items():
