@@ -29,7 +29,7 @@
 ## 상태 라우터 · 문서화 · 테스트
 
 - **s-skills:harness** (`/s-skills`) — 프로젝트 상태 감지 후 적절한 스킬로 라우팅
-- **s-skills:docs-organize** (`/docs-organize`) — 코드베이스 분석 및 docs/ 생성, 건강 점수 산출 v1.2.0. `remediate` 모드(`/docs-organize remediate [목표점수]`): 목표 점수까지 치유 플랜→사람 승인→단계별 실행·재측정. 자동 도달 불가 점수(테스트 통과율 등)는 천장에서 멈추고 triage/sj-company 위임 (gbrain doctor --remediate 차용).
+- **s-skills:docs-organize** (`/docs-organize`) — 코드베이스 분석 및 docs/ 생성, 건강 점수 산출 v1.2.0. `remediate` 모드(`/docs-organize remediate [목표점수]`): 목표 점수까지 치유 플랜→사람 승인→단계별 실행·재측정. 자동 도달 불가 점수(테스트 통과율 등)는 천장에서 멈추고 triage/sj-company 위임 (gbrain doctor --remediate 차용). 기존 프로젝트에 `docs/FEATURE-MAP.md` 최초 생성(재실행 시 미매핑 후보 나열).
 - **s-skills:test-scenario** (`/test-scenario`) — 기능 검증 시나리오 생성 및 통과율 추적
 - **s-skills:pw-loop** (`/pw-loop`) — 기능 단위 Playwright 반복 테스트 루프
 - **s-skills:obsidian-writer** (`/obsidian`, `/obsidian-writer`) — Obsidian 문서 작성 전문가. 기능·작업·프로젝트 전체를 .md로 정리. iCloud/로컬 볼트 자동 탐지, 매 실행마다 저장 위치 선택
@@ -46,14 +46,14 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v4.0.0. 라우팅 키워드의 단일 사실은 [skills/RESOLVER.md](skills/RESOLVER.md) — Step 0이 런타임에 읽어 디스패치 (행 수·키워드는 RESOLVER 표가 단일 사실). 모호성 해소는 행위(동사) 우선 — 키워드가 대상만 가리키면 행위 행으로. RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
 - **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석 v3.0.0. AskUserQuestion 최대 1회, 모호해도 가정으로 진행. PII 마스킹 적용.
 - **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v4.0.0. 볼트 `00_취향 프로필.md`를 실행 계약으로 필수 선행(전역 금지 C-규칙·preserve/greenfield 모드·값-소스 태스크당 1개). 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
-- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v3.0.0. RUN_ID 연결. 학습 패턴은 볼트 30_경험 우선 로딩. [SPEC:] 참조 자동 인식. 리뷰어 다양성(렌즈 분리 + 심각도 보정) + 7a-1 CRITICAL 적대 검증(GPT 교차모델 렌즈 포함). Step 10 완료 보고는 서술식 + 옵시디언 정리본 저장.
-- **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v3.0.0. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 심각도 보정 — FAIL은 실제 결함에만, 취향은 LOW. 판정 정리본 옵시디언 저장.
+- **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v3.0.0. RUN_ID 연결. 학습 패턴은 볼트 30_경험 우선 로딩. [SPEC:] 참조 자동 인식. 리뷰어 다양성(렌즈 분리 + 심각도 보정) + 7a-1 CRITICAL 적대 검증(GPT 교차모델 렌즈 포함). Step 10 완료 보고는 서술식 + 옵시디언 정리본 저장. `docs/FEATURE-MAP.md` 있으면 Dispatch Card `[IMPACT]` 필드로 영향 기능 전달 + 구현 후 지도 갱신.
+- **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v3.0.0. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 심각도 보정 — FAIL은 실제 결함에만, 취향은 LOW. 판정 정리본 옵시디언 저장. 기능 지도 drift 검사 후 FAIL/CONDITIONAL 시 `## 의심 지점`(기능 ID + 파일 경로) 명시, 지도 불일치 자체는 LOW.
 - **s-skills:sj-secretary** (`/secretary`) — 프로젝트 상태 보고 전문. 전체 프로젝트 PROJECT.md를 탐색해 목표·현재 단계(progress)·다음 할 일을 긴급/진행/대기/완료별 우선순위로 정렬 출력. 읽기 전용, 파일 수정 없음.
 - **s-skills:sj-dev-si** (`/sj-dev-si`) — SI 문서 전문가. 작업 개요·제안서·요구사항·WBS·데모·결과보고서(6종) + 주간 보고서 + 견적서 + DDD 도메인 맵 직접 작성
 
 ## 품질 · 보안 · 릴리즈
 
-- **s-skills:sj-spec** (`/spec`, `/sj-spec`) — 스펙 작성 전문가. 모호한 의도를 5단계(why·scope·technical·draft·file)로 실행 가능한 정밀 스펙으로 변환
+- **s-skills:sj-spec** (`/spec`, `/sj-spec`) — 스펙 작성 전문가. 모호한 의도를 5단계(why·scope·technical·draft·file)로 실행 가능한 정밀 스펙으로 변환. `docs/FEATURE-MAP.md` 있으면 `## 영향 범위` 절에 의존·역방향 의존 기능을 ID로 지목
 - **s-skills:sj-investigate** (`/investigate`, `/sj-investigate`) — 체계적 루트코즈 디버깅 v2.0.0. 가설 수립→검증 강제, 조사 없는 수정 금지. Step 4b 이해 도구 옵션(마이크로월드) — 상태 변화 추적형 문제·검증 반복 실패 시 사람이 직접 탐색할 일회용 도구(단계별 실행·상태 시각화·before/after 뷰) 제작을 1회 제안. 조사 결과 옵시디언 저장.
 - **s-skills:sj-cso** (`/cso`, `/sj-cso`) — CSO 보안 감사 v2.0.0. OWASP Top 10 + STRIDE 위협 모델링, 8/10 이상 확신 취약점만 보고. 감사 보고서 정리본 옵시디언 저장.
 - **s-skills:sj-ship** (`/ship`, `/sj-ship`) — 릴리즈 엔지니어 자동화. 테스트→커버리지 감사→PR 오픈까지 한 번에. sj-company 통해 호출 시 push 전 브랜치 확인 필수. PR 본문 서술식(배경→의도→읽기 순서→세부) + 릴리즈 보고 옵시디언 저장.
@@ -120,6 +120,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 ## 아키텍처 원칙 (v4.0.0 기준)
 
 - **플레이북 구조 (v4)**: 역할 스킬 13개(sj-company·pm·design·tech-lead·qa·spec·investigate·cso·ship·retro·secretary·marketing·dev-si)의 절차 정본은 볼트 `20_실행/플레이북/{스킬}.md`. SKILL.md는 얇은 디스패처(플레이북 로드 커널 + 불변 산출물 계약 + 최소 계약 폴백, 80줄 이하). 역할→플레이북+지식 폴더 맵은 볼트 `00_SYSTEM/START-HERE.md` "하네스 역할 라우팅"이 정본. 플레이북은 신뢰된 절차 문서지만 SKILL.md의 불변 계약(산출물 경로·사람 게이트)을 뒤집을 수 없다. 도구 배선형 스킬(law·gpt·seo·automation·loop·agent-*·outsource·harness·docs-organize·obsidian-writer·pw-loop·test-scenario)은 기존 구조 유지.
+- **기능 지도·추적성**: 기능 목록·연결·수정 지점은 대상 repo `docs/FEATURE-MAP.md`에 — 표가 정본이고 mermaid는 파생. sj-spec이 구현 전 영향 범위(역방향 포함)를 지목, sj-tech-lead가 구현 후 행을 갱신, sj-qa가 drift 검사 후 FAIL 시 의심 지점(기능 ID + 파일 경로)을 판정문에 명시, docs-organize가 기존 프로젝트에 최초 생성. 지도 불일치는 FAIL이 아니라 경고이며 지도가 없으면 비차단 (정본: [skills/_conventions/feature-map.md](skills/_conventions/feature-map.md)).
 
 > 횡단 원칙의 **단일 정의는 [skills/_conventions/](skills/_conventions/README.md)** — 아래는 요약. 규칙 수정은 컨벤션 파일에서 한다. 라우팅 키워드의 단일 정의는 [skills/RESOLVER.md](skills/RESOLVER.md). (gbrain의 얇은 디스패처 + 단일 컨벤션 패턴 차용)
 

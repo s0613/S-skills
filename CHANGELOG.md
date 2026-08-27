@@ -4,10 +4,16 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
-## [Unreleased]
+## [4.1.0] - 2026-08-27
+
+**기능 지도·추적성 층** — 기능 하나의 정밀도(수직)는 스펙이 이미 다뤘지만, 기능들이 서로 어떻게 엮이는지(수평)를 규정한 규칙이 없었다. `docs/FEATURE-MAP.md`를 대상 repo에 두고 네 스킬에 배선했다: sj-spec(구현 전 `## 영향 범위` — 의존 + 역방향 의존을 기능 ID로 지목), sj-tech-lead(Dispatch Card `[IMPACT]` 필드로 전달 + 구현 후 행 갱신·흐름도 재생성), sj-qa(drift 검사 + FAIL/CONDITIONAL 시 `## 의심 지점`에 기능 ID·파일 경로 명시), docs-organize(기존 프로젝트 최초 생성, 재실행 시 미매핑 후보 나열). 표가 정본이고 mermaid 흐름도는 파생. 지도 불일치는 FAIL이 아니라 LOW 경고, 지도가 없으면 어떤 스킬도 멈추지 않는다.
 
 ### Added
-- **기능 지도·추적성 설계 스펙** — `docs/spec/2026-08-27-feature-map-traceability.md`. 기능 간 연결성·영향 범위를 구현 **전에** 따지고, 고장 시 수정 지점을 문서에서 바로 찾게 하는 `docs/FEATURE-MAP.md` 층 설계. 경쟁 하네스 4종(spec-kit 131k★·OpenSpec 66k★·BMAD 52k★·claude-code-harness 3k★) 조사 결과 포함 — 넷 다 "변경 하나"의 정합성만 보고 기능 간 영향은 다루지 않는다. **설계만, 구현 전** — 채택은 사람 게이트.
+- **기능 지도 컨벤션** — `skills/_conventions/feature-map.md` 신설. 칸 규칙(ID 영구 보존, 핵심 파일 최대 3개 공백/쉼표 구분, 테스트 없으면 "없음" 명시, 의존은 단방향만 저장), 기계 검증 가능한 drift 검사 명령, 갱신 시점 표를 정본으로 규정.
+- **sj-spec `## 영향 범위` 절** — 지도가 있으면 의존·역방향 의존 기능을 ID로 지목, 없으면 `미수행: FEATURE-MAP 없음`을 기록하고 계속 진행.
+- **sj-tech-lead 영향 전달 + 지도 갱신** — Dispatch Card `[IMPACT]` 필드가 스펙의 `## 영향 범위`를 서브에이전트에 전달(의존·역방향 불릿을 기능 ID로 옮기고, 매칭되는 회귀 확인 대상 테스트 경로를 붙이는 결합 규칙 포함), 구현 후 지도 행 갱신 + 흐름도 재생성.
+- **sj-qa drift 검사 + 의심 지점** — 지도가 있으면 drift 검사를 실행하고, FAIL/CONDITIONAL 시 판정문 `## 의심 지점`에 기능 ID + 파일 경로를 명시. 지도 없음/깨끗함을 구분하는 가드(`MAP=absent`)를 둔 sj-qa 전용 변형은 의도된 것으로 컨벤션에 명문화.
+- **docs-organize 지도 최초 생성** — Phase 3에서 `docs/FEATURE-MAP.md`를 생성(기존 지도는 통째로 덮어쓰지 않고 미매핑 후보만 추가), 건강 점수 체계는 비간섭.
 - **sj-design 에셋 라이선스 게이트** (취향 프로필 C15) — 폰트·아이콘·이미지를 저장소에 반입하기 전 라이선스를 파일에서 직접 확인한다(폰트는 name 테이블 ID 13·14). 상용 파운드리 EULA·출처 불명이면 구현하지 않고 OFL 대체안을 제안하며, 확인 근거는 에셋 디렉터리 README에 남긴다.
 
 ### Security
