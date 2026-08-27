@@ -1,2 +1,4 @@
 {"ts": "2026-06-17T10:44:46", "run_id": "standalone", "skill": "sj-retro", "phase": "step5b-gate", "kind": "delight", "severity": "nit", "message": "Self-Harness 게이트가 첫 시도에 녹색 통과·적색 차단·존재가드 3분기 모두 의도대로 동작"}
 {"ts":"2026-06-22T10:08:30","run":"20260622-100258-38515","kind":"friction","where":"sj-company/routing","note":"옵시디언 키워드(#1 writer)와 평가 의도(#23 review)가 충돌 — 의도가 verb(평가)에 있어 review로 라우팅. 키워드 단독 매칭이 의도를 놓칠 수 있음"}
+{"ts":"2026-08-18T05:54:49Z","run":"20260818-144416-22201","skill":"sj-company","kind":"friction","note":"Step R 리뷰 경로가 git diff 기반 대상 감지를 전제하는데, 리뷰 대상이 다른 저장소/볼트일 때 감지가 무의미. 대상 경로를 인자로 받는 분기 필요"}
+{"ts":"2026-08-27T10:05:00Z","run":"standalone","skill":"sj-dev-si","kind":"friction","severity":"high","where":"sj-dev-si/output-path","note":"SI 산출물 5종(대외비 표기)이 클라이언트 프로젝트가 아니라 공개 저장소 S-skills의 docs/si/에 생성됨. 하마터면 공개 커밋될 뻔. 산출 경로가 현재 작업 디렉토리에 상대적이라 하네스 저장소에서 실행하면 그대로 여기에 쓴다. 대외비 산출물은 저장소 공개 여부를 확인하고 쓰기 경로를 결정해야 함"}

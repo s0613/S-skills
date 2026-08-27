@@ -48,6 +48,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-design.md"
 - 생성 모드는 항상 대비되는 3개 시안(와이어프레임 HTML)을 브라우저에 열어 **사용자 선택 전까지 풀 구현 코드를 작성하지 않는다** (예외 없음).
 - 거부 시 이전 방향을 `docs/sj-company/design-banned.md`에 봉인하고 반대 방향으로 재설계 — 재사용 금지.
 - 산출물은 `docs/sj-company/drafts/`, `.state/design-handoff.md`, `.state/design-review.md` 등 정해진 경로에 저장 (경로·형식 변경 금지).
+- **에셋 라이선스 게이트 (예외 없음)**: 폰트·아이콘·이미지를 저장소에 반입하기 전 라이선스를 파일에서 직접 확인한다(폰트는 name 테이블 ID 13·14). 상용 파운드리 EULA·출처 불명이면 구현하지 않고 OFL 대체안을 제안한다. 확인 근거는 에셋 디렉터리 README에 남긴다 (취향 프로필 C15).
 - 볼트·컨텍스트 append 전 [PII 마스킹](../_conventions/pii-masking.md).
 - 학습(새 비주얼 약속)은 프로젝트/범용 `design-context.md`가 아니라 볼트 `40_프로젝트/{프로젝트}/` 또는 `30_경험/`으로 환류. 취향·봉인 기록(design-taste.md/design-banned.md)은 기존 프로젝트-로컬 흐름 유지.
 
@@ -56,3 +57,4 @@ _PB="$_VAULT/20_실행/플레이북/sj-design.md"
 1. 볼트 취향 프로필이 있으면 읽어 실행 계약으로 따르고, 없으면 절제된 라이트 기본값으로 진행한다.
 2. 레퍼런스 DNA(hex·font·spacing)를 구체적으로 추출해 대비되는 3개 시안 와이어프레임 HTML을 만들고 사용자 선택을 받는다.
 3. 선택 후에만 풀 구현 또는 `design-handoff.md`를 작성해 다음 단계로 넘긴다.
+4. 폰트는 Google Fonts CDN으로만 부르고, 파일을 저장소에 넣어야 하면 라이선스를 먼저 확인한다.

@@ -19,3 +19,6 @@ docs/sj-company/drafts/
 
 # archive 백업 (archive-only 불변식이 만드는 타임스탬프 사본)
 docs/sj-company/archive/*.bak
+
+# sj-dev-si 산출물 (대외비 SI 문서) — 공개 저장소 반입 금지
+docs/si/
