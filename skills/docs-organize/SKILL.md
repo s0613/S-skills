@@ -90,6 +90,8 @@ grep -r "{키워드}" --include="*.ts" --include="*.py" --include="*.go" --inclu
 | **부분 낡음** | 일부 용어/기능이 변경됐으나 구조는 유효 |
 | **완전 낡음** | 참조하는 기능/용어가 코드에 더 이상 존재하지 않거나 목적 자체가 바뀜 |
 
+- `docs/FEATURE-MAP.md`은 이 분류에서 제외한다 — `(폐기)` 표기된 행은 의도된 상태이며, 삭제하면 ID 영속성이 깨진다.
+
 #### 사용자에게 보고
 
 낡은 파일이 발견되면 Phase 2 인터뷰 전에 먼저 보고:
@@ -398,6 +400,7 @@ docs-organize complete.
   - docs/prd.md
   - docs/architecture.md
   - docs/UI_GUIDE.md   (if frontend detected)
+  - docs/FEATURE-MAP.md
   - docs/STATUS.md
   - CLAUDE.md          (created / updated)
 

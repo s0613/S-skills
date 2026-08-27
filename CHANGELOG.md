@@ -15,6 +15,7 @@
 - **sj-qa drift 검사 + 의심 지점** — 지도가 있으면 drift 검사를 실행하고, FAIL/CONDITIONAL 시 판정문 `## 의심 지점`에 기능 ID + 파일 경로를 명시. 지도 없음/깨끗함을 구분하는 가드(`MAP=absent`)를 둔 sj-qa 전용 변형은 의도된 것으로 컨벤션에 명문화.
 - **docs-organize 지도 최초 생성** — Phase 3에서 `docs/FEATURE-MAP.md`를 생성(기존 지도는 통째로 덮어쓰지 않고 미매핑 후보만 추가), 건강 점수 체계는 비간섭.
 - **sj-design 에셋 라이선스 게이트** (취향 프로필 C15) — 폰트·아이콘·이미지를 저장소에 반입하기 전 라이선스를 파일에서 직접 확인한다(폰트는 name 테이블 ID 13·14). 상용 파운드리 EULA·출처 불명이면 구현하지 않고 OFL 대체안을 제안하며, 확인 근거는 에셋 디렉터리 README에 남긴다.
+- **설계 스펙** — `docs/spec/2026-08-27-feature-map-traceability.md`. 경쟁 하네스 4종(spec-kit·OpenSpec·BMAD·claude-code-harness) 조사와 불변식·트레이드오프·완료 조건 8개를 담은 이 기능의 설계 근거.
 
 ### Security
 - `.gitignore`에 `docs/si/` 추가 — sj-dev-si 산출물(**대외비** 표기 SI 문서 5종)이 공개 저장소에 커밋되는 경로를 차단. 산출물은 클라이언트 프로젝트 저장소에 있어야 한다.

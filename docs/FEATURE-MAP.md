@@ -78,5 +78,5 @@ flowchart LR
 ## 미매핑
 - `skills/RESOLVER.md` — 라우팅 단일 사실 테이블 자체. 스킬(기능)이 아니라 F08(sj-company)이 소비하는 설정 파일이라 행으로 만들지 않았다.
 - `skills/manifest.json`, `skills/VERSION` — 생성/버전 메타데이터, 스킬 아님.
-- `skills/_conventions/` — 규칙 폴더(24개 컨벤션 문서), 스킬 아님. 태스크 브리핑 지시에 따라 제외.
+- `skills/_conventions/` — 규칙 폴더(컨벤션 17개 + README), 스킬 아님. 태스크 브리핑 지시에 따라 제외.
 - `/Users/songseungju/S-skills/test-scenario/SKILL.md` (repo 루트, `skills/` 밖) — `skills/test-scenario/`와 별개의 고아 사본으로 보인다. 어느 manifest·RESOLVER에도 연결되지 않아 기능으로 등록하지 않았다. Concerns 참고.
