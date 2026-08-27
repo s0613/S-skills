@@ -244,6 +244,32 @@ def check(skills):
         for a, b in sorted(table_edges - mermaid_edges):
             errors.append(f"[feature-map-edge] 표에 {a}의 의존 {b} 있으나 mermaid에 화살표 없음 (표가 정본)")
 
+    # 9. 볼트 플레이북의 기능 지도 배선이 살아 있는가 (볼트 없으면 비차단)
+    #    의미는 못 보고 존재만 본다 — 삭제·변형을 잡는 최소 회귀망.
+    vault = os.environ.get("OBSIDIAN_VAULT_DIR") or os.path.expanduser(
+        "~/obsidian-vaults/AI 에이전트"
+    )
+    playbooks = os.path.join(vault, "20_실행", "플레이북")
+    wiring_contracts = {
+        "sj-spec": ["## Step 3.5: IMPACT", "미수행: FEATURE-MAP 없음", "중단하지 않는다"],
+        "sj-tech-lead": ["[IMPACT]", "### 9b-2", "옮기는 규칙"],
+        "sj-qa": ["### Step 3-map", "LOW 이슈로만 기록한다", "판정 근거가 아니다"],
+        "sj-company": ["FEATURE-MAP"],
+    }
+    if os.path.isdir(playbooks):
+        for skill, markers in wiring_contracts.items():
+            path = os.path.join(playbooks, f"{skill}.md")
+            if not os.path.isfile(path):
+                errors.append(f"[playbook-missing] {skill}.md — 볼트 플레이북 없음")
+                continue
+            with open(path, encoding="utf-8") as f:
+                text = f.read()
+            for marker in markers:
+                if marker not in text:
+                    errors.append(
+                        f"[playbook-contract] {skill}.md: '{marker}' 없음 — 기능 지도 배선이 지워졌거나 변형됨"
+                    )
+
     return errors
 
 
