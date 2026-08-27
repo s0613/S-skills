@@ -210,6 +210,40 @@ def check(skills):
                     f"[version-file-drift] skills/VERSION v{file_ver} != package.json v{pkg_ver} — 릴리즈 시 함께 범프"
                 )
 
+    # 8. docs/FEATURE-MAP.md 무결성 (이 저장소 자신의 기능 지도)
+    #    drift 검사(경로 실존)는 컨벤션의 bash가 대상 프로젝트에서 돌지만,
+    #    참조 무결성과 표↔mermaid 일치는 여기서만 상시 검사한다.
+    feature_map = os.path.join(ROOT, "docs", "FEATURE-MAP.md")
+    if os.path.isfile(feature_map):
+        with open(feature_map, encoding="utf-8") as f:
+            fmap = f.read()
+        # 칼럼: ID | 기능 | 진입점 | 핵심 파일 | 테스트 | 의존
+        rows = re.findall(
+            r"^\|\s*(F\d+)\s*\|[^|]*\|([^|]*)\|([^|]*)\|([^|]*)\|([^|]*)\|",
+            fmap, re.M,
+        )
+        row_ids = {r[0] for r in rows}
+        for rid, entry, core, test, _dep in rows:
+            for cell in (entry, core, test):
+                for path in re.split(r"[ ,]+", cell.replace("`", "").strip()):
+                    if path and path not in ("—", "-", "없음"):
+                        if not os.path.exists(os.path.join(ROOT, path)):
+                            errors.append(f"[feature-map-stale] {rid}: '{path}' 경로 없음 — 지도가 낡음")
+        for rid, _e, _c, _t, dep in rows:
+            for ref in re.findall(r"F\d+", dep):
+                if ref not in row_ids:
+                    errors.append(f"[feature-map-ref] {rid}의 의존 '{ref}' — 그런 행이 표에 없음")
+        table_edges = {
+            (rid, ref)
+            for rid, _e, _c, _t, dep in rows
+            for ref in re.findall(r"F\d+", dep)
+        }
+        mermaid_edges = set(re.findall(r"(F\d+)(?:\[[^\]]*\])?\s*-->\s*(F\d+)", fmap))
+        for a, b in sorted(mermaid_edges - table_edges):
+            errors.append(f"[feature-map-edge] mermaid에 {a} --> {b} 있으나 표의 의존 칸에 없음 (표가 정본)")
+        for a, b in sorted(table_edges - mermaid_edges):
+            errors.append(f"[feature-map-edge] 표에 {a}의 의존 {b} 있으나 mermaid에 화살표 없음 (표가 정본)")
+
     return errors
 
 

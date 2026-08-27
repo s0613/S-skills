@@ -64,6 +64,26 @@ awk -F'|' '/^\| *F[0-9]/ {print $4 $5 $6}' docs/FEATURE-MAP.md \
 
 지도가 없을 수도 있는 호출부(sj-qa)는 위 명령 앞에 `[ -f docs/FEATURE-MAP.md ] || echo "MAP=absent"` 가드를 두고 `awk`에 `2>/dev/null`을 붙인다 — 가드가 없으면 "지도 없음"과 "지도 깨끗함"이 둘 다 빈 출력이라 구별되지 않는다. 이 분기는 의도된 것이며, 두 변형을 억지로 일치시키지 않는다.
 
+경로 실존 외에 두 가지를 더 기계로 확인할 수 있다. 대상 프로젝트에서는 아래 두 명령을 쓴다 (스크립트 설치 없음).
+
+**의존 참조 무결성** — 의존 칸이 가리키는 ID가 실제 행으로 존재하는가:
+
+```bash
+IDS=$(awk -F'|' '/^\| *F[0-9]/ {gsub(/ /,"",$2); print $2}' docs/FEATURE-MAP.md | sort -u)
+awk -F'|' '/^\| *F[0-9]/ {gsub(/ /,"",$2); n=split($7,a,/[ ,]+/); for(i=1;i<=n;i++) if(a[i] ~ /^F[0-9]+$/) print $2, a[i]}' docs/FEATURE-MAP.md \
+  | while read src ref; do echo "$IDS" | grep -qx "$ref" || echo "DANGLING: $src → $ref"; done
+```
+
+**표↔mermaid 일치** — 화살표 집합과 의존 칸 집합이 같은가 (`A --> B` = A가 B에 의존):
+
+```bash
+diff <(awk -F'|' '/^\| *F[0-9]/ {gsub(/ /,"",$2); n=split($7,a,/[ ,]+/); for(i=1;i<=n;i++) if(a[i] ~ /^F[0-9]+$/) print $2"->"a[i]}' docs/FEATURE-MAP.md | sort) \
+     <(grep -o 'F[0-9]*\(\[[^]]*\]\)\? *--> *F[0-9]*' docs/FEATURE-MAP.md | sed 's/\[[^]]*\]//g; s/ *--> */->/' | sort) \
+  && echo "EDGES OK"
+```
+
+둘 다 출력이 없으면(후자는 `EDGES OK`) 지도가 자기모순 없이 일관된다. **의존 관계가 실제로 참인지는 기계가 확인할 수 없다** — 그것만은 사람과 리뷰의 몫이다.
+
 역방향(코드엔 있으나 지도에 없는 기능)은 기계로 잡히지 않는다 — docs-organize 재실행 시 `## 미매핑`에 후보를 나열한다.
 
 ## 심각도
