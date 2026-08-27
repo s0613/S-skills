@@ -41,6 +41,8 @@ _PB="$_VAULT/20_실행/플레이북/sj-spec.md"
 - 저장 시 `docs/sj-company/.state/task.txt` 맨 앞에 `[SPEC: {경로}]`를 자동 기록
   (Tech Lead Dispatch Card가 참조).
 - 가정은 스펙 `## 가정` 절에 은폐 없이 명시 (정본: `honest-report.md`).
+- 스펙에 `## 영향 범위` 절 필수 — `docs/FEATURE-MAP.md`가 있으면 의존/역방향 의존 기능을 ID로
+  지목하고, 없으면 `미수행: FEATURE-MAP 없음`을 기록한다 (정본: `../_conventions/feature-map.md`).
 
 ## 3. 최소 계약 (플레이북 부재 시)
 
