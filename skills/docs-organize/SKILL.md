@@ -205,6 +205,36 @@ Write each file. If a file already exists in docs/, update it — do not overwri
 [Anti-patterns specific to this project — infer from existing code style]
 ```
 
+#### docs/FEATURE-MAP.md
+
+Phase 1 코드베이스 분석에서 식별한 기능을 표로 옮긴다. 규칙 정본: `skills/_conventions/feature-map.md`.
+
+````markdown
+# Feature Map
+> 이 프로젝트의 기능 목록과 서로의 연결. 코드와 같은 커밋에서 갱신된다.
+> 갱신 규칙: s-skills `skills/_conventions/feature-map.md`
+
+## 흐름
+[표의 의존 칸에서 생성한 mermaid flowchart LR]
+
+## 기능
+| ID | 기능 | 진입점 | 핵심 파일 | 테스트 | 의존 |
+|----|------|--------|-----------|--------|------|
+[식별된 기능마다 1행. 진입점은 라우트·핸들러·페이지, 테스트가 없으면 "없음"]
+
+## 미매핑
+[기능으로 보이는데 확신이 없는 것만 나열. 유틸·설정은 여기 두지 않는다]
+````
+
+**작성 규칙**
+- 라우트·엔트리포인트에서 출발한다. 유틸리티 함수는 기능이 아니다.
+- 확신이 없으면 `## 미매핑`에 두고 사용자에게 묻는다 — 추측으로 행을 만들지 않는다.
+- 작성 후 drift 검사를 돌려 `STALE:` 0줄을 확인한다 (명령은 규칙 파일 참조).
+- 이미 `docs/FEATURE-MAP.md`가 있으면 **통째로 덮어쓰지 않는다.** 기존 행은 두고,
+  코드에 있으나 표에 없는 기능만 `## 미매핑`에 후보로 추가한다 (archive-only 정신).
+
+**건강 점수 체계는 건드리지 않는다** — Phase 5 점수 항목·배점에 FEATURE-MAP을 추가하지 않는다 (회귀 위험).
+
 #### docs/STATUS.md
 
 ```markdown
