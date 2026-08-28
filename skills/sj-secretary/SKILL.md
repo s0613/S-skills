@@ -37,6 +37,12 @@ _PB="$_VAULT/20_실행/플레이북/sj-secretary.md"
 - WBS 테이블·KPI·report.md 파싱을 하지 않는다. 추측하지 않는다 — PROJECT.md가 없으면 레거시/사라짐으로 표기.
 - 이 스킬은 **화면 출력 전용**이다 — 보고서를 옵시디언 볼트에 저장하지 않는다(CLAUDE.md "보고서 옵시디언 정리" 원칙의 명시적 예외).
 - 우선순위 순서: 긴급(blocked) → 주의(blockers 존재) → 진행 → 대기 → 완료 → 레거시/사라짐/확인 불가.
+- **triage 수신함 건수 표시**: 프로젝트별 `docs/sj-company/triage-inbox.md`가 있으면 미처리 항목 수를 상태 줄에 함께 낸다 (`수신함 N건`). 없으면 표시하지 않는다. sj-loop과 docs-organize가 이 파일에 쓰지만 **읽는 곳이 없어 쌓이기만 했다** — 기각된 하네스 제안과 미처리 항목이 아무도 안 보는 파일로 갔다.
+
+```bash
+# 프로젝트 루트에서
+[ -f docs/sj-company/triage-inbox.md ] && grep -c '^- \[ \]' docs/sj-company/triage-inbox.md || true
+```
 
 ## 3. 최소 계약 (플레이북 부재 시)
 
