@@ -15,7 +15,7 @@ S-skills의 모든 스킬에 적용되는 공통 규칙. **규칙 본문은 여�
 | [archive-only.md](archive-only.md) | 영속 파일은 삭제 금지 — 백업 후에만 통째 덮어쓰기 | sj-company, 영속 파일을 쓰는 모든 스킬 |
 | [judge-independence.md](judge-independence.md) | 검증자는 구현자의 자기 평가를 읽지 않는다 | sj-qa |
 | [run-id.md](run-id.md) | 파이프라인 실행 식별자 생성·전파 계약 | sj-company, sj-tech-lead |
-| [friction-log.md](friction-log.md) | 스킬 실행 중 마찰·기쁨을 한 줄 기록 → sj-retro가 주간 소비 | sj-company·sj-pm·sj-tech-lead·sj-qa·sj-loop (기록), sj-retro (소비) |
+| [friction-log.md](friction-log.md) | 스킬 실행 중 마찰·기쁨을 한 줄 기록 → sj-retro가 주간 소비. 기록은 판단이 아니라 **관측 트리거 5종**(미수행 기록·수정 2회+·도구 우회·리뷰 Critical/Important·지시 자체의 결함)으로 강제, 완료 보고 직전이 체크포인트 | sj-company·sj-pm·sj-tech-lead·sj-qa·sj-loop (기록), sj-retro (소비) |
 | [context-curation.md](context-curation.md) | 학습 환류는 볼트 30_경험·40_프로젝트로 — notability 게이트 통과 항목만, 인용 형식으로 (레거시 *-context.md는 읽기만) | 역할 스킬 플레이북 전부 |
 | [minimal-code.md](minimal-code.md) | 코드 쓰기 전 안 써도 되는 길부터 — 게으름 사다리 6칸, 단순화는 `ponytail:` 표시 | sj-tech-lead, sj-dev-*, sj-company |
 | [self-harness.md](self-harness.md) | 하네스 변경은 마이닝된 약점→최소 제안→회귀 통과 시에만 채택 (채택은 사람 게이트) | sj-retro, sj-loop |

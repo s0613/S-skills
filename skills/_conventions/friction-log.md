@@ -18,6 +18,27 @@
 - 처음 시도에 그대로 됐고 문서가 정확히 맞았다
 - 에러 메시지가 곧바로 해법을 줬다
 
+## 의무 기록 트리거 (판단하지 않는다)
+
+위의 "언제 기록하나"는 **알아차림**을 요구한다 — 작업에 몰입해 있으면 그냥 지나간다.
+실제로 이 로그는 두 달 넘게 4건에 머물렀고, 그 사이 기록되지 않은 마찰이 최소 6건 있었다.
+
+그래서 **관측 가능한 사건**을 트리거로 고정한다. "마찰을 느꼈나"를 묻지 말고 아래가 일어났는지만 본다:
+
+1. **산출물에 `미수행:`을 썼다** → 그 이유가 곧 마찰이다.
+2. **같은 태스크에서 수정 라운드가 2회 이상 돌았다** → 한 번에 안 된 이유가 마찰이다.
+3. **도구·훅·명령이 예상과 다르게 동작해 우회했다** — 재시도, 다른 방법으로 돌아가기, 플래그 변경.
+4. **리뷰가 Critical 또는 Important를 냈다** → 그걸 만든 원인이 마찰이다.
+5. **지시받은 대로 했는데 지시 자체가 틀렸다는 걸 발견했다** → 가장 값진 신호다. 반드시 기록한다.
+
+## 의무 체크포인트
+
+역할 스킬이 **완료 보고를 쓰기 직전**, 위 5개 트리거 중 발생한 것이 있으면 각각 한 줄씩 기록한 뒤 보고한다.
+
+- 발생한 게 없으면 **아무것도 기록하지 않는다** — "마찰 없음" 항목은 로그를 잡음으로 채운다.
+- 체크 자체는 건너뛰지 않는다. 완료 보고가 항상 있으므로 체크 지점도 항상 있다.
+- 기록은 사후 회상이 아니라 그 자리에서 — 회상은 이번처럼 6건을 놓친다.
+
 ## severity 가이드
 
 | severity | 의미 |
@@ -91,14 +112,22 @@ if not os.path.exists(f):
 since = sys.argv[1]   # YYYY-MM-DD
 rows = [json.loads(l) for l in open(f, encoding="utf-8") if l.strip()]
 recent = [r for r in rows if r.get("ts", "")[:10] >= since]
-sev = Counter(r["severity"] for r in recent if r.get("kind") == "friction")
+
+# 구스키마 관용 — 초기 항목은 severity 없이 where/note를 썼다. 로그는 append-only라
+# 과거를 고쳐 쓰지 않고 읽는 쪽이 흡수한다. 누락 필드로 죽으면 retro가 통째로 멈춘다.
+def sev_of(r):   return r.get("severity", "confused")
+def who_of(r):   return r.get("skill") or r.get("where", "?")
+def msg_of(r):   return r.get("message") or r.get("note", "")
+
+sev = Counter(sev_of(r) for r in recent if r.get("kind") == "friction")
 delight = sum(1 for r in recent if r.get("kind") == "delight")
 print(f"friction {sum(sev.values())}건 "
       f"(blocker:{sev['blocker']} error:{sev['error']} confused:{sev['confused']} nit:{sev['nit']}) "
       f"/ delight {delight}건")
 for r in recent:
-    if r.get("kind") == "friction" and r["severity"] in ("blocker", "error", "confused"):
-        print(f"  [{r['severity']}] {r['skill']}/{r['phase']}: {r['message']}"
+    if r.get("kind") == "friction" and sev_of(r) in ("blocker", "error", "confused"):
+        phase = r.get("phase", "-")
+        print(f"  [{sev_of(r)}] {who_of(r)}/{phase}: {msg_of(r)}"
               + (f"  → {r['hint']}" if r.get("hint") else ""))
 PY
 ```
