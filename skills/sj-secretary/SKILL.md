@@ -43,6 +43,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-secretary.md"
 # 프로젝트 루트에서
 [ -f docs/sj-company/triage-inbox.md ] && grep -c '^- \[ \]' docs/sj-company/triage-inbox.md || true
 ```
+- `SJ_OUTPUT_FILE`이 설정돼 있으면 사용자에게 보이는 보고를 그 경로에도 그대로 쓴다 — 화면 출력은 평소대로, 캡처는 추가다 (정본: `../_conventions/noninteractive.md`).
 
 ## 3. 최소 계약 (플레이북 부재 시)
 

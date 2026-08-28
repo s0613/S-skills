@@ -26,6 +26,9 @@ cp -R docs/superpowers/fixtures/behavior/mapped "$T/"
 cp -R docs/superpowers/fixtures/behavior/qastale "$T/"
 cp -R docs/superpowers/fixtures/behavior/pmtask "$T/"
 cp -R docs/superpowers/fixtures/behavior/retrofriction "$T/"
+cp -R docs/superpowers/fixtures/behavior/routing "$T/"
+cp -R docs/superpowers/fixtures/behavior/triage "$T/"
+cp -R docs/superpowers/fixtures/behavior/libscan "$T/"
 ```
 
 ## 케이스 A — 지도 있음 (sj-spec)
@@ -111,6 +114,61 @@ grep -qi 'KeyError\|Traceback' "$R/out.txt" && echo "FAIL: 조회가 예외로 �
 로그가 비어 있는 것보다 나빴다 — 채워도 읽히지 않았으므로. 로그는 append-only라
 **과거 항목을 고쳐 쓰는 방식으로는 이 케이스를 통과할 수 없다.** 읽는 쪽이 흡수해야 한다.
 
+## 케이스 F — 키워드가 아니라 행위로 라우팅한다 (sj-company)
+
+- 픽스처: `routing/`
+- 태스크: `옵시디언 문서 리뷰해줘`
+- 실행: `SJ_OUTPUT_FILE="$T/routing/out.txt"`를 주고 sj-company를 돌린다.
+- 단언:
+
+```bash
+O="$T/routing/out.txt"
+[ -f "$O" ]                        || echo "FAIL: 출력 캡처 안 됨 (SJ_OUTPUT_FILE 미준수)"
+grep -qi 'review\|리뷰' "$O"        || echo "FAIL: 행위(리뷰)로 라우팅하지 않았다"
+grep -qi 'obsidian-writer' "$O"    && echo "FAIL: 키워드(옵시디언)로 라우팅했다"
+```
+
+키워드 `옵시디언`은 obsidian-writer를, 행위 `리뷰`는 리뷰 경로를 가리킨다.
+RESOLVER 규칙은 **행위 우선**이다 — 2026-06-22 friction에 기록된 실제 마찰이고,
+키워드 단독 매칭으로 퇴화하면 여기서 잡힌다.
+
+## 케이스 G — 수신함을 표시하고 아무것도 고치지 않는다 (sj-secretary)
+
+- 픽스처: `triage/` (미처리 3건 + 처리됨 1건)
+- 실행: `SJ_OUTPUT_FILE="$T/triage/out.txt"`를 주고 sj-secretary를 돌린다.
+- 단언:
+
+```bash
+O="$T/triage/out.txt"
+BEFORE=$(find "$T/triage/docs" -type f -exec md5 -q {} \; | sort | md5 -q)
+grep -q '수신함 3건' "$O" || echo "FAIL: 수신함 건수 미표시 또는 처리됨 항목을 셌다"
+AFTER=$(find "$T/triage/docs" -type f -exec md5 -q {} \; | sort | md5 -q)
+[ "$BEFORE" = "$AFTER" ] || echo "FAIL: 읽기 전용 불변식 위반 — 파일이 바뀌었다"
+```
+
+(`BEFORE`는 실행 **전**에 찍어 둔다.) 처리된 `- [x]` 항목을 세면 3이 아니라 4가 나온다.
+이 소비자는 2026-08-28에 배선했다 — 그 전에는 sj-loop과 docs-organize가 쓰기만 하고
+읽는 곳이 없었다.
+
+## 케이스 H — 공유 도메인 모듈은 올리고 범용 기반은 올리지 않는다 (docs-organize)
+
+- 픽스처: `libscan/` (라우트 3개, 공유 모듈 2개)
+- 단언:
+
+```bash
+M="$T/libscan/docs/FEATURE-MAP.md"
+[ -f "$M" ]                              || echo "FAIL: 지도 미생성"
+grep -q 'order-notify' "$M"              || echo "FAIL: 도메인 규칙 모듈(order-notify)을 놓쳤다"
+grep -q 'utils/format' "$M"              && echo "FAIL: 범용 기반(format)을 기능으로 올렸다"
+awk -F'|' '/^\| *F[0-9]/ {print $4 $5 $6}' "$M" | tr -d '`' | tr ' ,' '\n\n' \
+  | grep -v '^$\|^없음$\|^—$\|^-$' \
+  | while read p; do [ -e "$T/libscan/$p" ] || echo "FAIL: STALE $p"; done
+```
+
+**빈도만 보면 반드시 틀린다** — `format`이 3회, `order-notify`가 2회로 범용 쪽이 더 많이 쓰인다.
+판별은 "이 모듈만 고치는 버그 수정이 있었을 법한가"이지 빈도가 아니다.
+2026-08-27 필드 검증에서 실증된 사각지대를 고정한다.
+
 ## 커버리지와 경계
 
 지금 덮는 것과 못 덮는 것을 밝혀 둔다 — 덮이지 않은 영역이 검증된 것처럼 보이지 않도록.
@@ -121,12 +179,14 @@ grep -qi 'KeyError\|Traceback' "$R/out.txt" && echo "FAIL: 조회가 예외로 �
 | sj-qa | 케이스 C |
 | sj-pm | 케이스 D |
 | sj-retro | 케이스 E (friction 소비 경로만) |
-| sj-tech-lead · docs-organize | 픽스처 가능하나 비싸다 — 서브에이전트 디스패치·코드베이스 전체 분석이 필요 |
-| sj-company · sj-secretary | 산출이 화면 출력 중심이라 파일 단언이 어렵다. 출력을 파일로 받는 방식이 필요 |
+| sj-company | 케이스 F (라우팅만) |
+| sj-secretary | 케이스 G (수신함·읽기 전용) |
+| docs-organize | 케이스 H (2차 훑기만 — 전체 문서 생성은 미커버) |
+| sj-tech-lead | 미커버 — 서브에이전트 디스패치가 필요해 픽스처가 비싸다 |
 | sj-investigate · cso · ship · design · marketing · dev-si | 외부 상태·사람 판단 의존 |
 | seo · automation · law · gpt · agent-* · loop · outsource · pw-loop · test-scenario · harness · obsidian-writer | 브라우저·MCP·OS·네트워크가 필요해 값싼 픽스처에 부적합 |
 
-**26개 스킬 중 행동 테스트가 있는 것은 4개다.** 나머지는 여전히 구조 검사
+**26개 스킬 중 행동 테스트가 있는 것은 7개다.** 나머지는 여전히 구조 검사
 (`skill-manifest.py --check`)만 받는다 — 배선의 존재는 보지만 동작은 보지 않는다.
 
 새 케이스를 추가할 때는 하나만 지킨다: **고장난 구현이 이 단언을 통과할 수 있는가?**
