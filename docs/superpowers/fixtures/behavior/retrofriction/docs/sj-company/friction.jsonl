@@ -1,0 +1,4 @@
+{"ts":"2026-08-01T10:00:00","run_id":"20260801-100000-1","skill":"sj-tech-lead","phase":"dispatch","kind":"friction","severity":"error","message":"신스키마 — 정상 항목"}
+{"ts":"2026-08-02T10:00:00","run":"20260802-100000-2","kind":"friction","where":"sj-company/routing","note":"구스키마 — severity 없음, where/note 사용"}
+{"ts":"2026-08-03T10:00:00","run":"20260803-100000-3","kind":"friction","skill":"sj-qa","note":"구스키마 변형 — severity 없고 phase도 없음"}
+{"ts":"2026-08-04T10:00:00","run_id":"20260804-100000-4","skill":"sj-spec","phase":"draft","kind":"delight","severity":"nit","message":"신스키마 delight"}
