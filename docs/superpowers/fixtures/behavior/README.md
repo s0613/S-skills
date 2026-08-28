@@ -11,7 +11,7 @@ sj-company Small 경로) 중 하나라도 바뀌는 하네스 변경을 제안�
 
 ## 어떻게 돌리나
 
-이 스킬들은 `AskUserQuestion`을 쓰므로 비대화형 서브에이전트에서 멈춘다.
+이 스킬들은 `AskUserQuestion`을 쓰므로 비대화형 서브에이전트에서 멈춘다 — 계약 정본은 `skills/_conventions/noninteractive.md`이며, 디스패치 시 `SJ_NONINTERACTIVE=1`을 주거나 "사용자 없음"을 명시한다.
 각 케이스는 **서브에이전트에게 해당 스킬 역할을 시켜** 돌린다 — 볼트 플레이북을 읽고
 그대로 따르게 하되, 사용자 질문은 "가정으로 채우고 명시"하도록 지시한다.
 

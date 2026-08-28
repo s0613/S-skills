@@ -53,6 +53,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-qa.md"
   [judge-independence](../_conventions/judge-independence.md) 유지).
 - 심각도 보정([reviewer-diversity](../_conventions/reviewer-diversity.md)): FAIL은 실제 결함에만, 취향·스타일은 LOW로 통과.
 - 볼트·컨텍스트 append 전 [PII 마스킹](../_conventions/pii-masking.md), 인용 형식은 [context-curation](../_conventions/context-curation.md). 판정 정리본은 볼트 `40_프로젝트/{프로젝트}/보고서/`에 저장.
+- 사용자가 없는 실행(서브에이전트·루프·픽스처)에서는 `AskUserQuestion` 대신 가정을 쓰고 `## 가정`에 기록하되, 사람 게이트는 가정하지 않고 `보류: 사람 승인 필요`로 남긴다 (정본: `../_conventions/noninteractive.md`).
 
 ## 3. 최소 계약 (플레이북 부재 시)
 

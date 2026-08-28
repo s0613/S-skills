@@ -53,6 +53,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-company.md"
 - **산출물**: 사이클 휘발은 `.state/`(pm-brief·dev-summary·qa-verdict), 현재 상태는 `PROJECT.md`. 영속 파일 통째 재작성 전 archive 백업 ([archive-only](../_conventions/archive-only.md)).
 - **학습 환류**: 인사이트는 볼트 `30_경험/`(범용)·`40_프로젝트/{프로젝트}/`(한정)로 — notability 게이트·인용 형식·PII 마스킹은 [context-curation](../_conventions/context-curation.md). 레거시 `*-context.md`는 읽기만.
 - **프릭션 로그**: 라우팅·디스패치 마찰은 `friction.jsonl`에 한 줄 ([friction-log](../_conventions/friction-log.md)).
+- 사용자가 없는 실행(서브에이전트·루프·픽스처)에서는 `AskUserQuestion` 대신 가정을 쓰고 `## 가정`에 기록하되, 사람 게이트는 가정하지 않고 `보류: 사람 승인 필요`로 남긴다 (정본: `../_conventions/noninteractive.md`).
 
 ## 3. 최소 계약 (플레이북 부재 시)
 

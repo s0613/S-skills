@@ -27,6 +27,7 @@ S-skills의 모든 스킬에 적용되는 공통 규칙. **규칙 본문은 여�
 | [literate-report.md](literate-report.md) | 코드 변경 보고·PR 본문은 배경→의도→읽기 순서→세부 — diff 나열은 보고가 아니다 | sj-tech-lead, sj-ship |
 | [obsidian-output.md](obsidian-output.md) | 사용자 대상 보고서는 볼트 `40_프로젝트/{프로젝트}/보고서/`에 정리본 저장 — 볼트 없으면 비차단 | sj-tech-lead, sj-qa, sj-retro, sj-investigate, sj-cso, sj-ship |
 | [feature-map.md](feature-map.md) | 기능 목록·연결·수정 지점은 `docs/FEATURE-MAP.md`에 — 표가 정본, 지도 불일치는 경고(FAIL 아님), 없으면 비차단 | sj-spec, sj-tech-lead, sj-qa, docs-organize |
+| [noninteractive.md](noninteractive.md) | 사용자 없는 실행은 질문 대신 가정 + `## 가정` 기록 — 단 사람 게이트는 가정 금지, `보류:`로 남기고 나머지 진행 | 강제 질문을 가진 역할 스킬, 행동 픽스처, 루프·크론 |
 
 ## 스킬에서 참조하는 방법
 
