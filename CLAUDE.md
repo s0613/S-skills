@@ -53,7 +53,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 
 ## 품질 · 보안 · 릴리즈
 
-- **s-skills:sj-spec** (`/spec`, `/sj-spec`) — 스펙 작성 전문가. 모호한 의도를 5단계(why·scope·technical·draft·file)로 실행 가능한 정밀 스펙으로 변환. `docs/FEATURE-MAP.md` 있으면 `## 영향 범위` 절에 의존·역방향 의존 기능을 ID로 지목
+- **s-skills:sj-spec** (`/spec`, `/sj-spec`) — 스펙 작성 전문가. 모호한 의도를 6단계(why·scope·technical·impact·draft·file)로 실행 가능한 정밀 스펙으로 변환. `docs/FEATURE-MAP.md` 있으면 `## 영향 범위` 절에 의존·역방향 의존 기능을 ID로 지목
 - **s-skills:sj-investigate** (`/investigate`, `/sj-investigate`) — 체계적 루트코즈 디버깅 v2.0.0. 가설 수립→검증 강제, 조사 없는 수정 금지. Step 4b 이해 도구 옵션(마이크로월드) — 상태 변화 추적형 문제·검증 반복 실패 시 사람이 직접 탐색할 일회용 도구(단계별 실행·상태 시각화·before/after 뷰) 제작을 1회 제안. 조사 결과 옵시디언 저장.
 - **s-skills:sj-cso** (`/cso`, `/sj-cso`) — CSO 보안 감사 v2.0.0. OWASP Top 10 + STRIDE 위협 모델링, 8/10 이상 확신 취약점만 보고. 감사 보고서 정리본 옵시디언 저장.
 - **s-skills:sj-ship** (`/ship`, `/sj-ship`) — 릴리즈 엔지니어 자동화. 테스트→커버리지 감사→PR 오픈까지 한 번에. sj-company 통해 호출 시 push 전 브랜치 확인 필수. PR 본문 서술식(배경→의도→읽기 순서→세부) + 릴리즈 보고 옵시디언 저장.
@@ -120,6 +120,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 ## 아키텍처 원칙 (v4.0.0 기준)
 
 - **플레이북 구조 (v4)**: 역할 스킬 13개(sj-company·pm·design·tech-lead·qa·spec·investigate·cso·ship·retro·secretary·marketing·dev-si)의 절차 정본은 볼트 `20_실행/플레이북/{스킬}.md`. SKILL.md는 얇은 디스패처(플레이북 로드 커널 + 불변 산출물 계약 + 최소 계약 폴백, 80줄 이하). 역할→플레이북+지식 폴더 맵은 볼트 `00_SYSTEM/START-HERE.md` "하네스 역할 라우팅"이 정본. 플레이북은 신뢰된 절차 문서지만 SKILL.md의 불변 계약(산출물 경로·사람 게이트)을 뒤집을 수 없다. 도구 배선형 스킬(law·gpt·seo·automation·loop·agent-*·outsource·harness·docs-organize·obsidian-writer·pw-loop·test-scenario)은 기존 구조 유지.
+- **비대화형 실행**: 사용자가 없는 실행(서브에이전트·루프·크론·행동 픽스처)에서는 `AskUserQuestion` 대신 가정을 쓰고 산출물 `## 가정`에 기록한다. 되돌릴 수 있는 선택은 좁은 쪽 기본값. **사람 게이트는 가정하지 않는다** — PR 머지·배포·파괴적 작업·외부 발송은 `보류: 사람 승인 필요`로 남기고 나머지를 끝낸다(전체 중단도, 승인 가정도 틀렸다). `SJ_OUTPUT_FILE`이 있으면 화면 보고를 그 경로에도 써 화면 전용 스킬도 단언 가능하게 한다 (정본: [skills/_conventions/noninteractive.md](skills/_conventions/noninteractive.md)).
 - **기능 지도·추적성**: 기능 목록·연결·수정 지점은 대상 repo `docs/FEATURE-MAP.md`에 — 표가 정본이고 mermaid는 파생. sj-spec이 구현 전 영향 범위(역방향 포함)를 지목, sj-tech-lead가 구현 후 행을 갱신, sj-qa가 drift 검사 후 FAIL 시 의심 지점(기능 ID + 파일 경로)을 판정문에 명시, docs-organize가 기존 프로젝트에 최초 생성. 지도 불일치는 FAIL이 아니라 경고이며 지도가 없으면 비차단 (정본: [skills/_conventions/feature-map.md](skills/_conventions/feature-map.md)).
 
 > 횡단 원칙의 **단일 정의는 [skills/_conventions/](skills/_conventions/README.md)** — 아래는 요약. 규칙 수정은 컨벤션 파일에서 한다. 라우팅 키워드의 단일 정의는 [skills/RESOLVER.md](skills/RESOLVER.md). (gbrain의 얇은 디스패처 + 단일 컨벤션 패턴 차용)

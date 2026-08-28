@@ -3,7 +3,7 @@ name: sj-spec
 version: 2.0.0
 description: |
   스펙 작성 전문가 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-spec.md).
-  모호한 의도를 5단계(why·scope·technical·draft·file)로 실행 가능한 정밀 스펙으로 변환한다.
+  모호한 의도를 6단계(why·scope·technical·impact·draft·file)로 실행 가능한 정밀 스펙으로 변환한다.
   "스펙 만들어줘", "요구사항 정리", "PRD 써줘", "기능 명세" 요청에 반응.
 allowed-tools:
   - Bash
@@ -27,7 +27,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-spec.md"
 [ -f "$_PB" ] && echo "PLAYBOOK=present: $_PB" || echo "PLAYBOOK=absent"
 ```
 
-- **present** → 플레이북을 Read로 읽고 Why→Scope→Technical→Draft→File 5단계 절차를
+- **present** → 플레이북을 Read로 읽고 Why→Scope→Technical→Impact→Draft→File 6단계 절차를
   그대로 따른다.
 - **absent** → 아래 최소 계약만으로 진행하고, 스펙 문서에
   `미수행: 플레이북 없음(볼트 부재)` 한 줄을 남긴다.
@@ -48,6 +48,6 @@ _PB="$_VAULT/20_실행/플레이북/sj-spec.md"
 ## 3. 최소 계약 (플레이북 부재 시)
 
 1. Why(강제 질문 6개, 미답변은 가정으로 채움) → Scope(포함/제외/보류) →
-   Technical(코드베이스 탐색) → Draft(자가검토 체크리스트) → File(저장 + task.txt
-   등록) 순으로 진행한다.
+   Technical(코드베이스 탐색) → Impact(지도 있으면 의존·역방향 지목, 없으면 `미수행:` 기록) →
+   Draft(자가검토 체크리스트) → File(저장 + task.txt 등록) 순으로 진행한다.
 2. 스펙 저장 후 사용자에게 경로를 보고하고 다음 단계(구현/보안검토)를 제안한다.
