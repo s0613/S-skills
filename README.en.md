@@ -148,6 +148,7 @@ skills/
 ├── sj-company/       ← entry point for all skills (Step 0 reads RESOLVER.md and dispatches)
 ├── sj-pm/            ← requirements analysis
 ├── sj-design/        ← UI design + design review
+├── sj-seed/          ← Karrot SEED design system (tokens + official components only)
 ├── sj-tech-lead/     ← sub-agent orchestration
 ├── sj-qa/            ← independent verification
 ├── sj-spec/          ← precise spec

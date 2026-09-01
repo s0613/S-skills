@@ -148,6 +148,7 @@ skills/
 ├── sj-company/       ← すべてのスキルの入口（Step 0 が RESOLVER.md を読んでディスパッチ）
 ├── sj-pm/            ← 要件分析
 ├── sj-design/        ← UI 設計 + デザインレビュー
+├── sj-seed/          ← カラット SEED デザインシステム（トークンと公式コンポーネントのみ）
 ├── sj-tech-lead/     ← サブエージェントオーケストレーション
 ├── sj-qa/            ← 独立検証
 ├── sj-spec/          ← 精密仕様

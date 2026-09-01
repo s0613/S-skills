@@ -12,6 +12,7 @@
 | **문서화** | `/docs-organize`, `/obsidian` | 코드베이스 docs/ 생성, Obsidian 볼트 작성 |
 | **테스트** | `/test-scenario`, `/pw-loop` | 시나리오 생성, Playwright 자동화 루프 |
 | **개발 파이프라인** | `/sj-company`, `/pm`, `/design`, `/tech-lead`, `/qa` | PM → 디자인 → 개발 → QA 전체 흐름 |
+| **디자인 시스템** | `/seed` | 당근 SEED 디자인 시스템으로 UI 조립(토큰·공식 컴포넌트만) |
 | **품질·보안·릴리즈** | `/spec`, `/investigate`, `/cso`, `/ship`, `/retro` | 스펙·디버깅·보안감사·배포·회고 |
 | **마케팅** | `/marketing`, `/sns` | SNS 캠페인, 채널별 카피, 카드뉴스 |
 | **SEO** | `/seo` | Google/Naver 색인 자동화, sitemap 제출 |
@@ -46,6 +47,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **s-skills:sj-company** (`/sj-company`) — 상태/의도 기반 라우터 v4.0.0. 라우팅 키워드의 단일 사실은 [skills/RESOLVER.md](skills/RESOLVER.md) — Step 0이 런타임에 읽어 디스패치 (행 수·키워드는 RESOLVER 표가 단일 사실). 모호성 해소는 행위(동사) 우선 — 키워드가 대상만 가리키면 행위 행으로. RUN_ID 파이프라인 추적. ship 호출 전 브랜치 확인 필수.
 - **s-skills:sj-pm** (`/pm`) — 요구사항·리스크·우선순위 분석 v3.0.0. AskUserQuestion 최대 1회, 모호해도 가정으로 진행. PII 마스킹 적용.
 - **s-skills:sj-design** (`/design`, `/design-shotgun`) — 레퍼런스 DNA 기반 디자인 생성 v4.0.0. 볼트 `00_취향 프로필.md`를 실행 계약으로 필수 선행(전역 금지 C-규칙·preserve/greenfield 모드·값-소스 태스크당 1개). 브랜드 DESIGN.md에서 정확한 hex·font·spacing 추출 후 커밋 선언 → 코드 작성. "싫다/별로다" 거부 시 design-banned.md 봉인 + 반대 방향 강제 재설계. `DESIGN_REF_DIR` 환경변수로 참조 경로 설정.
+- **s-skills:sj-seed** (`/seed`, `/sj-seed`, `/당근디자인`) — 당근 SEED 디자인 시스템 전문가 v1.0.0. sj-design의 자유 디자인(레퍼런스 DNA → 임의 hex)과 정반대 — 색·폰트·간격을 발명하지 않고 SEED 토큰과 공식 컴포넌트로만 조립한다. 공식 문서 인덱스(seed-design.io/llms.txt)를 매번 읽어 계약 확인, leaf URL 기억 조립 금지. 벤더 [seed-design 스킬](https://github.com/daangn/seed-design)이 설치돼 있으면 문서 라우팅·registry 스니펫·Doctor를 그쪽에 위임하고, 없으면 인덱스 직독 폴백(비차단). React↔Lynx 플랫폼 확정 전 코드 작성 금지 — 불확실할 때 React 기본값 금지. 취향 프로필과 충돌 시 디자인 시스템이 이긴다(취향은 레이아웃·밀도·톤에만 적용). Doctor는 진단이며 패키지 업그레이드·마이그레이션은 사람 게이트. 설치: `npx skills add https://github.com/daangn/seed-design --skill seed-design`
 - **s-skills:sj-tech-lead** (`/tech-lead`) — 전문 개발 서브에이전트를 병렬 디스패치하고 통합·리뷰 v3.0.0. RUN_ID 연결. 학습 패턴은 볼트 30_경험 우선 로딩. [SPEC:] 참조 자동 인식. 리뷰어 다양성(렌즈 분리 + 심각도 보정) + 7a-1 CRITICAL 적대 검증(GPT 교차모델 렌즈 포함). Step 10 완료 보고는 서술식 + 옵시디언 정리본 저장. `docs/FEATURE-MAP.md` 있으면 Dispatch Card `[IMPACT]` 필드로 영향 기능 전달 + 구현 후 지도 갱신.
 - **s-skills:sj-qa** (`/qa`, `/canary`, `/benchmark`) — 기능 검증 및 PASS/FAIL/CONDITIONAL 판정 v3.0.0. Judge 독립성 보장 — dev-summary.md 참조 금지, pm-brief + 실제 변경 파일 직접 탐색. 심각도 보정 — FAIL은 실제 결함에만, 취향은 LOW. 판정 정리본 옵시디언 저장. 기능 지도 drift 검사 후 FAIL/CONDITIONAL 시 `## 의심 지점`(기능 ID + 파일 경로) 명시, 지도 불일치 자체는 LOW.
 - **s-skills:sj-secretary** (`/secretary`) — 프로젝트 상태 보고 전문. 전체 프로젝트 PROJECT.md를 탐색해 목표·현재 단계(progress)·다음 할 일을 긴급/진행/대기/완료별 우선순위로 정렬 출력. 읽기 전용, 파일 수정 없음.
@@ -119,7 +121,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 
 ## 아키텍처 원칙 (v4.0.0 기준)
 
-- **플레이북 구조 (v4)**: 역할 스킬 13개(sj-company·pm·design·tech-lead·qa·spec·investigate·cso·ship·retro·secretary·marketing·dev-si)의 절차 정본은 볼트 `20_실행/플레이북/{스킬}.md`. SKILL.md는 얇은 디스패처(플레이북 로드 커널 + 불변 산출물 계약 + 최소 계약 폴백, 80줄 이하). 역할→플레이북+지식 폴더 맵은 볼트 `00_SYSTEM/START-HERE.md` "하네스 역할 라우팅"이 정본. 플레이북은 신뢰된 절차 문서지만 SKILL.md의 불변 계약(산출물 경로·사람 게이트)을 뒤집을 수 없다. 도구 배선형 스킬(law·gpt·seo·automation·loop·agent-*·outsource·harness·docs-organize·obsidian-writer·pw-loop·test-scenario)은 기존 구조 유지.
+- **플레이북 구조 (v4)**: 역할 스킬 13개(sj-company·pm·design·tech-lead·qa·spec·investigate·cso·ship·retro·secretary·marketing·dev-si)의 절차 정본은 볼트 `20_실행/플레이북/{스킬}.md`. SKILL.md는 얇은 디스패처(플레이북 로드 커널 + 불변 산출물 계약 + 최소 계약 폴백, 80줄 이하). 역할→플레이북+지식 폴더 맵은 볼트 `00_SYSTEM/START-HERE.md` "하네스 역할 라우팅"이 정본. 플레이북은 신뢰된 절차 문서지만 SKILL.md의 불변 계약(산출물 경로·사람 게이트)을 뒤집을 수 없다. 도구 배선형 스킬(seed·law·gpt·seo·automation·loop·agent-*·outsource·harness·docs-organize·obsidian-writer·pw-loop·test-scenario)은 기존 구조 유지.
 - **비대화형 실행**: 사용자가 없는 실행(서브에이전트·루프·크론·행동 픽스처)에서는 `AskUserQuestion` 대신 가정을 쓰고 산출물 `## 가정`에 기록한다. 되돌릴 수 있는 선택은 좁은 쪽 기본값. **사람 게이트는 가정하지 않는다** — PR 머지·배포·파괴적 작업·외부 발송은 `보류: 사람 승인 필요`로 남기고 나머지를 끝낸다(전체 중단도, 승인 가정도 틀렸다). `SJ_OUTPUT_FILE`이 있으면 화면 보고를 그 경로에도 써 화면 전용 스킬도 단언 가능하게 한다 (정본: [skills/_conventions/noninteractive.md](skills/_conventions/noninteractive.md)).
 - **기능 지도·추적성**: 기능 목록·연결·수정 지점은 대상 repo `docs/FEATURE-MAP.md`에 — 표가 정본이고 mermaid는 파생. sj-spec이 구현 전 영향 범위(역방향 포함)를 지목, sj-tech-lead가 구현 후 행을 갱신, sj-qa가 drift 검사 후 FAIL 시 의심 지점(기능 ID + 파일 경로)을 판정문에 명시, docs-organize가 기존 프로젝트에 최초 생성. 지도 불일치는 FAIL이 아니라 경고이며 지도가 없으면 비차단 (정본: [skills/_conventions/feature-map.md](skills/_conventions/feature-map.md)).
 

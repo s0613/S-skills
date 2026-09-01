@@ -197,6 +197,7 @@ skills/
 ├── sj-company/       ← 모든 스킬의 진입점 (Step 0이 RESOLVER.md를 읽어 디스패치)
 ├── sj-pm/            ← 요구사항 분석
 ├── sj-design/        ← UI 설계 + 디자인 리뷰
+├── sj-seed/          ← 당근 SEED 디자인 시스템 (토큰·공식 컴포넌트로만 조립)
 ├── sj-tech-lead/     ← 서브에이전트 오케스트레이션
 ├── sj-qa/            ← 독립 검증
 ├── sj-spec/          ← 정밀 명세

@@ -148,6 +148,7 @@ skills/
 ├── sj-company/       ← 所有技能的入口（Step 0 读取 RESOLVER.md 并分发）
 ├── sj-pm/            ← 需求分析
 ├── sj-design/        ← UI 设计 + 设计评审
+├── sj-seed/          ← Karrot SEED 设计系统（仅用 token 与官方组件）
 ├── sj-tech-lead/     ← 子代理编排
 ├── sj-qa/            ← 独立验证
 ├── sj-spec/          ← 精确规格

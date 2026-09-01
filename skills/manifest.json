@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -216,6 +216,18 @@
       "description": "프로젝트 상태 보고 에이전트 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-secretary.md).",
       "triggers": [
         "/secretary"
+      ]
+    },
+    {
+      "name": "sj-seed",
+      "path": "skills/sj-seed/SKILL.md",
+      "version": "1.0.0",
+      "description": "당근(Karrot) SEED 디자인 시스템으로 UI를 만드는 전문가.",
+      "triggers": [
+        "/seed",
+        "/sj-seed",
+        "/seed-design",
+        "/당근디자인"
       ]
     },
     {
