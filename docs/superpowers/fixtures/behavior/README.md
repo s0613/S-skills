@@ -169,6 +169,25 @@ awk -F'|' '/^\| *F[0-9]/ {print $4 $5 $6}' "$M" | tr -d '`' | tr ' ,' '\n\n' \
 판별은 "이 모듈만 고치는 버그 수정이 있었을 법한가"이지 빈도가 아니다.
 2026-08-27 필드 검증에서 실증된 사각지대를 고정한다.
 
+## 케이스 I — 만드는 요청은 자동화가 아니다 (sj-company)
+
+- 픽스처: `routing/` (케이스 F와 공용)
+- 태스크: `SEED로 버튼 컴포넌트 만들어줘`
+- 실행: `SJ_OUTPUT_FILE="$T/routing/out-i.txt"`를 주고 sj-company를 돌린다.
+- 단언:
+
+```bash
+O="$T/routing/out-i.txt"
+[ -f "$O" ]                        || echo "FAIL: 출력 캡처 안 됨 (SJ_OUTPUT_FILE 미준수)"
+grep -qi 'sj-seed\|SEED 디자인' "$O" || echo "FAIL: SEED 행(#26)으로 라우팅하지 않았다"
+grep -qi 'sj-automation' "$O"      && echo "FAIL: #2 UI 자동화가 가로챘다"
+```
+
+RESOLVER #2의 맨 단어 `버튼`은 #26의 구 `seed 컴포넌트`보다 **위에** 있다 —
+순서만 따르면 자동화 스킬이 이긴다. #2에 생성 동사 제외 조건이 없거나
+모호성 규칙 1(행위 우선)이 퇴화하면 여기서 잡힌다.
+2026-09-03 라우팅 감사에서 발견해 고정했다.
+
 ## 커버리지와 경계
 
 지금 덮는 것과 못 덮는 것을 밝혀 둔다 — 덮이지 않은 영역이 검증된 것처럼 보이지 않도록.
@@ -179,14 +198,14 @@ awk -F'|' '/^\| *F[0-9]/ {print $4 $5 $6}' "$M" | tr -d '`' | tr ' ,' '\n\n' \
 | sj-qa | 케이스 C |
 | sj-pm | 케이스 D |
 | sj-retro | 케이스 E (friction 소비 경로만) |
-| sj-company | 케이스 F (라우팅만) |
+| sj-company | 케이스 F·I (라우팅만) |
 | sj-secretary | 케이스 G (수신함·읽기 전용) |
 | docs-organize | 케이스 H (2차 훑기만 — 전체 문서 생성은 미커버) |
 | sj-tech-lead | 미커버 — 서브에이전트 디스패치가 필요해 픽스처가 비싸다 |
 | sj-investigate · cso · ship · design · marketing · dev-si | 외부 상태·사람 판단 의존 |
 | seo · automation · law · gpt · agent-* · loop · outsource · pw-loop · test-scenario · harness · obsidian-writer | 브라우저·MCP·OS·네트워크가 필요해 값싼 픽스처에 부적합 |
 
-**26개 스킬 중 행동 테스트가 있는 것은 7개다.** 나머지는 여전히 구조 검사
+**27개 스킬 중 행동 테스트가 있는 것은 7개다.** 나머지는 여전히 구조 검사
 (`skill-manifest.py --check`)만 받는다 — 배선의 존재는 보지만 동작은 보지 않는다.
 
 새 케이스를 추가할 때는 하나만 지킨다: **고장난 구현이 이 단언을 통과할 수 있는가?**
@@ -194,5 +213,5 @@ awk -F'|' '/^\| *F[0-9]/ {print $4 $5 $6}' "$M" | tr -d '`' | tr ' ,' '\n\n' \
 
 ## 결과 기록
 
-세 케이스의 통과/실패와 실제 출력을 sj-retro 보고서의 Self-Harness 절에 적는다.
+각 케이스의 통과/실패와 실제 출력을 sj-retro 보고서의 Self-Harness 절에 적는다.
 돌리지 못한 케이스는 `미수행: {이유}`로 남긴다 — 안 돌린 것을 통과로 세지 않는다.
