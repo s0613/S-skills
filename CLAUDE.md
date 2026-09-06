@@ -17,6 +17,7 @@
 | **마케팅** | `/marketing`, `/sns` | SNS 캠페인, 채널별 카피, 카드뉴스 |
 | **SEO** | `/seo` | Google/Naver 색인 자동화, sitemap 제출 |
 | **PC 자동화** | `/automation`, `/auto`, `/ui-auto` | 스크립트·UI 조작·네이티브 앱 제작 |
+| **화면 영상** | `/screencast`, `/화면녹화` | 화면 설명 영상 녹화·줌·자막·MP4/GIF 렌더 |
 | **루프 엔지니어링** | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | **에이전트 개발** | `/agent-dev`, `/agent-review` | AI 에이전트 설계·심사 |
 | **GPT 자문** | `/gpt` | codex MCP로 GPT에 리서치·세컨드 오피니언·브레인스토밍 위임 |
@@ -69,6 +70,10 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 ## PC 자동화
 
 - **s-skills:sj-automation** (`/sj-automation`, `/automation`, `/auto`, `/sj-ui-auto`, `/ui-auto`) — 자동화 + UI 조작 + 네이티브 앱 제작 통합 전문가 v2.1.0. OS 자동 감지(macOS·Linux·Windows) 후 최적 도구 선택. 스크립트 자동화(launchd·systemd·Task Scheduler)·UI 조작(Playwright·PyAutoGUI·AppleScript·xdotool·AutoHotkey)·네이티브 앱 제작(SwiftUI·WinForms·GTK·Tauri·customtkinter) 통합 구현
+
+## 화면 영상
+
+- **s-skills:sj-screencast** (`/screencast`, `/sj-screencast`, `/데모영상`, `/화면녹화`) — 화면 설명 영상 제작 전문가 v1.0.0. [OpenScreen](https://github.com/getopenscreen/openscreen) CLI(MIT, 앱 바이너리 내장)를 헤드리스로 몰아 `sources`로 대상 확정 → 장면표(원고) → 녹화 → `.openscreen` JSON을 줌·주석으로 편집 → 내레이션·자막 → MP4/GIF 렌더까지 끝낸다. **녹화 시작은 항상 사람 승인**(화면 위생 체크리스트) — 영상은 사후 마스킹이 불가능해 토큰·고객 데이터가 찍히면 재촬영이 유일한 해법. 소스는 `sources -o` 결과로만 확정(추측 금지, 래퍼가 stdout을 오염시킬 수 있어 파일 경로 사용). 렌더 후 ffmpeg으로 프레임을 뽑아 **직접 확인**한 뒤에만 완료 보고 — 권한 없이 찍힌 검은 화면을 성공으로 읽지 않는다. 자막은 프로젝트 오디오를 전사하므로 TTS 내레이션만 쓰면 주석 텍스트로 넣는다. 화면 *조작*은 이 스킬이 하지 않는다(sj-automation과 병행). 재사용 자산은 `docs/screencast/{slug}/`(script.md + build.sh).
 
 ## 루프 엔지니어링
 
