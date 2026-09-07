@@ -28,6 +28,7 @@ S-skills의 모든 스킬에 적용되는 공통 규칙. **규칙 본문은 여�
 | [obsidian-output.md](obsidian-output.md) | 사용자 대상 보고서는 볼트 `40_프로젝트/{프로젝트}/보고서/`에 정리본 저장 — 볼트 없으면 비차단 | sj-tech-lead, sj-qa, sj-retro, sj-investigate, sj-cso, sj-ship |
 | [feature-map.md](feature-map.md) | 기능 목록·연결·수정 지점은 `docs/FEATURE-MAP.md`에 — 표가 정본, 지도 불일치는 경고(FAIL 아님), 없으면 비차단 | sj-spec, sj-tech-lead, sj-qa, docs-organize |
 | [noninteractive.md](noninteractive.md) | 사용자 없는 실행은 질문 대신 가정 + `## 가정` 기록 — 단 사람 게이트는 가정 금지, `보류:`로 남기고 나머지 진행 | 강제 질문을 가진 역할 스킬, 행동 픽스처, 루프·크론 |
+| [external-tools.md](external-tools.md) | 외부 도구 의존은 릴리즈 페이지 링크가 아니라 붙여넣을 설치 명령으로 — 버전 박제 금지(`releases/latest`), 설치는 승인 후 실행 가능하나 권한 부여·sudo·키 발급은 사람 게이트 | sj-screencast, sj-law, sj-gpt, sj-seed, sj-seo, pw-loop, sj-automation |
 
 ## 스킬에서 참조하는 방법
 

@@ -4,6 +4,24 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [4.7.0] - 2026-09-07
+
+**외부 도구는 링크가 아니라 설치 명령으로** — 스킬이 외부 도구에 의존할 때 사용자를 릴리즈 페이지로 보내지 않는다. 실제로 설치를 돌려보고 스크립트 결함 둘을 잡았다.
+
+### Added
+- **`_conventions/external-tools.md`** — 외부 도구 설치 게이트 규칙. ① 탐지는 스킬이 한다(앱 번들 안 CLI·홈 아래 설치 등 후보 경로를 훑는다) ② 안내는 플랫폼·아키텍처를 감지한 **붙여넣을 명령**이고 페이지 링크는 출처로만 ③ 버전을 SKILL.md에 박지 말고 `releases/latest`에서 런타임에 뽑는다 ④ 설치는 승인 후 스킬이 실행해도 되지만 `sudo`·권한 부여·API 키 발급은 사람 게이트 ⑤ "설치했다"를 믿지 말고 재검증 후 진행. 스킬별 외부 의존 인덱스 표(sj-screencast·sj-law·sj-gpt·sj-seed·sj-seo·pw-loop·sj-automation)를 함께 둬 새 의존이 생기면 한 줄 추가하게 했다.
+
+### Changed
+- **`sj-screencast` v1.1.0 Step 0** — "릴리즈 페이지에서 `.dmg`를 받으세요"를 실제 설치 경로로 바꿨다. macOS는 `uname -m`으로 Apple Silicon/Intel을 갈라 `releases/latest`에서 맞는 자산 URL을 뽑고 마운트·복사·언마운트까지 하며, Windows는 Store(`winget install --source msstore OpenScreen`)와 미서명 `.exe`의 SmartScreen 경고를, Linux는 `.deb`/`.rpm`/`.pacman`/`.AppImage`와 Wayland의 포털 요구를 적었다.
+- **macOS 권한이 둘이라는 사실을 명시** — 화면 기록만 적혀 있었으나 상류 문서는 **손쉬운 사용(Accessibility)도 필수**라고 한다. 하나만 켜면 녹화가 시작되지 않는데 증상은 "그냥 안 됨"이라 원인을 찾기 어렵다. Step 9의 검은 화면 진단 항목도 두 권한을 함께 가리키게 고쳤다.
+
+### Fixed
+- **설치 스크립트 결함 2건 — 실제로 돌려서 발견했다.** `hdiutil attach -nobrowse -quiet`는 마운트 경로까지 삼켜 `$MP`가 비고 `cp`가 `/Openscreen.app`에서 실패한다(`-quiet` 제거). 그리고 설치 검증으로 적었던 `--version`은 **CLI 명령이 아니다** — 모르는 플래그를 주면 오류 대신 GUI 앱을 띄운 채 매달려서 세션이 타임아웃까지 멈춘다. 검증을 실제 서브커맨드(`sources -o`)의 exit 0으로 바꿨다. 창 제목이 열거되면 화면 기록 권한까지 같이 확인된다.
+
+### Notes
+- **런타임 검증 완료** — 4.6.0의 `미수행: 런타임 검증`을 해소했다. 이 머신에 OpenScreen 1.10.0을 실제로 설치하고 `sources -o`로 디스플레이 2개·창 4개·마이크 4개를 열거해 exit 0을 확인했다. URL 추출 스니펫(macOS·Linux)도 실행해 자산 URL이 나오는 것을 확인했다. 녹화·렌더는 사람 승인이 필요한 단계라 여전히 미실행이다.
+- 도구를 문서로만 배선하면 이런 결함이 첫 사용자에게서 터진다. 설치를 한 번 돌려보는 비용이 결함 2건보다 쌌다.
+
 ## [4.6.0] - 2026-09-06
 
 **화면 설명 영상 스킬** — 제품 데모·기능 소개·버그 재현 영상을 명령줄에서 끝까지 만든다. 영상 편집 앱을 여는 단계가 파이프라인에서 빠진다.

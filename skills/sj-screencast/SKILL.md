@@ -1,6 +1,6 @@
 ---
 name: sj-screencast
-version: 1.0.0
+version: 1.1.0
 description: |
   화면 설명 영상(제품 데모·기능 소개·버그 재현) 제작 전문가.
   OpenScreen CLI(헤드리스)로 녹화 → 프로젝트 JSON을 줌·주석으로 편집 →
@@ -58,18 +58,83 @@ echo "${OS_BIN:-NOT_FOUND}"
 
 Windows는 `"C:\Program Files\Openscreen\Openscreen.exe"`.
 
-**없으면 설치를 안내하고 여기서 멈춘다.** 데스크톱 앱 설치와 화면 기록 권한 부여는
-사람 게이트 — 대신 설치하지 않는다.
+### 없으면 — 링크만 던지지 않는다
 
-> OpenScreen을 먼저 설치해 주세요 (무료, MIT).
-> - macOS: https://github.com/getopenscreen/openscreen/releases 에서 `.dmg`
-> - Windows: `winget install --source msstore OpenScreen`
-> - Linux: `.deb`/`.rpm`/`.AppImage` (Wayland는 PipeWire 포털 필요)
-> 설치 후 **시스템 설정 → 개인정보 보호 → 화면 기록**에서 권한을 켜 주세요.
+> **컨벤션:** [외부 도구 설치 게이트](../_conventions/external-tools.md) — 릴리즈 페이지로
+> 보내지 말고 그 사용자가 붙여넣을 명령을 준다. 설치는 승인받아 스킬이 실행해도 되지만
+> **권한 부여는 사람 게이트다.**
 
-macOS 권한은 앱이 아니라 **Electron을 호스팅한 바이너리**(이 세션을 띄운 터미널)에
-걸린다. 권한이 없으면 record가 성공한 척하고 **검은 화면**을 남긴다 — Step 9에서
-프레임을 반드시 확인하는 이유다.
+사용자에게 설치 여부를 묻고(`AskUserQuestion`, 비대화형이면 `보류: 사람 승인 필요`),
+승인하면 아래를 그대로 실행한다. 버전을 박지 않고 `releases/latest`에서 뽑는다.
+
+**macOS** — 아키텍처를 감지해 맞는 `.dmg`를 받아 `/Applications`에 설치:
+
+```bash
+set -e
+case "$(uname -m)" in arm64) PAT="Apple-Silicon" ;; *) PAT="Intel" ;; esac
+URL="$(curl -sL https://api.github.com/repos/getopenscreen/openscreen/releases/latest \
+  | grep -o "https://[^\"]*macOS-${PAT}[^\"]*\.dmg" | head -1)"
+[ -n "$URL" ] || { echo "릴리즈 조회 실패 — https://github.com/getopenscreen/openscreen/releases 에서 수동 설치"; exit 1; }
+curl -L --progress-bar -o /tmp/Openscreen.dmg "$URL"
+MP="$(hdiutil attach -nobrowse -noverify /tmp/Openscreen.dmg | grep -o '/Volumes/.*' | tail -1)"
+cp -R "$MP"/Openscreen.app /Applications/
+hdiutil detach -quiet "$MP"; rm -f /tmp/Openscreen.dmg
+xattr -dr com.apple.quarantine /Applications/Openscreen.app 2>/dev/null || true
+```
+
+1.9.0부터 Developer ID 서명·공증된 빌드라 Gatekeeper가 막지 않는다.
+`hdiutil attach`에 **`-quiet`를 붙이지 않는다** — 마운트 경로까지 같이 삼켜서
+`$MP`가 비고, `cp`가 `/Openscreen.app`을 찾다 실패한다.
+
+**Windows** — Microsoft Store 경로가 권장(스토어가 서명·자동 업데이트):
+
+```powershell
+winget install --source msstore OpenScreen
+```
+
+스토어에 못 닿는 환경(LTSC·사내 잠금)이면 릴리즈의 `Openscreen.Setup.*.exe`.
+서명되지 않아 SmartScreen이 "알 수 없는 게시자"를 띄운다 — **More info → Run anyway**.
+
+**Linux** — 배포판에 맞는 자산 하나:
+
+```bash
+URL="$(curl -sL https://api.github.com/repos/getopenscreen/openscreen/releases/latest \
+  | grep -o 'https://[^"]*Linux[^"]*\.deb' | head -1)"   # rpm·pacman·AppImage로 교체 가능
+curl -L --progress-bar -o /tmp/openscreen.deb "$URL" && sudo apt install -y /tmp/openscreen.deb
+```
+
+`sudo`가 붙는 순간 **사람 게이트** — 명령을 출력하고 사용자가 직접 실행하게 한다.
+Wayland는 네이티브 캡처에 `xdg-desktop-portal` + PipeWire가 필요하다.
+
+출처: <https://github.com/getopenscreen/openscreen> (MIT) ·
+릴리즈: <https://github.com/getopenscreen/openscreen/releases>
+
+### 설치 뒤 — 권한은 사람이 켠다 (여기서 멈춤)
+
+macOS는 **두 가지**를 요구한다. 하나만 켜면 녹화가 시작되지 않는다:
+
+> 시스템 설정 → 개인정보 보호 및 보안 에서 두 개를 켜 주세요:
+>   [ ] **화면 기록** (Screen Recording)
+>   [ ] **손쉬운 사용** (Accessibility)
+> 대상은 OpenScreen 앱이 아니라 **이 세션을 띄운 터미널**입니다 —
+> macOS 권한은 Electron을 호스팅한 바이너리에 걸립니다.
+
+권한이 없으면 record가 **성공한 척하고 검은 화면**을 남긴다 — Step 9에서 프레임을
+반드시 확인하는 이유다. macOS 15+는 화면 기록 권한을 주기적으로 다시 묻는다(정상 동작).
+1.9.0 미만에서 올렸다면 서명이 달라 기존 권한이 승계되지 않으니 두 항목의 기존
+엔트리를 지우고 다시 부여한다.
+
+설치·권한 안내 후에는 [정직 산출 계약](../_conventions/honest-report.md)대로
+**재검증에 성공한 뒤에만** Step 1로 간다. 검증은 Step 2를 앞당겨 쓴다:
+
+```bash
+"$OS_BIN" sources -o /tmp/os-check.json; echo "exit=$?"   # 0 + 디스플레이 목록이면 통과
+```
+
+**`--version`·`--help`로 확인하지 않는다.** CLI는 서브커맨드로만 동작해서, 모르는
+플래그를 주면 오류를 내지 않고 **GUI 앱을 띄운 채 매달린다**(무한 대기). 실제 서브커맨드
+하나가 exit 0으로 끝나는 것이 유일하게 믿을 수 있는 신호다.
+`sources`가 창 제목을 열거하면 화면 기록 권한도 함께 확인된 것이다.
 
 ---
 
@@ -287,7 +352,7 @@ ffmpeg -v error -i docs/screencast/{slug}/demo.mp4 \
 ```
 
 세 장을 Read로 열어 확인한다:
-- **검은 화면/빈 창** → macOS 화면 기록 권한 (Step 0). 재촬영해야 한다.
+- **검은 화면/빈 창** → macOS 화면 기록·손쉬운 사용 권한 (Step 0, 둘 다 필요). 재촬영해야 한다.
 - 엉뚱한 창 → `--window` 부분 일치가 다른 창을 잡았다 (Step 2로).
 - 화면에 토큰·개인정보가 보인다 → **파일을 지우고 재촬영.** 공유했다면 즉시 알린다.
 

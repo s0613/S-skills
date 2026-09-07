@@ -73,7 +73,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 
 ## 화면 영상
 
-- **s-skills:sj-screencast** (`/screencast`, `/sj-screencast`, `/데모영상`, `/화면녹화`) — 화면 설명 영상 제작 전문가 v1.0.0. [OpenScreen](https://github.com/getopenscreen/openscreen) CLI(MIT, 앱 바이너리 내장)를 헤드리스로 몰아 `sources`로 대상 확정 → 장면표(원고) → 녹화 → `.openscreen` JSON을 줌·주석으로 편집 → 내레이션·자막 → MP4/GIF 렌더까지 끝낸다. **녹화 시작은 항상 사람 승인**(화면 위생 체크리스트) — 영상은 사후 마스킹이 불가능해 토큰·고객 데이터가 찍히면 재촬영이 유일한 해법. 소스는 `sources -o` 결과로만 확정(추측 금지, 래퍼가 stdout을 오염시킬 수 있어 파일 경로 사용). 렌더 후 ffmpeg으로 프레임을 뽑아 **직접 확인**한 뒤에만 완료 보고 — 권한 없이 찍힌 검은 화면을 성공으로 읽지 않는다. 자막은 프로젝트 오디오를 전사하므로 TTS 내레이션만 쓰면 주석 텍스트로 넣는다. 화면 *조작*은 이 스킬이 하지 않는다(sj-automation과 병행). 재사용 자산은 `docs/screencast/{slug}/`(script.md + build.sh).
+- **s-skills:sj-screencast** (`/screencast`, `/sj-screencast`, `/데모영상`, `/화면녹화`) — 화면 설명 영상 제작 전문가 v1.1.0. [OpenScreen](https://github.com/getopenscreen/openscreen) CLI(MIT, 앱 바이너리 내장)를 헤드리스로 몰아 `sources`로 대상 확정 → 장면표(원고) → 녹화 → `.openscreen` JSON을 줌·주석으로 편집 → 내레이션·자막 → MP4/GIF 렌더까지 끝낸다. 설치돼 있지 않으면 Step 0이 `releases/latest`에서 OS·아키텍처에 맞는 자산을 받아 설치까지 끝낸다(권한 부여만 사람 게이트) — 사용자를 릴리즈 페이지로 보내지 않는다. **녹화 시작은 항상 사람 승인**(화면 위생 체크리스트) — 영상은 사후 마스킹이 불가능해 토큰·고객 데이터가 찍히면 재촬영이 유일한 해법. 소스는 `sources -o` 결과로만 확정(추측 금지, 래퍼가 stdout을 오염시킬 수 있어 파일 경로 사용). 렌더 후 ffmpeg으로 프레임을 뽑아 **직접 확인**한 뒤에만 완료 보고 — 권한 없이 찍힌 검은 화면을 성공으로 읽지 않는다. 자막은 프로젝트 오디오를 전사하므로 TTS 내레이션만 쓰면 주석 텍스트로 넣는다. 화면 *조작*은 이 스킬이 하지 않는다(sj-automation과 병행). 재사용 자산은 `docs/screencast/{slug}/`(script.md + build.sh).
 
 ## 루프 엔지니어링
 
@@ -142,6 +142,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 - **사람 게이트**: PR 머지·프로덕션 배포 승인은 항상 사람이 한다. 어떤 스킬·루프·자동화도 이 두 가지를 자동 실행하지 않는다 (build the loop, stay the engineer).
 - **완료 조건 검증**: pm-brief의 `## 완료 조건`(기계 검증 가능)을 sj-qa가 1:1 실행·대조해 판정. "done"은 주장이 아니라 조건 충족의 결과.
 - **병렬 충돌 방지**: Tech Lead 같은 단계 병렬 디스패치는 파일 소유권 분할이 기본, 불가피한 동시 수정만 `isolation: worktree` 격리.
+- **외부 도구 설치 게이트**: 스킬이 외부 앱·CLI·MCP에 의존하면 릴리즈 페이지 링크가 아니라 **그 사용자가 붙여넣을 설치 명령**을 스킬 안에 둔다. 버전은 박지 말고 `releases/latest`에서 런타임에 뽑는다(박제하면 스킬이 늙는다). 설치는 승인 후 스킬이 실행해도 되지만 **권한 부여·`sudo`·API 키 발급은 사람 게이트**이며, 설치 후 바이너리 재검증에 성공해야 다음 단계로 간다. 도구별 설치 명령의 단일 인덱스는 [skills/_conventions/external-tools.md](skills/_conventions/external-tools.md).
 - **프릭션 로그**: 스킬 실행 중 마찰(혼란·오류·막힘)·기쁨(delight)을 `docs/sj-company/friction.jsonl`에 append-only 기록. sj-retro가 주간으로 모아 Keep/Improve/Try에 반영 — 반복 마찰이 최우선 개선 후보 (gbrain friction protocol 차용).
 - **최소 코드 사다리**: 구현 전 "안 써도 되는 길"부터 따진다 — 존재 필요(YAGNI)→표준 라이브러리→플랫폼 네이티브→설치된 의존성→한 줄→그때서야 최소 코드. 요청 안 한 추상화·"나중을 위한" 보일러플레이트·불필요 의존성 금지, 추가보다 삭제. 의도된 단순화는 `ponytail:` 주석으로 표시. 단, 입력 검증·보안·접근성·명시 요청은 절대 깎지 않는다. Tech Lead Dispatch Card `[BUILD]`로 서브에이전트에 전파, Step 6 리뷰가 과설계를 검사 (ponytail 차용 — build less, not flimsier).
 - **셀프-하네스 게이트**: 하네스(스킬·프롬프트·컨벤션) 변경은 ① 마이닝된 약점(friction·QA FAIL 2회+ 반복)에서 출발, **파일 하나에 귀속**(플레이북/SKILL.md/컨벤션/RESOLVER) → ② 약점 1:1 최소 제안, 편집 기록 5필드(실패 증거·추정 원인·수정 대상·예상 개선·회귀 위험) → ③ **회귀 통과 시에만 "채택 후보"**. 채택/기각 이력은 볼트 `40_프로젝트/S-skills/하네스-제안-원장.md`에 보존(기각 재제안 금지). 평가기·QA 판정 규칙·사람 게이트 문구는 **편집 금지 표면**(보상 해킹 차단). 검증 없이 SKILL.md를 고치지 않으며, 실제 채택(편집·머지)은 사람 게이트. sj-retro Step 5b가 게이트, sj-loop은 자기 프롬프트 자동 수정 금지 (Self-Harness·AHE 차용 — 인사이트를 덧붙이지 말고 회귀로 검증한 것만 채택).
