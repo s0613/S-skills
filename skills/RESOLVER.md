@@ -38,13 +38,14 @@ sj-company Step 0이 런타임에 이 테이블을 읽어 디스패치하고, CL
 | 18 | 비서 | 비서, secretary, 현황 보고, 요약 보고, 보고서 봐줘, 진행 상황 알려줘, 지금 어때, 프로젝트 현황, 프로젝트 상태, 상태 확인, 뭐가 완료됐어 | 배포·프로덕션 맥락이 붙으면 → #13 | `Skill("s-skills:sj-secretary")` |
 | 19 | 테스트 시나리오 | 테스트 시나리오, 검증 시나리오, test scenario, 기능 검증 목록, 테스트 케이스 만들어줘, 시나리오 작성, 통과율 추적 | | `Skill("s-skills:test-scenario")` |
 | 20 | PW Loop | playwright 테스트, playwright 실행, e2e 테스트 실행, e2e 돌려줘, 테스트 통과율, pw-loop, pw 실행, 테스트 돌려줘 | 전제: `playwright.config.ts`/`.js` 존재. 없으면 "playwright 설정 파일이 없습니다" 출력 후 Tiny 경로 | `Skill("s-skills:pw-loop")` |
-| 21 | 문서 정리 | 문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize | `점수 올려`, `치유`, `remediate`, `N점까지`, `target` 포함 시 → docs-organize **remediate 모드**(REMEDIATE.md): 목표 점수까지 치유 플랜→승인→단계 실행 | `Skill("s-skills:docs-organize")` |
+| 21 | 문서 정리 | 문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize | `점수 올려`, `치유`, `remediate`, `N점까지`, `target` 포함 시 → docs-organize **remediate 모드**(REMEDIATE.md): 목표 점수까지 치유 플랜→승인→단계 실행. **변환 대상 파일 포맷(docx·pptx·xlsx·PDF·epub·오디오)이 명시되면 → #28** — 이 행은 *코드베이스를 읽어 docs/를 짓는* 요청이고, 남이 준 파일을 *읽을 수 있게 바꾸는* 요청은 변환이다 | `Skill("s-skills:docs-organize")` |
 | 22 | Loop | 루프 만들어, 루프 돌려, 루프 프롬프트, 루프 설계, 반복 자동화, 계속 돌려줘, 야간에 알아서, 주기적으로 실행, 무인으로 돌려, 스케줄로 돌려, sj-loop | Playwright 테스트 반복은 #20이 먼저 매치되므로 여기 오지 않음 | `Skill("s-skills:sj-loop")` |
-| 23 | 리뷰 | 리뷰/검토/점검/검수 성격의 태스크 | | sj-company **리뷰 경로 (Step R)** — 대상 자동 감지 후 리뷰어 병렬 디스패치 |
+| 23 | 리뷰 | 리뷰/검토/점검/검수 성격의 태스크 | 리뷰 대상이 Read 툴로 못 읽는 포맷(docx·pptx·xlsx·epub 등)이면 **#28로 먼저 변환한 뒤** 리뷰한다 — 읽지 못한 파일을 리뷰했다고 보고하지 않는다 | sj-company **리뷰 경로 (Step R)** — 대상 자동 감지 후 리뷰어 병렬 디스패치 |
 | 24 | GPT 자문 | GPT, ChatGPT, 지피티, GPT한테, GPT에 물어, GPT한테 물어봐, ChatGPT에 시켜, 다른 의견, 다른 모델, 딴 모델, 세컨드 오피니언, second opinion, 교차 검증, 브레인스토밍, 아이디어 발산, 리서치 해줘, 조사해줘, 최신 정보 | 이미지 생성(DALL-E)·이 레포 코드/버그 질문은 비대상(각각 미지원 안내·sj-investigate). "디버깅/에러 원인"은 #7이 먼저 매치. **한국 법령 키워드(#25) 동시 감지 시 → #25** ("법령 리서치 해줘"는 GPT가 아니라 법제처 DB로) | `Skill("s-skills:sj-gpt")` |
 | 25 | 법령 | 법령, 법률, 조문, 제N조, 판례, 대법원, 헌재, 시행령, 시행규칙, 조례, 자치법규, 행정규칙, 훈령, 예규, 고시, 해석례, 법제처, 별표, 신구대조, 개정 추적, 위법, 법적 근거, 근거 법령, 이 법 유효해, 판례 유효, 법적 리스크 | 전제: korean-law MCP 등록(미등록 시 스킬이 발급·등록 안내 후 정지). 회사 내부 규정·정책 문서 질문은 비대상. 계약서 리뷰라도 "법적 리스크" 언급이 없으면 일반 문서 리뷰(#23) | `Skill("s-skills:sj-law")` |
 | 26 | SEED 디자인 | SEED, seed design, seed-design, 시드 디자인, 당근 디자인, 당근 디자인 시스템, karrot design, @seed-design, seed 컴포넌트, seed 토큰, seed doctor, seed 업그레이드, seed 스니펫, foundation 토큰 | 전제 없음 — 미설치 프로젝트면 스킬이 셋업부터 안내. 씨앗·모종 등 일상어 "seed"는 비대상. #16/#17보다 **우선**한다 (해당 행의 구분 조건 참조) | `Skill("s-skills:sj-seed")` |
 | 27 | 화면 영상 | 화면 녹화, 녹화해줘, 화면 찍어, 데모 영상, 시연 영상, 설명 영상, 기능 소개 영상, 스크린캐스트, screencast, screen recording, GIF로 만들어줘, 움짤, openscreen, 영상으로 보여줘, 영상으로 만들어줘 | 전제: OpenScreen 설치(미설치면 스킬이 설치 안내 후 정지). 이미 있는 영상 파일의 편집·인코딩만 요청하면 비대상(ffmpeg 직접). 화면을 *조작*하는 요청은 #2 — 이 행은 화면을 *기록*하는 요청이다 | `Skill("s-skills:sj-screencast")` |
+| 28 | 문서 변환 | 문서 변환, 마크다운으로 변환, markdown으로 바꿔, markitdown, docx, pptx, xlsx, 워드 파일, 엑셀 파일, 파워포인트, PPT 읽어줘, 제안서 읽어줘, 첨부 파일 읽어줘, PDF 전문, epub, 아웃룩 메일, 녹음 전사, 음성 전사, 전사해줘, 유튜브 자막 | 전제 없음 — 미설치면 스킬이 `uvx` 무설치 실행 경로부터 안내. **Read 툴이 이미 읽는 것만 대상이면 비대상** (`.md`·`.txt`·`.json`·`.csv`·짧은 PDF·이미지) — 스킬 Step 0이 되돌려 보낸다. 일반 웹페이지 수집은 WebFetch(비대상), YouTube만 예외. 화면을 *영상으로 남기는* 요청은 #27 | `Skill("s-skills:sj-convert")` |
 
 ## 모호성 해소 규칙
 

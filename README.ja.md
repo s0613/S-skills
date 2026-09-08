@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.8.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.8.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -133,6 +133,7 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 | `/sj-agent-dev` | 10 軸ベースのビジネスエージェント設計 |
 | `/sj-loop` | ループプロンプト生成 + ドライラン/セッション内反復/クラウドスケジュール実行 |
 | `/outsource` | 行き詰まったら専門家に委譲——コンテキストレポート + メール下書きを自動作成 |
+| `/convert` | Word・PPT・Excel・EPub・音声など Read ツールが読めない文書を Markdown に変換 |
 
 ---
 
@@ -160,6 +161,7 @@ skills/
 ├── sj-seo/           ← 検索インデックス自動化
 ├── sj-agent-dev/     ← エージェント設計
 ├── sj-agent-review/  ← エージェントレビュー
+├── sj-convert/       ← ドキュメント変換 (markitdown — Read ツールが読めない形式)
 ├── sj-loop/          ← ループエンジニアリング
 └── sj-outsource/     ← 専門家委譲
 ```

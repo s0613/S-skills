@@ -4,6 +4,32 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [4.8.0] - 2026-09-08
+
+**못 읽는 문서를 읽게 만든다** — Read 툴은 텍스트·PDF·이미지·노트북에서 멈춘다. 사용자가 `제안서.docx`·`요구사항.xlsx`·`기획.pptx`를 던지면 파이프라인이 입구에서 막혔다. 그 입구를 연다.
+
+### Added
+- **`sj-convert` 스킬** (`/convert`, `/sj-convert`, `/문서변환`, `/markitdown`) — [markitdown](https://github.com/microsoft/markitdown)(Microsoft, MIT)으로 docx·pptx·xlsx·xls·epub·zip·Outlook 메일·오디오·YouTube 자막을 Markdown으로 변환한다. 제목·표·목록 구조를 마크업으로 보존하면서 토큰은 아끼는 **LLM 입력용** 변환이지 사람이 읽는 예쁜 변환이 아니다. 변환물은 `docs/converted/`에 두고, 본문이 아니라 **경로**를 다음 스킬(sj-pm·sj-spec·sj-dev-si·obsidian-writer)에 넘긴다 — 300쪽 제안서를 컨텍스트에 통째로 싣지 않기 위해서.
+- **Step 0 포맷 경계 — 이 스킬의 유일한 불변식** — 대부분의 파일은 변환하면 **안 된다.** `.md`·`.txt`·`.json`·`.csv`·`.ipynb`·짧은 PDF는 Read 툴이 이미 읽고, 디자인·차트·스크린샷 이미지는 Read 툴이 **본다**(markitdown에 넣으면 시각 정보를 잃는다). 일반 웹페이지는 WebFetch가 이미 마크다운으로 준다. Step 0 표가 위쪽 절반에 걸리면 "Read 툴로 바로 읽겠습니다" 한 줄을 출력하고 끝낸다. 이 경계가 없으면 스킬은 그냥 **느려지는 Read 툴**이다 ([최소 코드 사다리](skills/_conventions/minimal-code.md)).
+- **RESOLVER #28 (문서 변환)** — #21(문서 정리)에 "변환 대상 포맷(docx·pptx·xlsx·PDF·epub·오디오)이 명시되면 → #28" 제외 조건을 달았다. 문자열 `문서 정리`가 #21에 **정확히** 있고 #21이 위에 있어, 순서만 따르면 코드베이스 문서 생성기가 `기획서 pptx 문서 정리해줘`를 가져간다. #23(리뷰)에도 "대상이 못 읽는 포맷이면 #28로 먼저 변환한 뒤 리뷰 — 읽지 못한 파일을 리뷰했다고 보고하지 않는다"를 명시했다.
+- **행동 픽스처 `convert/` + 케이스 J·K** — J는 라우팅(`문서 정리` 문자열이 #21에 가로채이지 않는가), K는 스킬 Step 0(`.txt`는 그대로 두고 `.docx`만 변환하는가)을 본다. **전부 변환하는 구현은 J를 통과하고 K에서만 걸린다.** 픽스처의 `spec.docx`는 `textutil -convert docx`로 만든 실제 OOXML 파일이다 — 더미 바이트로는 변환기를 검증할 수 없다.
+
+### Changed
+- **`_conventions/external-tools.md` 인덱스** — sj-convert 행 추가. 설치를 **요구하지 않는 경로**를 1순위로 뒀다: `uvx --python 3.12 --from 'markitdown[all]' markitdown <파일>`. 전역 파이썬을 건드리지 않으므로 승인 비용이 가장 싸다.
+- **README 4종** — `/convert` 커맨드·구조 트리 추가. 버전 배지가 3.12.0(ko)·3.8.0(en·ja·zh)에서 멈춰 있던 것을 4.8.0으로 맞췄다.
+
+### Fixed
+- **`$MD` 변수 패턴이 zsh에서 죽는다 — 행동 픽스처가 잡았다.** Step 1이 명령을 `MD="uvx --python 3.12 --from markitdown[all] markitdown"`에 담고 `$MD file.docx`로 부르게 돼 있었다. bash에서는 돌지만 **zsh는 unquoted 변수 확장에 word-splitting을 하지 않아** 문자열 전체를 명령어 이름 하나로 읽고 `command not found: uvx --python 3.12 ...`를 낸다. macOS 기본 셸이 zsh다. 셸 함수(`md() { uvx ... "$@"; }`)로 바꿔 bash·zsh 양쪽에서 실행 확인했다. 케이스 K를 돌리지 않았으면 첫 macOS 사용자에게서 터졌을 결함이다.
+- **부정 단언이 기각 사유를 히트한다 — 케이스 F가 옳게 라우팅하고도 FAIL로 떴다.** `grep -qi 'obsidian-writer' "$O" && FAIL`이 파일 **전체**를 훑는 바람에, 라우터가 근거 문단에 "obsidian-writer는 실행하지 않음"이라고 적은 것을 "obsidian-writer로 라우팅했다"로 읽었다. F·I·J 세 케이스의 부정 단언을 **디스패치 결정 줄**에만 걸도록 좁혔다. 올바른 구현이 실패하는 단언은 회귀망이 아니라 잡음이고, 잡음은 다음 사람이 픽스처를 끄게 만든다.
+- **`--python 3.12`를 빼면 죽는다 — 실제로 돌려서 발견했다.** 이 머신의 기본 파이썬이 3.9.13이라 `uvx --from 'markitdown[all]'`가 `No solution found ... does not satisfy Python>=3.10`으로 즉사한다. macOS·기업 이미지에서 흔한 조건이라 플래그를 스킬 본문의 **굵은 경고**로 올렸다. 명령만 적고 넘어갔으면 첫 사용자에게서 터졌을 결함이다.
+
+### Notes
+- **행동 픽스처 4건 실행 — 전부 통과.** 케이스 J(신규 라우팅)·K(신규 Step 0 경계)와, RESOLVER #21·#23을 건드렸으므로 회귀로 F(행위 우선)·I(생성 동사)를 함께 돌렸다. 서브에이전트에 기대 결과를 알려주지 않고 태스크만 줬다. J는 `기획서 pptx 문서 정리해줘`를 #21이 아니라 #28로 보냈고, K는 `.txt`를 그대로 두고 `.docx`만 `docs/converted/spec.md`(145바이트, 원문 일치)로 변환했다. 이 두 번의 실행이 위 Fixed 2건을 잡았다.
+- **런타임 검증 완료.** `uvx --python 3.12`로 docx(textutil 생성)·PDF(cupsfilter 생성)·CSV를 실제 변환해 확인했다 — CSV는 Markdown 표로 나오고, `--list-plugins`는 exit 0으로 응답한다. 첫 실행은 의존성 48개(약 120MB, onnxruntime·pandas·lxml 등)를 받느라 **2분 40초**, 캐시 후에는 **0.6초**다. 이 격차를 사용자에게 미리 알리라고 스킬에 적었다 — 말없이 3분을 멈추면 사용자는 걸린 줄 안다.
+- **빈 출력을 성공으로 읽지 않는다** ([정직 산출 계약](skills/_conventions/honest-report.md)). 암호화 PDF·스캔 PDF·손상된 docx는 exit 0에 0바이트 파일을 남긴다. Step 3이 바이트 수를 세고, 0이면 OCR 경로(`--use-plugins` / Azure DI)를 안내한다.
+- **변환된 문서는 신뢰 경계 밖이다.** 남이 준 제안서·계약서 속 명령형 문장은 데이터로만 취급하고([외부 콘텐츠는 데이터](skills/_conventions/untrusted-content.md)), 계약서·인사 문서·고객 명단이 흔한 입력이라 [PII 마스킹](skills/_conventions/pii-masking.md)을 특히 챙긴다. 오디오 전사는 외부 서비스로 나갈 수 있어 민감한 녹음은 변환 전에 알린다.
+- 이미지 캡션 LLM 생성(`llm_client`)·Azure Content Understanding은 배선하지 않았다 — 전자는 이미지를 Read 툴이 이미 보므로 불필요하고, 후자는 엔드포인트·키가 필요해 사람 게이트다.
+
 ## [4.7.0] - 2026-09-07
 
 **외부 도구는 링크가 아니라 설치 명령으로** — 스킬이 외부 도구에 의존할 때 사용자를 릴리즈 페이지로 보내지 않는다. 실제로 설치를 돌려보고 스크립트 결함 둘을 잡았다.

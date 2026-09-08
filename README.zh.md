@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-3.8.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.8.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -133,6 +133,7 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 | `/sj-agent-dev` | 基于 10 轴的业务代理设计 |
 | `/sj-loop` | 生成循环提示词 + 以 dry-run / 会话内重复 / 云端调度运行 |
 | `/outsource` | 卡住时委派给专家——自动撰写上下文报告 + 邮件草稿 |
+| `/convert` | 将 Word・PPT・Excel・EPub・音频等 Read 工具无法读取的文档转换为 Markdown |
 
 ---
 
@@ -160,6 +161,7 @@ skills/
 ├── sj-seo/           ← 搜索索引自动化
 ├── sj-agent-dev/     ← 代理设计
 ├── sj-agent-review/  ← 代理评审
+├── sj-convert/       ← 文档转换 (markitdown — Read 工具无法读取的格式)
 ├── sj-loop/          ← 循环工程
 └── sj-outsource/     ← 专家委派
 ```

@@ -62,3 +62,4 @@ curl -sL https://api.github.com/repos/{owner}/{repo}/releases/latest \
 | sj-seo | Playwright MCP | `claude mcp add playwright npx @playwright/mcp@latest --scope user` |
 | pw-loop | Playwright | `npm install -D @playwright/test && npx playwright install --with-deps chromium` |
 | sj-automation | 플랫폼별 (PyAutoGUI·xdotool·AutoHotkey 등) | SKILL.md OS 감지 표 참조 |
+| sj-convert | markitdown (Microsoft, MIT) | 무설치: `uvx --python 3.12 --from 'markitdown[all]' markitdown <파일>` / 설치: `pipx install 'markitdown[all]'` — Python ≥ 3.10 필수 |

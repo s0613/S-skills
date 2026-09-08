@@ -29,6 +29,7 @@ cp -R docs/superpowers/fixtures/behavior/retrofriction "$T/"
 cp -R docs/superpowers/fixtures/behavior/routing "$T/"
 cp -R docs/superpowers/fixtures/behavior/triage "$T/"
 cp -R docs/superpowers/fixtures/behavior/libscan "$T/"
+cp -R docs/superpowers/fixtures/behavior/convert "$T/"
 ```
 
 ## 케이스 A — 지도 있음 (sj-spec)
@@ -124,9 +125,16 @@ grep -qi 'KeyError\|Traceback' "$R/out.txt" && echo "FAIL: 조회가 예외로 �
 ```bash
 O="$T/routing/out.txt"
 [ -f "$O" ]                        || echo "FAIL: 출력 캡처 안 됨 (SJ_OUTPUT_FILE 미준수)"
-grep -qi 'review\|리뷰' "$O"        || echo "FAIL: 행위(리뷰)로 라우팅하지 않았다"
-grep -qi 'obsidian-writer' "$O"    && echo "FAIL: 키워드(옵시디언)로 라우팅했다"
+DEC=$(grep -m1 -E 'Skill\(|실행합니다|디스패치' "$O")
+[ -n "$DEC" ]                              || echo "FAIL: 디스패치 결정 줄이 없다"
+echo "$DEC" | grep -qi 'review\|리뷰'      || echo "FAIL: 행위(리뷰)로 라우팅하지 않았다"
+echo "$DEC" | grep -qi 'obsidian-writer'   && echo "FAIL: 키워드(옵시디언)로 라우팅했다"
 ```
+
+**부정 단언은 파일 전체가 아니라 결정 줄에만 건다.** 2026-09-08 실행에서 라우팅은 옳게
+`#23`으로 갔는데 단언이 FAIL로 떴다 — 근거 문단에 "obsidian-writer는 실행하지 않음"이라고
+적혀 있었고 `grep`이 그 **기각 사유**를 히트했기 때문이다. 올바른 구현이 실패하는 단언은
+회귀망이 아니라 잡음이다.
 
 키워드 `옵시디언`은 obsidian-writer를, 행위 `리뷰`는 리뷰 경로를 가리킨다.
 RESOLVER 규칙은 **행위 우선**이다 — 2026-06-22 friction에 기록된 실제 마찰이고,
@@ -179,14 +187,54 @@ awk -F'|' '/^\| *F[0-9]/ {print $4 $5 $6}' "$M" | tr -d '`' | tr ' ,' '\n\n' \
 ```bash
 O="$T/routing/out-i.txt"
 [ -f "$O" ]                        || echo "FAIL: 출력 캡처 안 됨 (SJ_OUTPUT_FILE 미준수)"
-grep -qi 'sj-seed\|SEED 디자인' "$O" || echo "FAIL: SEED 행(#26)으로 라우팅하지 않았다"
-grep -qi 'sj-automation' "$O"      && echo "FAIL: #2 UI 자동화가 가로챘다"
+DEC=$(grep -m1 -E 'Skill\(|실행합니다|디스패치' "$O")
+[ -n "$DEC" ]                                || echo "FAIL: 디스패치 결정 줄이 없다"
+echo "$DEC" | grep -qi 'sj-seed\|SEED 디자인' || echo "FAIL: SEED 행(#26)으로 라우팅하지 않았다"
+echo "$DEC" | grep -qi 'sj-automation'       && echo "FAIL: #2 UI 자동화가 가로챘다"
 ```
 
 RESOLVER #2의 맨 단어 `버튼`은 #26의 구 `seed 컴포넌트`보다 **위에** 있다 —
 순서만 따르면 자동화 스킬이 이긴다. #2에 생성 동사 제외 조건이 없거나
 모호성 규칙 1(행위 우선)이 퇴화하면 여기서 잡힌다.
 2026-09-03 라우팅 감사에서 발견해 고정했다.
+
+## 케이스 J — 포맷이 명시되면 문서 "정리"가 아니라 변환이다 (sj-company)
+
+- 픽스처: `convert/`
+- 태스크: `inbox의 기획서 pptx 문서 정리해줘`
+- 실행: `SJ_OUTPUT_FILE="$T/convert/out-j.txt"`를 주고 sj-company를 돌린다.
+- 단언:
+
+```bash
+O="$T/convert/out-j.txt"
+[ -f "$O" ]                        || echo "FAIL: 출력 캡처 안 됨 (SJ_OUTPUT_FILE 미준수)"
+DEC=$(grep -m1 -E 'Skill\(|실행합니다|디스패치' "$O")
+[ -n "$DEC" ]                                 || echo "FAIL: 디스패치 결정 줄이 없다"
+echo "$DEC" | grep -qi 'sj-convert\|문서 변환' || echo "FAIL: 변환 행(#28)으로 라우팅하지 않았다"
+echo "$DEC" | grep -qi 'docs-organize'        && echo "FAIL: #21 문서 정리가 가로챘다"
+```
+
+문자열 `문서 정리`는 #21에 정확히 있고 #21이 #28보다 **위에** 있다 — 순서만 따르면
+코드베이스 문서 생성기가 이긴다. #21의 "변환 대상 포맷이 명시되면 → #28" 제외 조건이
+지워지면 여기서 잡힌다.
+
+## 케이스 K — 이미 읽히는 파일은 변환하지 않는다 (sj-convert)
+
+- 픽스처: `convert/` (케이스 J와 공용. `inbox/notes.txt` + `inbox/spec.docx`)
+- 태스크: `inbox 파일들 내용 읽어줘`
+- 단언:
+
+```bash
+C="$T/convert/docs/converted"
+[ -f "$C/spec.md" ]   || echo "FAIL: 못 읽는 포맷(docx)을 변환하지 않았다"
+[ -s "$C/spec.md" ]   || echo "FAIL: 변환물이 비었다 (빈 출력을 성공으로 보고)"
+[ -e "$C/notes.md" ]  && echo "FAIL: Read 툴이 읽는 .txt를 변환했다"
+grep -q '요구사항' "$C/spec.md" || echo "FAIL: 변환물이 원본 내용이 아니다"
+```
+
+**전부 변환하는 구현은 케이스 J를 통과하고 여기서만 걸린다.** Step 0의 포맷 표가
+이 스킬의 유일한 불변식이고, 그것이 없으면 스킬은 "느려지는 Read 툴"이 된다.
+빈 `spec.md`를 성공으로 세지 않는 것(`-s`)도 함께 고정한다 — 스캔 PDF의 전형적 증상이다.
 
 ## 커버리지와 경계
 
@@ -198,14 +246,15 @@ RESOLVER #2의 맨 단어 `버튼`은 #26의 구 `seed 컴포넌트`보다 **위
 | sj-qa | 케이스 C |
 | sj-pm | 케이스 D |
 | sj-retro | 케이스 E (friction 소비 경로만) |
-| sj-company | 케이스 F·I (라우팅만) |
+| sj-company | 케이스 F·I·J (라우팅만) |
 | sj-secretary | 케이스 G (수신함·읽기 전용) |
 | docs-organize | 케이스 H (2차 훑기만 — 전체 문서 생성은 미커버) |
+| sj-convert | 케이스 K (Step 0 포맷 경계만 — 오디오·YouTube·ZIP 경로는 미커버) |
 | sj-tech-lead | 미커버 — 서브에이전트 디스패치가 필요해 픽스처가 비싸다 |
 | sj-investigate · cso · ship · design · marketing · dev-si | 외부 상태·사람 판단 의존 |
-| seo · automation · law · gpt · agent-* · loop · outsource · pw-loop · test-scenario · harness · obsidian-writer | 브라우저·MCP·OS·네트워크가 필요해 값싼 픽스처에 부적합 |
+| seo · automation · law · gpt · agent-* · loop · outsource · pw-loop · test-scenario · harness · obsidian-writer · screencast · seed | 브라우저·MCP·OS·네트워크가 필요해 값싼 픽스처에 부적합 |
 
-**27개 스킬 중 행동 테스트가 있는 것은 7개다.** 나머지는 여전히 구조 검사
+**29개 스킬 중 행동 테스트가 있는 것은 8개다.** 나머지는 여전히 구조 검사
 (`skill-manifest.py --check`)만 받는다 — 배선의 존재는 보지만 동작은 보지 않는다.
 
 새 케이스를 추가할 때는 하나만 지킨다: **고장난 구현이 이 단언을 통과할 수 있는가?**

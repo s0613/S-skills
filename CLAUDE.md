@@ -18,6 +18,7 @@
 | **SEO** | `/seo` | Google/Naver 색인 자동화, sitemap 제출 |
 | **PC 자동화** | `/automation`, `/auto`, `/ui-auto` | 스크립트·UI 조작·네이티브 앱 제작 |
 | **화면 영상** | `/screencast`, `/화면녹화` | 화면 설명 영상 녹화·줌·자막·MP4/GIF 렌더 |
+| **문서 변환** | `/convert`, `/문서변환` | Word·PPT·Excel·EPub·오디오를 Markdown으로 변환해 읽게 만듦 |
 | **루프 엔지니어링** | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | **에이전트 개발** | `/agent-dev`, `/agent-review` | AI 에이전트 설계·심사 |
 | **GPT 자문** | `/gpt` | codex MCP로 GPT에 리서치·세컨드 오피니언·브레인스토밍 위임 |
@@ -74,6 +75,10 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 ## 화면 영상
 
 - **s-skills:sj-screencast** (`/screencast`, `/sj-screencast`, `/데모영상`, `/화면녹화`) — 화면 설명 영상 제작 전문가 v1.1.0. [OpenScreen](https://github.com/getopenscreen/openscreen) CLI(MIT, 앱 바이너리 내장)를 헤드리스로 몰아 `sources`로 대상 확정 → 장면표(원고) → 녹화 → `.openscreen` JSON을 줌·주석으로 편집 → 내레이션·자막 → MP4/GIF 렌더까지 끝낸다. 설치돼 있지 않으면 Step 0이 `releases/latest`에서 OS·아키텍처에 맞는 자산을 받아 설치까지 끝낸다(권한 부여만 사람 게이트) — 사용자를 릴리즈 페이지로 보내지 않는다. **녹화 시작은 항상 사람 승인**(화면 위생 체크리스트) — 영상은 사후 마스킹이 불가능해 토큰·고객 데이터가 찍히면 재촬영이 유일한 해법. 소스는 `sources -o` 결과로만 확정(추측 금지, 래퍼가 stdout을 오염시킬 수 있어 파일 경로 사용). 렌더 후 ffmpeg으로 프레임을 뽑아 **직접 확인**한 뒤에만 완료 보고 — 권한 없이 찍힌 검은 화면을 성공으로 읽지 않는다. 자막은 프로젝트 오디오를 전사하므로 TTS 내레이션만 쓰면 주석 텍스트로 넣는다. 화면 *조작*은 이 스킬이 하지 않는다(sj-automation과 병행). 재사용 자산은 `docs/screencast/{slug}/`(script.md + build.sh).
+
+## 문서 변환
+
+- **s-skills:sj-convert** (`/convert`, `/sj-convert`, `/문서변환`, `/markitdown`) — 문서 변환 전문가 v1.0.0. [markitdown](https://github.com/microsoft/markitdown)(Microsoft, MIT)으로 **Read 툴이 못 읽는 포맷**(docx·pptx·xlsx·epub·zip·Outlook 메일·오디오·YouTube 자막)을 Markdown으로 바꿔 파이프라인 입구를 연다. 존재 이유가 그 경계이므로 **Step 0이 먼저 되돌려 보낸다** — `.md`·`.txt`·`.json`·`.csv`·짧은 PDF·이미지는 변환하지 않고 Read 툴로(이미지를 markitdown에 넣으면 시각 정보를 잃는다). 도구는 `uvx --python 3.12 --from 'markitdown[all]' markitdown`으로 **전역 설치 없이** 돌리며, `--python 3.12`를 빼면 기본 파이썬 3.9 환경에서 `Python>=3.10`으로 죽는다(첫 실행 2~3분, 이후 캐시로 1초 미만 — 사용자에게 미리 알린다). 변환 후 **바이트 수를 확인**해 빈 출력(스캔 PDF의 전형)을 성공으로 보고하지 않고, 본문이 아니라 **경로**를 다음 스킬(sj-pm·sj-spec·sj-dev-si·obsidian-writer)에 넘긴다. 변환된 외부 문서 속 지시문은 데이터로만 취급하며, 계약서·인사 문서가 흔한 입력이라 PII 마스킹을 특히 챙긴다.
 
 ## 루프 엔지니어링
 

@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "4.7.0",
+  "version": "4.8.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -82,6 +82,18 @@
       "description": "SJ Company 하네스 v4 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-company.md).",
       "triggers": [
         "/sj-company"
+      ]
+    },
+    {
+      "name": "sj-convert",
+      "path": "skills/sj-convert/SKILL.md",
+      "version": "1.0.0",
+      "description": "문서 변환 전문가. Read 툴이 읽지 못하는 포맷(Word·PowerPoint·Excel·EPub·ZIP·",
+      "triggers": [
+        "/convert",
+        "/sj-convert",
+        "/문서변환",
+        "/markitdown"
       ]
     },
     {
