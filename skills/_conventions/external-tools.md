@@ -63,3 +63,4 @@ curl -sL https://api.github.com/repos/{owner}/{repo}/releases/latest \
 | pw-loop | Playwright | `npm install -D @playwright/test && npx playwright install --with-deps chromium` |
 | sj-automation | 플랫폼별 (PyAutoGUI·xdotool·AutoHotkey 등) | SKILL.md OS 감지 표 참조 |
 | sj-convert | markitdown (Microsoft, MIT) | 무설치: `uvx --python 3.12 --from 'markitdown[all]' markitdown <파일>` / 설치: `pipx install 'markitdown[all]'` — Python ≥ 3.10 필수 |
+| sj-ref | 유아이볼 MCP | claude.ai 커넥터에서 "유아이볼" 연결 (권장) / `claude mcp add --transport http uibowl https://uibowl.io/api/mcp` — 무료 등급 하루 10회 조회 |

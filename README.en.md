@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.8.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.9.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -162,6 +162,7 @@ skills/
 ├── sj-agent-dev/     ← agent design
 ├── sj-agent-review/  ← agent review
 ├── sj-convert/       ← document conversion (markitdown — formats the Read tool can't open)
+├── sj-ref/           ← app UI references (uibowl — real shipped screens)
 ├── sj-loop/          ← loop engineering
 └── sj-outsource/     ← expert delegation
 ```

@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "4.8.0",
+  "version": "4.9.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -209,6 +209,19 @@
         "/qa",
         "/canary",
         "/benchmark"
+      ]
+    },
+    {
+      "name": "sj-ref",
+      "path": "skills/sj-ref/SKILL.md",
+      "version": "1.0.0",
+      "description": "앱 UI 레퍼런스 탐색 전문가. [유아이볼](https://uibowl.io) MCP로 실제 출시된 앱·웹·게임",
+      "triggers": [
+        "/ref",
+        "/sj-ref",
+        "/레퍼런스",
+        "/유아이볼",
+        "/uibowl"
       ]
     },
     {

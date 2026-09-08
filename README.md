@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.8.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.9.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="#옵시디언-연동--하네스의-장기-기억"><img src="https://img.shields.io/badge/Obsidian-long--term%20memory-7c3aed?style=flat-square&logo=obsidian&logoColor=white&labelColor=0d0d0d" alt="obsidian"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
@@ -183,6 +183,7 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | `/outsource` | 막혔을 때 전문가 위임 — 맥락 리포트 + 메일 초안 자동 작성 |
 | `/convert` | Word·PPT·Excel·EPub·오디오 등 Read 툴이 못 읽는 문서를 Markdown으로 변환 |
+| `/ref` | 유아이볼로 출시된 앱·웹 화면 레퍼런스 조회 (패턴·컴포넌트·문구·MAU) |
 
 ---
 
@@ -211,6 +212,7 @@ skills/
 ├── sj-agent-dev/     ← 에이전트 설계
 ├── sj-agent-review/  ← 에이전트 리뷰
 ├── sj-convert/       ← 문서 변환 (markitdown — Read 툴이 못 읽는 포맷)
+├── sj-ref/           ← 앱 레퍼런스 조회 (유아이볼 — 출시된 실제 화면)
 ├── sj-loop/          ← 루프 엔지니어링
 └── sj-outsource/     ← 전문가 위임
 ```
