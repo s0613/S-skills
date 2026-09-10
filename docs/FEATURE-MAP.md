@@ -82,9 +82,10 @@ flowchart LR
 | F28 | sj-screencast — OpenScreen CLI로 화면 설명 영상 녹화·줌/주석 편집·자막·MP4/GIF 렌더 | `skills/sj-screencast/SKILL.md` | `skills/sj-screencast/` | 없음 | — |
 | F29 | sj-convert — markitdown으로 Read 툴이 못 읽는 포맷(docx·pptx·xlsx·epub·zip·오디오·YouTube)을 Markdown으로 변환 | `skills/sj-convert/SKILL.md` | `skills/sj-convert/` | 없음 | — |
 | F30 | sj-ref — 유아이볼 MCP로 출시된 앱·웹·게임 화면 레퍼런스 조회(패턴·컴포넌트·OCR 문구·MAU·인기 순위) | `skills/sj-ref/SKILL.md` | `skills/sj-ref/` | 없음 | — |
+| F31 | ADHD 출력 규칙 SessionStart 훅 — i-have-adhd 저장소를 받아 규칙 본문을 세션 컨텍스트에 주입 (캐시 24h·비차단·중복 방지) | `hooks/hooks.json` | `hooks/adhd-bootstrap.mjs` | 없음 | — |
 
 ## 미매핑
 - `skills/RESOLVER.md` — 라우팅 단일 사실 테이블 자체. 스킬(기능)이 아니라 F08(sj-company)이 소비하는 설정 파일이라 행으로 만들지 않았다.
 - `skills/manifest.json`, `skills/VERSION` — 생성/버전 메타데이터, 스킬 아님.
-- `skills/_conventions/` — 규칙 폴더(컨벤션 17개 + README), 스킬 아님. 태스크 브리핑 지시에 따라 제외.
+- `skills/_conventions/` — 규칙 폴더(컨벤션 20개 + README), 스킬 아님. 태스크 브리핑 지시에 따라 제외.
 - `/Users/songseungju/S-skills/test-scenario/SKILL.md` (repo 루트, `skills/` 밖) — `skills/test-scenario/`와 별개의 고아 사본으로 보인다. 어느 manifest·RESOLVER에도 연결되지 않아 기능으로 등록하지 않았다. Concerns 참고.

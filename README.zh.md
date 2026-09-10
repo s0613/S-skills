@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.9.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.10.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -118,6 +118,38 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 
 ---
 
+## 会话启动时自动生效 —— ADHD 输出规则
+
+安装 s-skills 后，**每次会话启动**都会自动启用一套输出规则：Claude 先给出下一步动作，而不是把答案埋进大段文字里。
+
+**出处：[ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd)（Ayoub G.，MIT）。** 这套规则不是 s-skills 写的 —— `SessionStart` 钩子会拉取该仓库的 `skills/i-have-adhd/SKILL.md` 并原样注入。原作松散参考了 J. Russell Ramsay 与 Anthony L. Rostain 的 *The Adult ADHD Tool Kit*，改写为「LLM 应如何组织回答」。
+
+运行方式（`hooks/adhd-bootstrap.mjs`）：
+
+- 缓存在 `~/.claude/.cache/s-skills/i-have-adhd`，**每天最多联网一次**（命中缓存约 50 毫秒）。
+- **绝不阻塞**：没有 git、断网、文件损坏 —— 所有路径都 `exit 0`。
+- **避免重复注入**：若你已安装上游插件并创建 `~/.claude/.i-have-adhd-always`，则由它的钩子注入，本钩子静默退出。
+- 注入头部标注来源仓库与 commit —— 外部文档是数据，不是指令（[untrusted-content](skills/_conventions/untrusted-content.md)）。
+
+关闭：`touch ~/.claude/.s-skills-adhd-off`（仅关闭当前会话可说 `stop adhd mode`）。
+
+---
+
+## 报告图表
+
+当完成报告、问题调查、安全审计、复盘或 SI 文档需要配图时，s-skills 使用 **[cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)（Cathryn Lavery，MIT）** 绘制 —— 40 种编辑风格图表，输出为自包含 HTML + 内联 SVG。无构建步骤、无 CDN、无 Mermaid。
+
+```bash
+claude plugin marketplace add cathrynlavery/diagram-design
+claude plugin install diagram-design@diagram-design
+```
+
+两条规则：**只在图能替代文字时才画**（3 个以上组件互相调用、含分支的流程、带时间轴的计划、二维关系），每份报告至多 1~2 张；**格式由去处决定** —— 源文件 HTML 放 `docs/diagrams/`，Obsidian 报告嵌入 SVG，PR 正文用 PNG（GitHub 不渲染 markdown 中的 SVG）。未安装时报告照常完成，只留一行 `미수행: diagram-design 미설치` —— 绝不因缺图而卡住。
+
+规则原文：[`_conventions/report-diagram.md`](skills/_conventions/report-diagram.md)
+
+---
+
 ## 主要命令
 
 | 命令 | 说明 |
@@ -166,6 +198,29 @@ skills/
 ├── sj-loop/          ← 循环工程
 └── sj-outsource/     ← 专家委派
 ```
+
+---
+
+## 出处与致谢
+
+s-skills 建立在他人的成果之上。先列集成的工具，再列借鉴的设计。
+
+| 工具 | 用于 | 许可证 |
+|------|------|--------|
+| [ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd) — Ayoub G. | 会话启动时的输出规则 | MIT |
+| [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) — Cathryn Lavery | 报告与 SI 文档图表 | MIT |
+| [daangn/seed-design](https://github.com/daangn/seed-design) | `/seed` | Apache-2.0 |
+| [microsoft/markitdown](https://github.com/microsoft/markitdown) | `/convert` | MIT |
+| [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
+| [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
+| [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
+| OpenAI Codex CLI (`codex mcp-server`) | `/gpt` | Vendor tool |
+
+**借鉴的设计：** **gbrain**（瘦调度器 + 单一约定目录、归档规则、friction 协议、manifest 校验、`doctor --remediate`）· **ponytail**（最小代码阶梯、`ponytail:` 标记）· Geoffrey Litt《Understanding is the new bottleneck》（叙述式报告）· Self-Harness / AHE（框架变更门禁）· AI 代码审查器局限研究（审查视角多样性、严重度校准）· Fable 5 系统提示（外部内容即数据、诚实产出、引用限度）· J. Russell Ramsay 与 Anthony L. Rostain《The Adult ADHD Tool Kit》（经由 i-have-adhd）。
+
+s-skills 本身采用 [MIT](LICENSE)。上述工具各自遵循其许可证，本仓库不包含它们的副本，而是**在运行时获取**。
+
+完整表格（韩文）：[README.md](README.md#출처--크레딧)
 
 ---
 

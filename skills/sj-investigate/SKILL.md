@@ -45,6 +45,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-investigate.md"
   이해 도구(마이크로월드, 일회용) AskUserQuestion 1회 제안. 거절 시 재제안 금지.
 - 조사 결과는 볼트 `40_프로젝트/{프로젝트}/보고서/{날짜} 조사.md`에 저장
   (정본: `obsidian-output.md`). 볼트 없으면 `미수행` 기록, 비차단.
+- 보고서에 그림이 문장을 대체할 때만 다이어그램 1~2개 — diagram-design으로 그리고 원본은 `docs/diagrams/`, 볼트엔 SVG 임베드 (정본: `report-diagram.md`). 미설치면 그림 없이 `미수행:` 기록, 비차단.
 
 ## 3. 최소 계약 (플레이북 부재 시)
 

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.9.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.10.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -118,6 +118,38 @@ ln -sf ~/S-skills/skills/harness ~/.claude/skills/s-skills
 
 ---
 
+## セッション開始時に自動適用 —— ADHD 出力ルール
+
+s-skills を入れると、**セッションが始まるたび**に出力ルールが 1 セット有効になります。Claude が答えを文章の奥に埋めず、**次の行動から**書くようになります。
+
+**出典：[ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd)（Ayoub G.、MIT）。** このルールは s-skills が書いたものではなく、`SessionStart` フックが同リポジトリの `skills/i-have-adhd/SKILL.md` を取得してそのまま注入します。原典は J. Russell Ramsay・Anthony L. Rostain『The Adult ADHD Tool Kit』を緩やかに参照し、「LLM が答えをどう配置すべきか」に翻案したものです。
+
+動作（`hooks/adhd-bootstrap.mjs`）：
+
+- キャッシュは `~/.claude/.cache/s-skills/i-have-adhd`。ネットワークは **1 日 1 回まで**（キャッシュ時は約 50 ミリ秒）。
+- **決してブロックしない**：git がない・ネットが切れている・ファイルが壊れている —— すべて `exit 0`。
+- **二重注入の防止**：上流プラグインを入れて `~/.claude/.i-have-adhd-always` を作っている場合は、そちらのフックに任せて何もしません。
+- 注入ヘッダーに出典リポジトリと commit を明示します —— 外部文書は指示ではなくデータです（[untrusted-content](skills/_conventions/untrusted-content.md)）。
+
+停止：`touch ~/.claude/.s-skills-adhd-off`（そのセッションだけなら `stop adhd mode`）。
+
+---
+
+## レポートの図
+
+完了報告・調査結果・セキュリティ監査・レトロ・SI 文書に図が必要なときは、**[cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)（Cathryn Lavery、MIT）** で描きます。40 種のエディトリアル図タイプを、自己完結 HTML + インライン SVG で出力します。ビルドも CDN も Mermaid もありません。
+
+```bash
+claude plugin marketplace add cathrynlavery/diagram-design
+claude plugin install diagram-design@diagram-design
+```
+
+ルールは 2 つ。**図が文章の代わりになるときだけ描く**（3 つ以上のコンポーネントの呼び出し構造、分岐のある流れ、時間軸のある計画、2 次元の関係）。1 レポートあたり 1〜2 枚が上限。**形式は宛先が決める** —— 元の HTML は `docs/diagrams/`、Obsidian レポートには SVG 埋め込み、PR 本文には PNG（GitHub は markdown 内の SVG をレンダリングしません）。未インストールなら図なしでレポートを完成させ、`미수행: diagram-design 미설치` の 1 行を残します —— 図のために報告が止まることはありません。
+
+ルール本文：[`_conventions/report-diagram.md`](skills/_conventions/report-diagram.md)
+
+---
+
 ## 主なコマンド
 
 | コマンド | 説明 |
@@ -166,6 +198,29 @@ skills/
 ├── sj-loop/          ← ループエンジニアリング
 └── sj-outsource/     ← 専門家委譲
 ```
+
+---
+
+## 出典・クレジット
+
+s-skills は他の人の成果の上に立っています。組み込んで使うツールと、設計を借りたものを分けて記します。
+
+| ツール | 用途 | ライセンス |
+|--------|------|-----------|
+| [ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd) — Ayoub G. | セッション開始時の出力ルール | MIT |
+| [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) — Cathryn Lavery | レポート・SI 文書の図 | MIT |
+| [daangn/seed-design](https://github.com/daangn/seed-design) | `/seed` | Apache-2.0 |
+| [microsoft/markitdown](https://github.com/microsoft/markitdown) | `/convert` | MIT |
+| [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
+| [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
+| [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
+| OpenAI Codex CLI (`codex mcp-server`) | `/gpt` | Vendor tool |
+
+**設計を借りた先：** **gbrain**（薄いディスパッチャ + 単一コンベンション、filing rules、friction プロトコル、manifest ガード、`doctor --remediate`）· **ponytail**（最小コードの梯子、`ponytail:` マーカー）· Geoffrey Litt『Understanding is the new bottleneck』（叙述式レポート）· Self-Harness / AHE（ハーネス変更ゲート）· AI コードレビュアーの限界に関する研究（レビュー観点の多様性、重大度の較正）· Fable 5 システムプロンプト（外部コンテンツはデータ、正直な報告、引用上限）· J. Russell Ramsay・Anthony L. Rostain『The Adult ADHD Tool Kit』（i-have-adhd 経由）。
+
+s-skills 自体は [MIT](LICENSE) です。上記のツールはそれぞれのライセンスに従い、本リポジトリはコピーを同梱せず**実行時に取得**します。
+
+完全な表（韓国語）：[README.md](README.md#출처--크레딧)
 
 ---
 

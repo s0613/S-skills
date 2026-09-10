@@ -43,6 +43,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-ship.md"
 - 커버리지 예외 승인은 `docs/sj-company/ship-log.md`에 한 줄 append(경로·형식 불변).
 - PR 본문은 [서술식 완료 보고](../_conventions/literate-report.md) — 배경→의도→읽기 순서→세부.
 - 릴리즈 보고는 볼트가 있으면 `{볼트}/40_프로젝트/{프로젝트}/보고서/{날짜} 릴리즈.md`에 저장 ([obsidian-output](../_conventions/obsidian-output.md)), 없으면 `미수행:` 기록.
+- 보고서에 그림이 문장을 대체할 때만 다이어그램 1~2개 — diagram-design으로 그리고 원본은 `docs/diagrams/`, 볼트엔 SVG 임베드 (정본: `../_conventions/report-diagram.md`). 미설치면 그림 없이 `미수행:` 기록, 비차단.
 - sj-company 경유 호출 시 push 전 브랜치 확인 필수.
 - 배포 후 모니터링은 이 스킬이 다시 만들지 않는다 — `/canary`(sj-qa)로 위임.
 

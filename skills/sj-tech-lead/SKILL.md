@@ -49,6 +49,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-tech-lead.md"
 - Frontend 참여 시 `.state/design-review.req` sentinel로 sj-design 시각 리뷰 트리거.
 - 완료 보고는 서술식(배경→의도→읽기 순서→세부) + 옵시디언 정리본
   ([literate-report](../_conventions/literate-report.md)).
+- 보고서에 그림이 문장을 대체할 때만 다이어그램 1~2개 — diagram-design으로 그리고 원본은 `docs/diagrams/`, 볼트엔 SVG 임베드 (정본: `../_conventions/report-diagram.md`). 미설치면 그림 없이 `미수행:` 기록, 비차단.
 - `docs/FEATURE-MAP.md`가 있으면 구현 후 해당 기능 행(진입점·핵심 파일·테스트·의존)을 갱신하고
   흐름도를 표에서 재생성한다. 없으면 dev-summary.md에 `미수행: FEATURE-MAP 없음`
   (정본: `../_conventions/feature-map.md`).

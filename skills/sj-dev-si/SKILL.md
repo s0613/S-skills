@@ -40,6 +40,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-dev-si.md"
 - 결과는 `docs/si/{doc_type}.md`에 저장 (주간 보고서는 `weekly-{YYYY-MM-DD}.md`, 견적서는 `estimate-v{N}.md` — 버전 번호 필수).
 - **정직 산출 계약**([honest-report](../_conventions/honest-report.md)): 언급된 입력 자료(회의록·기존 문서)는 존재 확인 후 실제로 읽고, 없으면 없다고 보고. 생성한 파일은 실제 경로로 보고.
 - **인용 한도**([citation-limits](../_conventions/citation-limits.md)): 외부 자료 인용은 출처당 1회·15단어 미만, 기본은 재서술.
+- 구조·흐름·일정을 그림으로 보여야 하는 문서(개요·제안서·WBS·결과보고서)는 diagram-design으로 그린다 — high-level·process·swimlane·Gantt·ER (정본: [report-diagram](../_conventions/report-diagram.md)). 미설치면 그림 없이 `미수행:` 기록.
 - 사실 근거 없이 수치(사업비·공수·날짜) 확정 기재 금지 — 미정이면 `[확인 필요]`로 표기. 소스 코드·DB 마이그레이션·CI/CD 파일 수정 금지.
 
 ## 3. 최소 계약 (플레이북 부재 시)

@@ -41,6 +41,7 @@ _PB="$_VAULT/20_실행/플레이북/sj-retro.md"
 - 취향 프로필 신선도 점검(Step 4c)은 승격 후보 나열까지만 — 직접 편집 금지, 반영은 사람 게이트.
 - 히스토리는 `docs/sj-company/retro-history.md`에 append(경로·형식 불변).
 - 회고 보고서는 볼트가 있으면 `{볼트}/40_프로젝트/{프로젝트}/보고서/{날짜} 회고.md`에 저장 ([obsidian-output](../_conventions/obsidian-output.md)), 없으면 `미수행:` 기록.
+- 보고서에 그림이 문장을 대체할 때만 다이어그램 1~2개 — diagram-design으로 그리고 원본은 `docs/diagrams/`, 볼트엔 SVG 임베드 (정본: `../_conventions/report-diagram.md`). 미설치면 그림 없이 `미수행:` 기록, 비차단.
 - 지표 수집은 레거시 `*-context.md`와 볼트 `40_프로젝트/{프로젝트}/` 양쪽에서 모두 확인한다 — 다른 역할 스킬이 v4 전환 중이라 한쪽만 보면 히스토리가 비어 보일 수 있다.
 
 ## 3. 최소 계약 (플레이북 부재 시)

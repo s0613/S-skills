@@ -32,8 +32,9 @@ mkdir -p "$_VAULT/40_프로젝트/{프로젝트 폴더}/보고서"
 
 1. 파일명: `{YYYY-MM-DD} {보고 종류}.md` (예: `2026-07-15 QA 판정.md`). 같은 날 같은 종류가 이미 있으면 ` -2` 붙임 — 기존 파일 덮어쓰기 금지.
 2. frontmatter: `date` / `run`(RUN_ID, 없으면 생략) / `skill` / `kind`(완료 보고·QA 판정·회고·조사·보안 감사·릴리즈).
-3. 본문: **그 자체로 읽히는 정리본** — 서술식 보고([literate-report.md](literate-report.md)) 또는 판정·핵심 발견 요약. 로그·diff 원문 덤프 금지. 원본(`.state/` 경로 등)은 마지막 줄에 경로로 연결.
-4. 저장 전 [PII 마스킹](pii-masking.md): `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]` 치환 — 볼트는 영속 파일이다.
+3. 그림이 문장을 대체할 때만 다이어그램을 넣는다 — [report-diagram.md](report-diagram.md) (diagram-design으로 그리고 SVG로 임베드, 보고서당 1~2개 상한).
+4. 본문: **그 자체로 읽히는 정리본** — 서술식 보고([literate-report.md](literate-report.md)) 또는 판정·핵심 발견 요약. 로그·diff 원문 덤프 금지. 원본(`.state/` 경로 등)은 마지막 줄에 경로로 연결.
+5. 저장 전 [PII 마스킹](pii-masking.md): `password|token|secret|api.?key|Bearer|private.?key` 패턴 값을 `[REDACTED]` 치환 — 볼트는 영속 파일이다.
 
 ## 비차단
 

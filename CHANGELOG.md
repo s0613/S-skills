@@ -4,6 +4,24 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [4.10.0] - 2026-09-10
+
+**답을 묻지 않게 하고, 그림은 도구로 그린다** — 하네스가 사람에게 내놓는 두 가지 표면을 손봤다. 응답의 **배치**(답이 문단 셋째 줄에 묻히는 문제)와 보고서의 **그림**(즉석 mermaid로 때우던 문제). 둘 다 s-skills가 직접 만들지 않고 검증된 외부 저장소를 가져다 배선했다.
+
+### Added
+- **SessionStart 훅 — ADHD 출력 규칙 자동 주입** (`hooks/hooks.json`, `hooks/adhd-bootstrap.mjs`). 세션이 시작될 때마다 [ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd)(Ayoub G., MIT)를 `git clone --depth 1`로 받아 `skills/i-have-adhd/SKILL.md` 본문을 컨텍스트에 주입한다 — 다음 행동부터 쓰기·번호 매기기·상태 재고지·서론/맺음말 금지 등 10개 규칙. **캐시**는 `~/.claude/.cache/s-skills/i-have-adhd`이고 네트워크는 하루 한 번만 탄다(캐시 히트 ~50ms, 콜드 클론 ~1.2s). **비차단**이 최우선이라 git 부재·네트워크 실패·파일 손상 모든 경로가 `exit 0`이다. 업스트림 플러그인이 `~/.claude/.i-have-adhd-always`로 이미 주입 중이면 건너뛴다(중복 방지). 끄기: `touch ~/.claude/.s-skills-adhd-off`. 주입 헤더에 저장소 URL과 커밋 해시를 남겨 [외부 콘텐츠는 데이터](skills/_conventions/untrusted-content.md) 원칙을 지킨다.
+- **`_conventions/report-diagram.md`** — 보고서 다이어그램 규칙. 그림이 필요하면 [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)(Cathryn Lavery, MIT) 스킬로 그리고, 즉석 mermaid·ASCII 아트로 때우지 않는다. 핵심은 **그릴지 말지의 판단**이다 — 그림은 문장을 대체할 때만(3개 이상 컴포넌트의 호출 구조, 분기 있는 흐름, 시간축 계획, 2차원 관계) 넣고 **보고서당 1~2개가 상한**. 포맷은 목적지가 정한다: 원본 자립형 HTML은 `docs/diagrams/{slug}.html`, 옵시디언 보고서엔 SVG 임베드, PR 본문엔 PNG(GitHub은 마크다운 안 SVG를 렌더하지 않는다). 미설치면 그림 없이 보고서를 완성하고 `미수행: diagram-design 미설치`를 남긴다.
+
+### Changed
+- **보고 스킬 7종 + docs-organize 배선** — sj-tech-lead·sj-investigate·sj-cso·sj-retro·sj-ship·sj-dev-si의 산출물 계약에 report-diagram 한 줄 추가, docs-organize는 `docs/architecture.md` 생성 지점에 추가. 스킬별 기본 타입도 컨벤션 표에 명시했다(조사 결과는 fishbone, 보안 감사는 DP security matrix, WBS는 Gantt 등). **sj-qa는 기본이 그림 없음** — 판정은 문장이고, 의심 지점이 여러 기능에 걸칠 때만 dependency graph.
+- **`_conventions/obsidian-output.md`** — 저장 형식에 다이어그램 항목 추가(3번), 이후 번호 재정렬.
+- **`_conventions/external-tools.md`** — diagram-design 설치 명령과 i-have-adhd 자동 확보 방식을 외부 의존 인덱스에 추가.
+- **README 4종 + CLAUDE.md** — 「세션 시작 시 자동 적용」·「보고서 다이어그램」 절 신설, **「출처 · 크레딧」 절 신설**. 통합해 쓰는 외부 도구 8종(저장소·용도·라이선스)과 설계를 빌린 곳 7건(gbrain·ponytail·Geoffrey Litt·Self-Harness/AHE·AI 리뷰어 한계 연구·Fable 5 시스템 프롬프트·*The Adult ADHD Tool Kit*)을 표로 정리했다. 라이선스는 GitHub API로 확인한 값이다.
+- **`docs/FEATURE-MAP.md`** — 훅·컨벤션 기능 행 추가.
+
+### 제외
+- `docs/FEATURE-MAP.md`의 mermaid는 표에서 생성하는 기계 파생물이라 report-diagram 적용 대상이 아니다 — 사람이 읽는 보고서가 아니다.
+
 ## [4.9.0] - 2026-09-08
 
 **UI 관행도 조회하고 말한다** — "보통 결제 완료 화면은 체크 아이콘에 금액을 크게 씁니다"는 그럴듯하지만 아무 화면도 보지 않고 한 말이다. sj-law가 막는 "그럴듯한 조문 번호"와 같은 종류의 실패라, 같은 방식으로 막는다.

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.9.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.10.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -118,6 +118,38 @@ After installing, in any project:
 
 ---
 
+## Auto-applied at session start — ADHD output rules
+
+Installing s-skills turns on one output rule set at the start of **every session**: Claude leads with the next action instead of burying it in prose.
+
+**Source: [ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd) (Ayoub G., MIT).** s-skills did not write these rules — the `SessionStart` hook fetches that repo's `skills/i-have-adhd/SKILL.md` and injects it verbatim. The original is loosely based on *The Adult ADHD Tool Kit* by J. Russell Ramsay and Anthony L. Rostain, adapted for how an LLM arranges an answer.
+
+How it runs (`hooks/adhd-bootstrap.mjs`):
+
+- Cache at `~/.claude/.cache/s-skills/i-have-adhd`; the network is touched **at most once a day** (cached runs finish in ~50 ms).
+- **Never blocks**: missing git, no network, broken file — every path exits 0.
+- **No double injection**: if you installed the upstream plugin with `~/.claude/.i-have-adhd-always`, its own hook does the work and this one stays quiet.
+- The injected header names the source repo and commit — external documents are data, not instructions ([untrusted-content](skills/_conventions/untrusted-content.md)).
+
+Turn it off: `touch ~/.claude/.s-skills-adhd-off` (or say `stop adhd mode` for the current session only).
+
+---
+
+## Report diagrams
+
+When a completion report, investigation, security audit, retro, or SI document needs a picture, s-skills draws it with **[cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (Cathryn Lavery, MIT)** — 40 editorial diagram types as self-contained HTML + inline SVG. No build step, no CDN, no Mermaid.
+
+```bash
+claude plugin marketplace add cathrynlavery/diagram-design
+claude plugin install diagram-design@diagram-design
+```
+
+Two rules: **draw only when the picture replaces sentences** (3+ components calling each other, branching flow, time-axis plan, two-dimensional relations) with a cap of 1–2 per report; and **the destination picks the format** — source HTML in `docs/diagrams/`, SVG embedded in Obsidian reports, PNG in PR bodies (GitHub does not render SVG inside markdown). Not installed means the report ships without the picture plus a `미수행: diagram-design 미설치` line — never a blocked report.
+
+Rule text: [`_conventions/report-diagram.md`](skills/_conventions/report-diagram.md)
+
+---
+
 ## Key commands
 
 | Command | Description |
@@ -166,6 +198,29 @@ skills/
 ├── sj-loop/          ← loop engineering
 └── sj-outsource/     ← expert delegation
 ```
+
+---
+
+## Credits
+
+s-skills stands on other people's work. Integrated tools first, borrowed ideas second.
+
+| Tool | Used by | License |
+|------|---------|---------|
+| [ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd) — Ayoub G. | SessionStart output rules | MIT |
+| [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) — Cathryn Lavery | Report and SI diagrams | MIT |
+| [daangn/seed-design](https://github.com/daangn/seed-design) | `/seed` | Apache-2.0 |
+| [microsoft/markitdown](https://github.com/microsoft/markitdown) | `/convert` | MIT |
+| [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
+| [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
+| [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
+| OpenAI Codex CLI (`codex mcp-server`) | `/gpt` | Vendor tool |
+
+**Ideas borrowed:** **gbrain** (thin dispatchers + single conventions dir, filing rules, friction protocol, manifest guard, `doctor --remediate`) · **ponytail** (minimal-code ladder, `ponytail:` markers) · Geoffrey Litt, *Understanding is the new bottleneck* (literate reports) · Self-Harness / AHE (harness change gate) · research on AI code-reviewer limits (reviewer diversity, severity calibration) · Fable 5 system prompt (external content is data, honest reporting, citation limits) · J. Russell Ramsay & Anthony L. Rostain, *The Adult ADHD Tool Kit* (via i-have-adhd).
+
+s-skills itself is [MIT](LICENSE). The tools above keep their own licenses; this repository ships no copies of them and **fetches them at runtime**.
+
+Full table (Korean): [README.md](README.md#출처--크레딧)
 
 ---
 

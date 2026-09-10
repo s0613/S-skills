@@ -159,6 +159,9 @@ Write each file. If a file already exists in docs/, update it — do not overwri
 
 #### docs/architecture.md
 
+> 구조 그림이 필요하면 diagram-design으로 그려 `docs/diagrams/architecture.html`에 두고 여기서 링크한다
+> (정본: `skills/_conventions/report-diagram.md`). 미설치면 그림 없이 진행하고 `미수행:` 한 줄을 남긴다.
+
 ```markdown
 # Architecture
 
