@@ -66,3 +66,4 @@ curl -sL https://api.github.com/repos/{owner}/{repo}/releases/latest \
 | sj-automation | 플랫폼별 (PyAutoGUI·xdotool·AutoHotkey 등) | SKILL.md OS 감지 표 참조 |
 | sj-convert | markitdown (Microsoft, MIT) | 무설치: `uvx --python 3.12 --from 'markitdown[all]' markitdown <파일>` / 설치: `pipx install 'markitdown[all]'` — Python ≥ 3.10 필수 |
 | sj-ref | 유아이볼 MCP | claude.ai 커넥터에서 "유아이볼" 연결 (권장) / `claude mcp add --transport http uibowl https://uibowl.io/api/mcp` — 무료 등급 하루 10회 조회 |
+| sj-mobile | ARTEMIS (Google, Apache-2.0) | `git clone https://github.com/google/artemis.git ~/artemis && cd ~/artemis && ./start.sh` (Windows: `.\start.bat`) → `uv run artemis mcp --install claude`. 전제: Python 3.12+ · adb · USB 디버깅 켠 안드로이드 기기/에뮬레이터 · LLM 키 1개(`~/artemis/.env`, 사람이 직접 입력) |

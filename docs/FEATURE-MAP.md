@@ -40,6 +40,7 @@ flowchart LR
   F08 --> F28[sj-screencast]
   F08 --> F29[sj-convert]
   F08 --> F30[sj-ref]
+  F08 --> F32[sj-mobile]
   F16 --> F22
   F19 --> F18
   F20 --> F08
@@ -59,7 +60,7 @@ flowchart LR
 | F05 | sj-agent-dev — 비즈니스 에이전트 아키텍처 설계·구현 안내 (10가지 설계 축) | `skills/sj-agent-dev/SKILL.md` | `skills/sj-agent-dev/` | 없음 | — |
 | F06 | sj-agent-review — 에이전트 코드 리뷰, sj-agent-dev 10축 기준 PASS/WARN/FAIL 판정 | `skills/sj-agent-review/SKILL.md` | `skills/sj-agent-review/` | 없음 | F05 |
 | F07 | sj-automation — PC 자동화 + UI 조작 + 네이티브 앱 제작 통합 | `skills/sj-automation/SKILL.md` | `skills/sj-automation/` | 없음 | — |
-| F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F30 |
+| F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F30, F32 |
 | F09 | sj-cso — OWASP Top 10 + STRIDE 보안 감사 | `skills/sj-cso/SKILL.md` | `skills/sj-cso/` | 없음 | — |
 | F10 | sj-design — 레퍼런스 DNA 기반 디자인 생성, 3안 제시 후 선택 구현 | `skills/sj-design/SKILL.md` | `skills/sj-design/` | 없음 | — |
 | F11 | sj-dev-si — SI 문서(제안서·WBS·결과보고서 등) 6종 + 주간보고·견적서·도메인 맵 작성 | `skills/sj-dev-si/SKILL.md` | `skills/sj-dev-si/` | 없음 | — |
@@ -83,6 +84,7 @@ flowchart LR
 | F29 | sj-convert — markitdown으로 Read 툴이 못 읽는 포맷(docx·pptx·xlsx·epub·zip·오디오·YouTube)을 Markdown으로 변환 | `skills/sj-convert/SKILL.md` | `skills/sj-convert/` | 없음 | — |
 | F30 | sj-ref — 유아이볼 MCP로 출시된 앱·웹·게임 화면 레퍼런스 조회(패턴·컴포넌트·OCR 문구·MAU·인기 순위) | `skills/sj-ref/SKILL.md` | `skills/sj-ref/` | 없음 | — |
 | F31 | ADHD 출력 규칙 SessionStart 훅 — i-have-adhd 저장소를 받아 규칙 본문을 세션 컨텍스트에 주입 (캐시 24h·비차단·중복 방지) | `hooks/hooks.json` | `hooks/adhd-bootstrap.mjs` | 없음 | — |
+| F32 | sj-mobile — ARTEMIS MCP로 안드로이드 실기기·에뮬레이터 조작·탐색, 스크린샷/UI 트리/logcat 증거 수집 | `skills/sj-mobile/SKILL.md` | `skills/sj-mobile/` | 없음 | — |
 
 ## 미매핑
 - `skills/RESOLVER.md` — 라우팅 단일 사실 테이블 자체. 스킬(기능)이 아니라 F08(sj-company)이 소비하는 설정 파일이라 행으로 만들지 않았다.

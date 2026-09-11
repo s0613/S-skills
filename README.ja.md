@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.10.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.11.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -195,6 +195,7 @@ skills/
 ├── sj-agent-review/  ← エージェントレビュー
 ├── sj-convert/       ← ドキュメント変換 (markitdown — Read ツールが読めない形式)
 ├── sj-ref/           ← アプリUIリファレンス (uibowl — 実際にリリースされた画面)
+├── sj-mobile/        ← Android実機自動化 (ARTEMIS — 実機を実際に操作して確認)
 ├── sj-loop/          ← ループエンジニアリング
 └── sj-outsource/     ← 専門家委譲
 ```
@@ -214,6 +215,7 @@ s-skills は他の人の成果の上に立っています。組み込んで使�
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
 | [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
+| [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
 | OpenAI Codex CLI (`codex mcp-server`) | `/gpt` | Vendor tool |
 
 **設計を借りた先：** **gbrain**（薄いディスパッチャ + 単一コンベンション、filing rules、friction プロトコル、manifest ガード、`doctor --remediate`）· **ponytail**（最小コードの梯子、`ponytail:` マーカー）· Geoffrey Litt『Understanding is the new bottleneck』（叙述式レポート）· Self-Harness / AHE（ハーネス変更ゲート）· AI コードレビュアーの限界に関する研究（レビュー観点の多様性、重大度の較正）· Fable 5 システムプロンプト（外部コンテンツはデータ、正直な報告、引用上限）· J. Russell Ramsay・Anthony L. Rostain『The Adult ADHD Tool Kit』（i-have-adhd 経由）。

@@ -4,6 +4,27 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [4.11.0] - 2026-09-11
+
+**폰을 추측하지 않고 직접 걸어 본다** — 웹은 pw-loop이, PC는 sj-automation이 몰았지만 **안드로이드 실기기**는 하네스에 경로가 없었다. 그 자리에서 하네스는 화면 흐름을 기억으로 말했다("로그인 누르면 홈으로 갑니다") — 실제로는 권한 팝업이 먼저 뜨고, A/B 분기가 있고, 스플래시가 2초 더 붙는다. sj-law가 막는 "그럴듯한 조문 번호", sj-ref가 막는 "그럴듯한 UI 관행"과 같은 종류의 실패라 같은 방식으로 막는다.
+
+### Added
+- **`sj-mobile` 스킬** (`/mobile`, `/sj-mobile`, `/모바일`, `/안드로이드`, `/artemis`) — [ARTEMIS](https://github.com/google/artemis)(Google, Apache-2.0) MCP로 연결된 안드로이드 실기기·에뮬레이터를 사람처럼 조작한다. 도구는 5개: `mobile_run_task`(비동기 실행)·`mobile_manage_task`(상태·개입·정지)·`mobile_get_device_state`(스크린샷/UI 트리)·`mobile_inspect_trace`(단계별 증거)·`mobile_diagnose`(환경 닥터). 프로필 갈림길은 하나다 — 경로가 분명한 조작은 **Flash**(3~5s/step), logcat·adb shell·체크포인트·장기 워크플로는 **Pro**(15~40s/turn). **Flash에는 adb shell이 없어서** logcat이 필요한 태스크에 Flash를 고르면 도구가 없어 실패한다.
+- **비동기 폴링 계약 (Step 3)** — `mobile_run_task`는 백그라운드 프로세스라 즉시 반환한다. `conversation_id`를 넘기면 완료 시 깨워 주지만, **그래도 1분 간격 `mobile_manage_task(action="status")` 폴링이 계약**이다 — 건너뛰면 죽은 태스크를 완료로 보고한다. `[Loop:continuous]` 모니터링 종료는 `release_loop=True`가 **유일한** 신호이고 `instruction="이제 그만"`은 정지로 해석되지 않는다(ARTEMIS 도구 명세).
+- **증거 직독 계약 (Step 5)** — `status: "completed"`는 *에이전트가 끝냈다*는 뜻이지 *올바른 것을 눌렀다*는 뜻이 아니다. 탭 위치가 빨간 원으로 표시된 `action_overlay_screenshot`을 직접 열어 본 뒤에만 "확인했다"고 쓴다. Pro 실행의 `test_summary`는 기계 판독 가능한 passed/failed 카운트를 주므로 리포트 산문을 파싱하지 않는다 ([정직 산출 계약](skills/_conventions/honest-report.md)).
+- **실기기 게이트 (Step 1)** — 이 스킬이 만지는 것은 브라우저 탭이 아니라 **사용자의 실제 폰**이다. 결제·송금·메시지 발송·계정 삭제·실계정 로그인은 [사람 게이트](skills/_conventions/human-gate.md)이고, 개인 폰이면 에뮬레이터를 먼저 권한다. 기기가 2대 이상이면 `device_serial`을 사용자에게 물어 확정한다 — 생략하면 ARTEMIS가 풀에서 임의 선택해 **조용히 다른 폰을 만진다**. 첫 태스크가 기기에 설치하는 Accessibility Helper APK도 사전 고지 대상이다(제거: `artemis helper uninstall`).
+- **탐색 1회 → 결정론적 코드 (Step 6)** — 에이전트 실행은 경로를 *발견하는* 도구지 상시 테스트 러너가 아니다. 한 번 걸어 트레이스로 경로를 확정한 뒤 Espresso·UIAutomator·`artemis-client` pytest로 고정한다. 로케이터는 resource-id·텍스트 우선에 좌표는 폴백이고, **에이전트 추론 지연(Flash ~5s/step, Pro ~30s/turn)을 테스트 코드의 `sleep`으로 옮기지 않는다** — 모델이 생각한 시간이지 앱이 느린 시간이 아니다 ([최소 코드 사다리](skills/_conventions/minimal-code.md)).
+- **RESOLVER #30 (모바일 실기기)** — 라우팅 가로채기 넷을 함께 막았다. ① #2(UI 자동화)의 맨 단어 `화면`·`클릭`이 "폰에서 로그인 화면 눌러봐"를 먼저 낚아채므로 안드로이드 기기 키워드 예외를 달았다(PC 화면 조작과 폰 화면 조작은 다른 도구다). ② #3(PC 자동화)에도 같은 예외. ③ #20(pw-loop) — Playwright는 브라우저를 몰고 네이티브 앱 화면은 몰지 못한다. ④ #14(Benchmark) — 기기 위 성능·안정성 측정은 실기기 도구가 하고 웹 성능은 그대로 #14. 반대 방향 예외도 넣었다: 모바일 화면을 *만들어달라*면 #16/#26(디자인), 남의 앱 화면 *사례*는 #29(sj-ref).
+
+### Changed
+- **`_conventions/external-tools.md` 인덱스** — sj-mobile 행 추가. 설치는 `git clone … && ./start.sh`(adb·scrcpy·ffmpeg·uv 의존성까지 자동) → `uv run artemis mcp --install claude`. **API 키는 사람 게이트** — `~/artemis/.env`에 사용자가 직접 넣는다(대화에 받아 적으면 전사 로그에 남는다). `--install claude`가 규칙을 까는 `~/.claude/rules/artemis.md`는 **한 곳에만** 둔다 — Claude Code가 `CLAUDE.md`와 `rules/*.md`를 둘 다 읽으므로 복사본은 컨텍스트만 먹는다.
+- **README 4종 + CLAUDE.md + FEATURE-MAP(F32)** — `/mobile` 커맨드·구조 트리·크레딧(Apache-2.0)·기능 행 추가, 버전 배지 4.11.0.
+
+### Notes
+- **정적 확인만 수행, 실기기 확인은 미수행.** 스킬 내용은 `google/artemis` 저장소를 클론해 `mcp_server/tools/*.py`의 도구 시그니처·독스트링과 `README.md`·`mcp_server/README.md`를 직접 읽고 적었다(프로필 한계, `release_loop` 의미, `mobile_diagnose`의 `Run:`/`Guidance:` 구분, Helper APK 동작). 다만 **ARTEMIS를 설치해 실기기로 돌려 보지는 않았다** — `미수행: 실기기 실행 검증`. 연결된 안드로이드 기기가 필요하고, 설치가 adb·scrcpy·ffmpeg를 건드리는 사람 게이트 작업이다.
+- **iOS는 미지원.** ARTEMIS 로드맵에 있을 뿐 현재는 안드로이드 전용이라, 스킬 Step 0b가 아이폰 요청을 받으면 없다고 말하고 멈춘다 — 안드로이드처럼 답하지 않는다.
+- **행동 픽스처 미실행.** RESOLVER #2·#3·#14·#20을 건드렸으므로 회귀 대상이 있으나 이번 릴리즈에서는 돌리지 않았다 — `미수행: 라우팅 회귀 픽스처`.
+
 ## [4.10.0] - 2026-09-10
 
 **답을 묻지 않게 하고, 그림은 도구로 그린다** — 하네스가 사람에게 내놓는 두 가지 표면을 손봤다. 응답의 **배치**(답이 문단 셋째 줄에 묻히는 문제)와 보고서의 **그림**(즉석 mermaid로 때우던 문제). 둘 다 s-skills가 직접 만들지 않고 검증된 외부 저장소를 가져다 배선했다.

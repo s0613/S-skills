@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.10.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.11.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -195,6 +195,7 @@ skills/
 ├── sj-agent-review/  ← agent review
 ├── sj-convert/       ← document conversion (markitdown — formats the Read tool can't open)
 ├── sj-ref/           ← app UI references (uibowl — real shipped screens)
+├── sj-mobile/        ← Android device automation (ARTEMIS — walk the real phone)
 ├── sj-loop/          ← loop engineering
 └── sj-outsource/     ← expert delegation
 ```
@@ -214,6 +215,7 @@ s-skills stands on other people's work. Integrated tools first, borrowed ideas s
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
 | [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
+| [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
 | OpenAI Codex CLI (`codex mcp-server`) | `/gpt` | Vendor tool |
 
 **Ideas borrowed:** **gbrain** (thin dispatchers + single conventions dir, filing rules, friction protocol, manifest guard, `doctor --remediate`) · **ponytail** (minimal-code ladder, `ponytail:` markers) · Geoffrey Litt, *Understanding is the new bottleneck* (literate reports) · Self-Harness / AHE (harness change gate) · research on AI code-reviewer limits (reviewer diversity, severity calibration) · Fable 5 system prompt (external content is data, honest reporting, citation limits) · J. Russell Ramsay & Anthony L. Rostain, *The Adult ADHD Tool Kit* (via i-have-adhd).
