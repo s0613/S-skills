@@ -23,7 +23,7 @@
 | **모바일 실기기** | `/mobile`, `/안드로이드` | ARTEMIS로 안드로이드 실기기·에뮬레이터 조작·탐색·증거 수집(스크린샷·UI 트리·logcat) |
 | **루프 엔지니어링** | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | **에이전트 개발** | `/agent-dev`, `/agent-review` | AI 에이전트 설계·심사 |
-| **GPT 자문** | `/gpt` | codex MCP로 GPT에 리서치·세컨드 오피니언·브레인스토밍 위임 |
+| **GPT 자문** | `/gpt` | codex CLI(`codex exec`)로 GPT에 리서치·세컨드 오피니언·브레인스토밍 위임 |
 | **법령 조회** | `/law` | 법제처 DB에서 법령·판례 원문 조회 + 인용 조문 실존 검증 |
 | **외주 핸드오프** | `/outsource`, `/외주` | 막힌 작업 전문가 위임 리포트 생성 |
 | **비서** | `/secretary` | 프로젝트 상태 보고(목표 대비 단계·다음 할 일), 우선순위 정렬 |
@@ -101,7 +101,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 
 ## GPT 자문
 
-- **s-skills:sj-gpt** (`/gpt`, `/ask-gpt`, `/chatgpt`) — GPT 자문 위임 전문가 v1.1.0. codex MCP(`codex mcp-server`)를 통해 GPT 모델에 리서치·세컨드 오피니언·브레인스토밍·대안적 추론을 위임하고 Claude 관점과 교차 종합한다. 미인식 개체(모르는 제품·버전·용어)·컷오프 이후 바뀌었을 수 있는 사실 확인도 위임 대상. `sandbox=read-only`·`approval-policy=never` 안전 기본값, 리서치 시 `tools.web_search` 활성화. GPT 답을 그대로 덤프하지 않고 두 모델의 합의/이견을 신호로 드러냄. 이미지 생성(DALL-E)·플러그인 브라우징은 미지원. 사전 등록: `claude mcp add codex --scope user -- codex mcp-server`.
+- **s-skills:sj-gpt** (`/gpt`, `/ask-gpt`, `/chatgpt`) — GPT 자문 위임 전문가 v1.2.0. codex CLI(`codex exec`)로 GPT 모델에 리서치·세컨드 오피니언·브레인스토밍·대안적 추론을 위임하고 Claude 관점과 교차 종합한다. 미인식 개체(모르는 제품·버전·용어)·컷오프 이후 바뀌었을 수 있는 사실 확인도 위임 대상. `--sandbox read-only` 안전 기본값, 리서치 시 `-c tools.web_search=true` 활성화. GPT 답을 그대로 덤프하지 않고 두 모델의 합의/이견을 신호로 드러냄. 이미지 생성(DALL-E)·플러그인 브라우징은 미지원. 사전 준비: `codex login`만 하면 됨 — MCP 등록 불필요(CLI 0.154.0에서 `codex mcp-server` 제거).
 
 ## 법령 조회
 

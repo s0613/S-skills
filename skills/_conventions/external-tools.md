@@ -57,7 +57,7 @@ curl -sL https://api.github.com/repos/{owner}/{repo}/releases/latest \
 |---|---|---|
 | sj-screencast | OpenScreen (앱 내장 CLI) | SKILL.md Step 0 스크립트 — macOS `.dmg` 자동 설치 / Windows `winget install --source msstore OpenScreen` |
 | sj-law | korean-law MCP | `claude mcp add korean-law --scope user --env LAW_OC=<키> -- npx -y korean-law-mcp@latest` (키: open.law.go.kr 무료) |
-| sj-gpt | codex MCP | `claude mcp add codex --scope user -- codex mcp-server` |
+| sj-gpt | codex CLI (`codex exec`) | `npm i -g @openai/codex && codex login` — MCP 등록 불필요(0.154.0에서 `codex mcp-server` 제거됨) |
 | 보고서 전반 ([report-diagram.md](report-diagram.md)) | diagram-design (Cathryn Lavery, MIT) | `claude plugin marketplace add cathrynlavery/diagram-design && claude plugin install diagram-design@diagram-design` |
 | 하네스 SessionStart 훅 (`hooks/adhd-bootstrap.mjs`) | i-have-adhd (Ayoub G., MIT) | 훅이 `git clone --depth 1 https://github.com/ayghri/i-have-adhd.git`으로 자동 확보 — 별도 설치 불필요 |
 | sj-seed | seed-docs MCP / seed-design 스킬 | `claude mcp add seed-docs -- npx -y @seed-design/docs-mcp` / `npx skills add https://github.com/daangn/seed-design --skill seed-design --global` |

@@ -4,6 +4,12 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/)를 따르며,
 버전은 [유의적 버전](https://semver.org/lang/ko/)을 따릅니다.
 
+## [Unreleased]
+
+### Changed
+- **sj-gpt** v1.2.0 — 위임 경로를 codex MCP에서 **codex CLI(`codex exec`)**로 교체. codex 0.154.0에서 `codex mcp-server` 서브커맨드가 제거돼 MCP 등록이 기동 즉시 끊겼다(`Error: stdin is not a terminal` → `CONNECTION_CLOSED`) — 남은 `codex mcp`는 codex가 *외부* MCP를 붙이는 반대 방향 명령이라 대체재가 아니다. 호출은 `codex exec --sandbox read-only --skip-git-repo-check --color never -o <파일>`, 리서치는 `-c tools.web_search=true`. 응답은 `-o` 파일에서 회수한다(stdout에는 hook·토큰 로그가 섞인다). `allowed-tools`에서 `mcp__codex__codex`·`ToolSearch` 제거.
+- **`_conventions/external-tools.md`·CLAUDE.md·README(4종)** — sj-gpt 의존을 `codex login`만 요구하는 CLI로 갱신. MCP 등록 안내 제거.
+
 ## [4.11.0] - 2026-09-11
 
 **폰을 추측하지 않고 직접 걸어 본다** — 웹은 pw-loop이, PC는 sj-automation이 몰았지만 **안드로이드 실기기**는 하네스에 경로가 없었다. 그 자리에서 하네스는 화면 흐름을 기억으로 말했다("로그인 누르면 홈으로 갑니다") — 실제로는 권한 팝업이 먼저 뜨고, A/B 분기가 있고, 스플래시가 2초 더 붙는다. sj-law가 막는 "그럴듯한 조문 번호", sj-ref가 막는 "그럴듯한 UI 관행"과 같은 종류의 실패라 같은 방식으로 막는다.

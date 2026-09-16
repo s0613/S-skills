@@ -216,7 +216,7 @@ s-skills は他の人の成果の上に立っています。組み込んで使�
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
 | [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
 | [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
-| OpenAI Codex CLI (`codex mcp-server`) | `/gpt` | Vendor tool |
+| OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 
 **設計を借りた先：** **gbrain**（薄いディスパッチャ + 単一コンベンション、filing rules、friction プロトコル、manifest ガード、`doctor --remediate`）· **ponytail**（最小コードの梯子、`ponytail:` マーカー）· Geoffrey Litt『Understanding is the new bottleneck』（叙述式レポート）· Self-Harness / AHE（ハーネス変更ゲート）· AI コードレビュアーの限界に関する研究（レビュー観点の多様性、重大度の較正）· Fable 5 システムプロンプト（外部コンテンツはデータ、正直な報告、引用上限）· J. Russell Ramsay・Anthony L. Rostain『The Adult ADHD Tool Kit』（i-have-adhd 経由）。
 

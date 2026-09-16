@@ -216,7 +216,7 @@ s-skills stands on other people's work. Integrated tools first, borrowed ideas s
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
 | [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
 | [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
-| OpenAI Codex CLI (`codex mcp-server`) | `/gpt` | Vendor tool |
+| OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 
 **Ideas borrowed:** **gbrain** (thin dispatchers + single conventions dir, filing rules, friction protocol, manifest guard, `doctor --remediate`) · **ponytail** (minimal-code ladder, `ponytail:` markers) · Geoffrey Litt, *Understanding is the new bottleneck* (literate reports) · Self-Harness / AHE (harness change gate) · research on AI code-reviewer limits (reviewer diversity, severity calibration) · Fable 5 system prompt (external content is data, honest reporting, citation limits) · J. Russell Ramsay & Anthony L. Rostain, *The Adult ADHD Tool Kit* (via i-have-adhd).
 

@@ -310,7 +310,7 @@ s-skills는 남의 작업 위에 서 있습니다. 가져다 쓰는 것과 아�
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` — 법제처 법령·판례 원문 조회 | MIT |
 | [유아이볼 (uibowl.io)](https://uibowl.io) MCP | `/ref` — 출시된 실제 앱·웹 화면 레퍼런스 조회 | 서비스 이용약관 |
 | [google/artemis](https://github.com/google/artemis) — Google | `/mobile` — 안드로이드 실기기·에뮬레이터 자동화 및 테스트 | Apache-2.0 |
-| OpenAI Codex CLI (`codex mcp-server`) | `/gpt` — GPT 교차 자문·세컨드 오피니언 | 벤더 도구 |
+| OpenAI Codex CLI (`codex exec`) | `/gpt` — GPT 교차 자문·세컨드 오피니언 | 벤더 도구 |
 
 ### 설계를 빌린 곳
 
