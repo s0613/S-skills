@@ -6,9 +6,29 @@
 
 ## [Unreleased]
 
+## [4.12.0] - 2026-09-21
+
+**판단을 문장이 아니라 타입으로 받는다** — 에이전트에서 가장 잘 깨지는 곳은 모델이 문장으로 답하고 코드가 그걸 파싱하는 지점이다. "JSON으로만 답해" → 마크다운 펜스 → 정규식 → 재시도 → 프롬프트 한 줄 추가. 하네스에는 이 사다리를 걷어낼 경로가 없었다. sj-law가 "그럴듯한 조문 번호"를, sj-ref가 "그럴듯한 UI 관행"을 막는다면 이건 반대편이다 — 조회가 아니라 **판단의 형태 자체**를 바꾼다.
+
+### Added
+- **`sj-jev` 스킬** (`/jev`, `/sj-jev`, `/typesafe`, `/타입세이프`) — [TypeSafe](https://docs.typesafe.ai)의 System One 모델 **Jev**를 에이전트 판단 레이어로 배선한다. 엔드포인트 `POST https://api.typesafe.ai/v1/systemone`에 `state` + 질문 맵을 보내면 타입 있는 답(Choice·Score·Noul) + 확률 + `confidence`가 온다. 워크플로는 코드가 소유하고, 모델은 "프로그래밍 가능한 상식"만 공급한다.
+- **적합성과 효과를 따로 판정 (Step 1 / Step 1.5)** — Step 1이 답의 *모양*을 본다(규칙·계산·정확 조회는 그냥 코드, 문장·코드 생성은 LLM, 그 사이 좁은 판단만 Jev). 모양이 맞아도 효과가 없는 자리가 있어 **Step 1.5가 실익을 따로 판정**한다: `붙인다` / `측정 후 결정` / `안 붙인다` + 근거 한 줄, 기본값은 안 붙인다. 가장 흔한 헛스윙은 **LLM 콜이 사라지지 않고 Jev 콜이 추가되는 경우** — 순증이면 지연도 비용도 올라간다. 갈리면 골든셋 20~50건으로 정확도·p50/p95 지연·요청당 비용·**에스컬레이션 비율**(30%가 사람에게 가면 자동화가 아니다)을 나란히 잰다. 키가 없어 못 쟀으면 `미수행: 실호출 미검증 — 효과 판정은 추정` ([최소 코드 사다리](skills/_conventions/minimal-code.md)·[정직 산출 계약](skills/_conventions/honest-report.md)).
+- **프리미티브 갈림길 (Step 2)** — 집합 중 하나면 Choice(`other` 옵션 필수, 최대 255), 축 위의 정도면 Score(레벨은 구체적 상황으로, 2~10개), 조건 참거짓이면 Noul. **Noul에는 별도 `confidence`가 없고 0.5는 "중간 정도"가 아니라 "예/아니오 반반"**이라 정도 측정에 쓰면 신호가 사라진다(실무 1순위 오답 — 정도는 Score로). 여러 라벨이 동시에 참일 수 있으면 Choice 하나가 아니라 라벨당 Noul 하나.
+- **한 요청 fan-out 계약 (Step 3)** — 같은 `state`의 질문은 전부 한 요청에 넣는다. 병렬 평가라 질문을 더해도 응답 시간이 거의 안 늘고, 일부 입력에서만 쓸 speculative 질문까지 미리 물어 코드가 골라 쓴다. **벤더 문서가 "코딩 에이전트는 사람보다 한 콜에 한 질문 습관에 잘 빠진다"고 명시적으로 경고**한다. 두 번째 요청은 첫 답이 있어야 증거를 가져오거나·state를 새로 만들거나·다음 선택지가 정해질 때만.
+- **confidence 행동 게이트 (Step 4)** — 3구간(낮음=사람에게, 중간=확인 후, 높음=자동)을 쓰되 **읽기 동작과 파괴적 동작의 문턱을 따로** 잡는다(잔액 조회 0.5 / 이체 승인 0.9). 쿡북 숫자는 예시지 상수가 아니다. 남용 방지 셋: 최선만 고르면 임계값이 필요 없고, 쓰지 않을 분기의 불확실성은 무시하며, **confidence는 분포가 뾰족한 정도지 워크플로가 옳다는 보증이 아니다**(타입은 인터페이스를 보장하지 진실을 보장하지 않는다).
+- **에이전트 배선표 (Step 5)** — sj-agent-dev 10축 중 Jev가 실제로 들어가는 자리를 못 박았다: 오케스트레이션(의도·핸들러 라우팅)·도구 계층화(툴 선택)·가드레일(정책 조항당 Noul)·컨텍스트 관리(리랭킹)·평가(인용 검증)·런타임 루프(다음 행동). **역할 분리·옵저버빌리티·메모리 계층·그래프 토폴로지는 코드 영역이라 직접 자리가 없다** — 전부에 끼우는 게 아니다. 구조 설계 자체는 [sj-agent-dev](skills/sj-agent-dev/SKILL.md)로 되돌린다.
+- **문서 직독 계약 (Step 0)** — 벤더가 명시한 1순위 실패가 *"에이전트가 요청·응답 필드를 지어낸다"*이고 원인은 낡은 기억이라, 통합 코드를 쓰기 전에 `docs.typesafe.ai/{llms.txt,api.md,primitives/*.md,models.md,confidence.md}`를 읽는다(Mintlify는 경로에 `.md`를 붙이면 마크다운을 준다). 접근 불가면 `미수행: 라이브 문서 접근 불가` + 설치된 SDK 타입 직독, **버전 의존 필드명은 지어내지 않는다**. 공식 벤더 스킬(`typesafe-ai/skills`)이 설치돼 있으면 계약 정본을 그쪽에 위임하고, 없어도 비차단.
+- **리뷰 표면 단일화 (Step 6)** — 사람이 실제로 검토해야 하는 건 **질문 문구와 임계값 상수 둘뿐**이라 파일 하나에 모으고 호출부는 참조만 한다. 임계값을 튜닝했으면 별칭(`jev-latest`)이 아니라 응답 `model` 필드의 버전 ID를 고정한다 — 별칭은 소리 없이 움직인다. API 키는 [사람 게이트](skills/_conventions/human-gate.md)로 `TYPESAFE_API_KEY`를 사용자가 직접 export 하고, 웹 앱이면 서버 사이드에만 둔다.
+- **RESOLVER #31 (Jev 판단 모델)** — #8(Agent Dev)의 `에이전트 만들어줘`·`AI 에이전트`가 "Jev로 에이전트 만들어줘"를 먼저 낚아채므로 #8에 Jev/TypeSafe 예외를 달았다. 반대 방향도 넣었다: 에이전트 *구조* 설계만 요청하면 #8로 되돌리고, 문장·코드를 *생성*하는 요청은 비대상(Jev는 텍스트를 만들지 않는다).
+
 ### Changed
+- **`_conventions/external-tools.md` 인덱스** — sj-jev 행 추가. 설치는 `claude plugin marketplace add typesafe-ai/skills && claude plugin install typesafe@typesafe-ai`(타 에이전트: `npx skills add typesafe-ai/skills --skill typesafe-ai`), SDK는 `pip install typesafe-sdk` / `npm i @typesafe-ai/sdk`. 키 발급·export는 사람 게이트.
+- **README 4종 + CLAUDE.md + FEATURE-MAP(F33)** — 구조 트리·스킬 지도(`판단 모델 배선`)·기능 행 추가, 버전 배지 4.12.0.
 - **sj-gpt** v1.2.0 — 위임 경로를 codex MCP에서 **codex CLI(`codex exec`)**로 교체. codex 0.154.0에서 `codex mcp-server` 서브커맨드가 제거돼 MCP 등록이 기동 즉시 끊겼다(`Error: stdin is not a terminal` → `CONNECTION_CLOSED`) — 남은 `codex mcp`는 codex가 *외부* MCP를 붙이는 반대 방향 명령이라 대체재가 아니다. 호출은 `codex exec --sandbox read-only --skip-git-repo-check --color never -o <파일>`, 리서치는 `-c tools.web_search=true`. 응답은 `-o` 파일에서 회수한다(stdout에는 hook·토큰 로그가 섞인다). `allowed-tools`에서 `mcp__codex__codex`·`ToolSearch` 제거.
 - **`_conventions/external-tools.md`·CLAUDE.md·README(4종)** — sj-gpt 의존을 `codex login`만 요구하는 CLI로 갱신. MCP 등록 안내 제거.
+
+### Notes
+- **정적 확인만 수행, 실호출은 미수행.** 스킬 내용은 `docs.typesafe.ai`의 `llms.txt`·`api.md`·`models.md`·`confidence.md`·`primitives*.md`·`agent-skill.md`와 공식 `typesafe-ai/skills` SKILL.md를 직접 받아 읽고 적었다(엔드포인트·요청/응답 필드·프리미티브 계약·한도·별칭 동작·벤더가 경고하는 실패 모드). 다만 **`TYPESAFE_API_KEY`로 실제 호출해 보지는 않았다** — `미수행: 실호출 검증`. 키 발급이 사람 게이트라 계정이 필요하다.
 
 ## [4.11.0] - 2026-09-11
 

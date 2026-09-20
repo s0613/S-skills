@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "4.11.0",
+  "version": "4.12.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -129,8 +129,8 @@
     {
       "name": "sj-gpt",
       "path": "skills/sj-gpt/SKILL.md",
-      "version": "1.1.0",
-      "description": "GPT(ChatGPT/OpenAI) 자문 위임 전문가. codex MCP를 통해 GPT 모델에게",
+      "version": "1.2.0",
+      "description": "GPT(ChatGPT/OpenAI) 자문 위임 전문가. codex CLI(`codex exec`)로 GPT 모델에게",
       "triggers": [
         "/gpt",
         "/ask-gpt",
@@ -145,6 +145,18 @@
       "triggers": [
         "/sj-investigate",
         "/investigate"
+      ]
+    },
+    {
+      "name": "sj-jev",
+      "path": "skills/sj-jev/SKILL.md",
+      "version": "1.0.0",
+      "description": "Jev(TypeSafe System One 모델)로 에이전트의 판단 레이어를 만드는 전문가.",
+      "triggers": [
+        "/jev",
+        "/sj-jev",
+        "/typesafe",
+        "/타입세이프"
       ]
     },
     {

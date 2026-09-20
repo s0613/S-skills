@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.11.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.12.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="#옵시디언-연동--하네스의-장기-기억"><img src="https://img.shields.io/badge/Obsidian-long--term%20memory-7c3aed?style=flat-square&logo=obsidian&logoColor=white&labelColor=0d0d0d" alt="obsidian"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
@@ -288,6 +288,7 @@ skills/
 ├── sj-convert/       ← 문서 변환 (markitdown — Read 툴이 못 읽는 포맷)
 ├── sj-ref/           ← 앱 레퍼런스 조회 (유아이볼 — 출시된 실제 화면)
 ├── sj-mobile/        ← 안드로이드 실기기 자동화 (ARTEMIS — 폰을 직접 걸어 본다)
+├── sj-jev/           ← Jev 판단 모델 배선 (TypeSafe — 판단을 타입으로 받는다)
 ├── sj-loop/          ← 루프 엔지니어링
 └── sj-outsource/     ← 전문가 위임
 ```
