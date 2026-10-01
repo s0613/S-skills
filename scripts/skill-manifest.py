@@ -276,6 +276,27 @@ def check(skills):
                         f"[playbook-contract] {skill}.md: '{marker}' 없음 — 기능 지도 배선이 지워졌거나 변형됨"
                     )
 
+    # 9. 프로즈 참조 무결성 — 본문이 언급한 s-skills:X 가 실존 스킬인가
+    #    RESOLVER 디스패치(검사 2)는 한 파일만 본다. 스킬 rename·삭제 시 다른 스킬
+    #    본문·CLAUDE.md·컨벤션에 남는 죽은 인계 경로는 아무도 잡지 않았다.
+    #    과거 실제 발생: pw-loop -> s-skills:sj-dev, RESOLVER -> s-skills:sj-ui-auto(별칭).
+    #    CHANGELOG는 고친 과거를 기록하므로 제외한다.
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".") and d != "node_modules"]
+        for fn in filenames:
+            if not fn.endswith(".md") or fn == "CHANGELOG.md":
+                continue
+            path = os.path.join(dirpath, fn)
+            rel = os.path.relpath(path, ROOT)
+            with open(path, encoding="utf-8") as f:
+                text = f.read()
+            for ref in sorted(set(re.findall(r"s-skills:([a-z0-9-]+)", text))):
+                if ref not in actual_names:
+                    errors.append(
+                        f"[prose-ref] {rel}: 's-skills:{ref}' 참조 — 그런 스킬 디렉토리 없음 "
+                        f"(rename 후 남은 인계 경로 또는 트리거 별칭을 스킬명으로 씀)"
+                    )
+
     return errors
 
 
