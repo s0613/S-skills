@@ -76,6 +76,17 @@
       ]
     },
     {
+      "name": "sj-ax",
+      "path": "skills/sj-ax/SKILL.md",
+      "version": "1.0.0",
+      "description": "AX(AI Transformation) 문제 발굴 전문가. 현장 관계자와 대화해 진짜 문제를 캐고,",
+      "triggers": [
+        "/ax",
+        "/sj-ax",
+        "/문제발굴"
+      ]
+    },
+    {
       "name": "sj-company",
       "path": "skills/sj-company/SKILL.md",
       "version": "4.0.0",
@@ -104,6 +115,17 @@
       "triggers": [
         "/sj-cso",
         "/cso"
+      ]
+    },
+    {
+      "name": "sj-data-check",
+      "path": "skills/sj-data-check/SKILL.md",
+      "version": "1.0.0",
+      "description": "데이터 수집·검증 전문가. 필요한 데이터를 확보하고, 에이전트에 먹이기 전에 출처·구조·의미를",
+      "triggers": [
+        "/data-check",
+        "/sj-data-check",
+        "/데이터검증"
       ]
     },
     {
