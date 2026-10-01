@@ -149,6 +149,17 @@
       ]
     },
     {
+      "name": "sj-estimate",
+      "path": "skills/sj-estimate/SKILL.md",
+      "version": "1.0.0",
+      "description": "견적 전문가. 고객 문의·RFP를 받아 기능별 단가가 들어간 견적서, 운영비(구독형) 설계,",
+      "triggers": [
+        "/estimate",
+        "/sj-estimate",
+        "/견적"
+      ]
+    },
+    {
       "name": "sj-gpt",
       "path": "skills/sj-gpt/SKILL.md",
       "version": "1.2.0",
