@@ -149,6 +149,18 @@
       ]
     },
     {
+      "name": "sj-e2e",
+      "path": "skills/sj-e2e/SKILL.md",
+      "version": "1.0.0",
+      "description": "자연어 에이전트 E2E 테스트 전문가. [e2e](https://github.com/tester-army/e2e)(TesterArmy, Apache-2.0)로",
+      "triggers": [
+        "/sj-e2e",
+        "/agent-e2e",
+        "/자연어테스트",
+        "/버그배시"
+      ]
+    },
+    {
       "name": "sj-estimate",
       "path": "skills/sj-estimate/SKILL.md",
       "version": "1.0.0",

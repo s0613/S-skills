@@ -44,6 +44,7 @@ flowchart LR
   F08 --> F33[sj-jev]
   F33 --> F05
   F08 --> F34[sj-motion]
+  F08 --> F35[sj-e2e]
   F16 --> F22
   F19 --> F18
   F20 --> F08
@@ -63,7 +64,7 @@ flowchart LR
 | F05 | sj-agent-dev — 비즈니스 에이전트 아키텍처 설계·구현 안내 (10가지 설계 축) | `skills/sj-agent-dev/SKILL.md` | `skills/sj-agent-dev/` | 없음 | — |
 | F06 | sj-agent-review — 에이전트 코드 리뷰, sj-agent-dev 10축 기준 PASS/WARN/FAIL 판정 | `skills/sj-agent-review/SKILL.md` | `skills/sj-agent-review/` | 없음 | F05 |
 | F07 | sj-automation — PC 자동화 + UI 조작 + 네이티브 앱 제작 통합 | `skills/sj-automation/SKILL.md` | `skills/sj-automation/` | 없음 | — |
-| F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F30, F32, F33, F34 |
+| F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F30, F32, F33, F34, F35 |
 | F09 | sj-cso — OWASP Top 10 + STRIDE 보안 감사 | `skills/sj-cso/SKILL.md` | `skills/sj-cso/` | 없음 | — |
 | F10 | sj-design — 레퍼런스 DNA 기반 디자인 생성, 3안 제시 후 선택 구현 | `skills/sj-design/SKILL.md` | `skills/sj-design/` | 없음 | — |
 | F11 | sj-dev-si — SI 문서(제안서·WBS·결과보고서 등) 6종 + 주간보고·견적서·도메인 맵 작성 | `skills/sj-dev-si/SKILL.md` | `skills/sj-dev-si/` | 없음 | — |
@@ -90,6 +91,7 @@ flowchart LR
 | F32 | sj-mobile — ARTEMIS MCP로 안드로이드 실기기·에뮬레이터 조작·탐색, 스크린샷/UI 트리/logcat 증거 수집 | `skills/sj-mobile/SKILL.md` | `skills/sj-mobile/` | 없음 | — |
 | F33 | sj-jev — TypeSafe Jev(System One)로 에이전트 판단 지점을 타입 있는 답(Choice·Score·Noul)+confidence로 배선, 라이브 문서 계약 직독 | `skills/sj-jev/SKILL.md` | `skills/sj-jev/` | 없음 | F05 |
 | F34 | sj-motion — 2D 모션그래픽 광고 영상 생성 프롬프트 작성(텍스트 원문 보존·2D 카메라 제약·길이 실측 검증) | `skills/sj-motion/SKILL.md` | `skills/sj-motion/` | 없음 | — |
+| F35 | sj-e2e — tester-army e2e로 자연어 에이전트 E2E 테스트(웹·iOS 시뮬레이터·안드로이드 에뮬레이터) 작성·실행, 재생 캐시·explore·버그 배시, 설치 버전 가이드 직독 | `skills/sj-e2e/SKILL.md` | `skills/sj-e2e/` | 없음 | — |
 
 ## 미매핑
 - `skills/RESOLVER.md` — 라우팅 단일 사실 테이블 자체. 스킬(기능)이 아니라 F08(sj-company)이 소비하는 설정 파일이라 행으로 만들지 않았다.

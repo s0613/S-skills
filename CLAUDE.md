@@ -10,7 +10,7 @@
 |------|--------|---------|
 | **상태 라우터** | `/s-skills` | 현재 프로젝트 상태 감지 → 적절한 스킬로 안내 |
 | **문서화** | `/docs-organize`, `/obsidian` | 코드베이스 docs/ 생성, Obsidian 볼트 작성 |
-| **테스트** | `/test-scenario`, `/pw-loop` | 시나리오 생성, Playwright 자동화 루프 |
+| **테스트** | `/test-scenario`, `/pw-loop`, `/sj-e2e` | 시나리오 생성, Playwright 자동화 루프, 자연어 에이전트 E2E(웹·iOS·안드로이드) |
 | **개발 파이프라인** | `/sj-company`, `/pm`, `/design`, `/tech-lead`, `/qa` | PM → 디자인 → 개발 → QA 전체 흐름 |
 | **디자인 시스템** | `/seed` | 당근 SEED 디자인 시스템으로 UI 조립(토큰·공식 컴포넌트만) |
 | **품질·보안·릴리즈** | `/spec`, `/investigate`, `/cso`, `/ship`, `/retro` | 스펙·디버깅·보안감사·배포·회고 |
@@ -42,6 +42,7 @@
 - **s-skills:docs-organize** (`/docs-organize`) — 코드베이스 분석 및 docs/ 생성, 건강 점수 산출 v1.2.0. `remediate` 모드(`/docs-organize remediate [목표점수]`): 목표 점수까지 치유 플랜→사람 승인→단계별 실행·재측정. 자동 도달 불가 점수(테스트 통과율 등)는 천장에서 멈추고 triage/sj-company 위임 (gbrain doctor --remediate 차용). 기존 프로젝트에 `docs/FEATURE-MAP.md` 최초 생성(재실행 시 미매핑 후보 나열).
 - **s-skills:test-scenario** (`/test-scenario`) — 기능 검증 시나리오 생성 및 통과율 추적
 - **s-skills:pw-loop** (`/pw-loop`) — 기능 단위 Playwright 반복 테스트 루프
+- **s-skills:sj-e2e** (`/sj-e2e`, `/agent-e2e`, `/자연어테스트`, `/버그배시`) — 자연어 에이전트 E2E 테스트 전문가 v1.0.0. [e2e](https://github.com/tester-army/e2e)(TesterArmy, Apache-2.0)로 웹(Playwright 엔진)·모바일(iOS 시뮬레이터·안드로이드 에뮬레이터) 테스트를 `agent.act`(목표 하나) + `expect`/`agent.assert`(검증)로 쓰고 돌린다. 검증된 조작은 재생 캐시가 녹화해 다음 실행부터 모델 호출 없이 재생하고, 앱이 바뀌면 에이전트가 그 화면부터 이어받는다. 존재 이유는 sj-jev·sj-seed와 같은 종류다 — **0.x 프레임워크의 API를 기억으로 쓰지 않는 것**. 그래서 Step 1이 설치된 버전의 벤더 스킬(`.agents/skills/e2e/`)이나 `npx e2e guide <topic>`을 계약 정본으로 읽은 뒤 코드를 쓴다. 경계는 프로젝트 상태로 갈린다: `playwright.config.*`만 있으면 도입을 강요하지 않고 pw-loop와 갈림길을 한 번 묻고, 안드로이드 실기기 증거 수집은 sj-mobile, 판정은 sj-qa. 작성 규율의 핵심은 **모든 `act` 뒤에 결과를 고정하는 것** — 검증이 없으면 성공 여부도 모르고 캐시도 녹화하지 않는다. `agent.assert`는 캐시와 무관하게 매번 모델을 부르므로 확정 가능한 검증은 `expect`로 옮긴다. 보고에는 `AI`(토큰·호출)·`Cache`(replayed/handed off/missed) 줄을 그대로 싣고, 정본은 화면이 아니라 `.e2e/report.json`이다. `e2e explore`·버그 배시의 발견 사항은 **재현 테스트가 `ASSERTION_FAILED`를 내야 버그**이고, 공유 배포 사이트 탐색은 읽기 전용. `npx e2e init`(package.json·.mcp.json 수정)·모델 로그인/키·`npx e2e feedback` 외부 발송·CI 시크릿은 사람 게이트. 텔레메트리 기본 켜짐을 도입 시 고지한다.
 - **s-skills:obsidian-writer** (`/obsidian`, `/obsidian-writer`) — Obsidian 문서 작성 전문가. 기능·작업·프로젝트 전체를 .md로 정리. iCloud/로컬 볼트 자동 탐지, 매 실행마다 저장 위치 선택
 
 ## 개발 파이프라인 (SJ Company)

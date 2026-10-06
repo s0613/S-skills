@@ -62,6 +62,7 @@ curl -sL https://api.github.com/repos/{owner}/{repo}/releases/latest \
 | 하네스 SessionStart 훅 (`hooks/adhd-bootstrap.mjs`) | i-have-adhd (Ayoub G., MIT) | 훅이 `git clone --depth 1 https://github.com/ayghri/i-have-adhd.git`으로 자동 확보 — 별도 설치 불필요 |
 | sj-seed | seed-docs MCP / seed-design 스킬 | `claude mcp add seed-docs -- npx -y @seed-design/docs-mcp` / `npx skills add https://github.com/daangn/seed-design --skill seed-design --global` |
 | sj-seo | Playwright MCP | `claude mcp add playwright npx @playwright/mcp@latest --scope user` |
+| sj-e2e | e2e (TesterArmy, Apache-2.0) | `npx e2e init` (pnpm: `pnpm dlx e2e init`) — 승인 후. 수동: `npm install --save-dev e2e @e2e-dev/web ai@^7` (모바일은 `@e2e-dev/mobile` + `npx agent-device doctor`). CI 브라우저: `npx @e2e-dev/web install chromium --with-deps`. 전제: Node 22.22.3+ 또는 24.8+. 모델 로그인(`npx e2e login <provider>`)·API 키는 사람 게이트. 텔레메트리 끄기: `E2E_TELEMETRY_DISABLED=1` |
 | pw-loop | Playwright | `npm install -D @playwright/test && npx playwright install --with-deps chromium` |
 | sj-automation | 플랫폼별 (PyAutoGUI·xdotool·AutoHotkey 등) | SKILL.md OS 감지 표 참조 |
 | sj-convert | markitdown (Microsoft, MIT) | 무설치: `uvx --python 3.12 --from 'markitdown[all]' markitdown <파일>` / 설치: `pipx install 'markitdown[all]'` — Python ≥ 3.10 필수 |
