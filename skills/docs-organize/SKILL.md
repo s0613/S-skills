@@ -1,6 +1,6 @@
 ---
 name: docs-organize
-version: 1.2.0
+version: 1.3.0
 description: |
   Analyzes a project codebase, interviews the user for missing context, and
   generates a standardized docs/ structure: prd.md, architecture.md,
@@ -8,6 +8,7 @@ description: |
   Also runs the test suite and scores the project 0-100.
   Invoke with /docs-organize in any project directory.
   remediate mode (/docs-organize remediate [목표점수]): 목표 점수까지 치유 플랜→승인→단계 실행.
+  architecture mode (/docs-organize architecture): 깊게 만들 모듈 후보를 HTML로 보여 주고 고른 하나를 질문 라운드로 설계 결정까지.
 allowed-tools:
   - Bash
   - Read
@@ -17,6 +18,7 @@ allowed-tools:
   - Grep
   - AskUserQuestion
   - Skill
+  - Agent
 triggers:
   - /docs-organize
   - docs 정리
@@ -30,6 +32,8 @@ Generate and maintain project documentation with a project health score.
 ## 모드 분기 (최우선)
 
 인자에 `remediate`, `점수 올려`, `치유`, `target`, 또는 목표 점수 숫자(예: `90까지`)가 포함되면 → **Remediate 모드**: 이 스킬 베이스 디렉토리의 [`REMEDIATE.md`](REMEDIATE.md)를 읽고 그 로직을 실행한다 (아래 Phase 0–7은 건너뛴다). REMEDIATE는 목표 점수까지 치유 플랜을 짜고, 사람 승인 후 단계별로 실행하며, 자동 도달 불가 점수에서 멈춘다.
+
+인자에 `architecture`, `아키텍처`, `구조 점검`, `깊은 모듈`, `리팩터링 후보`가 포함되면 → **Architecture 모드**: 이 스킬 베이스 디렉토리의 [`ARCHITECTURE.md`](ARCHITECTURE.md)를 읽고 그 로직을 실행한다 (아래 Phase 0–7은 건너뛴다). 코드는 고치지 않고 후보 보고 → 질문 라운드 → sj-spec 인계까지 한다.
 
 그 외(인자 없음 또는 일반 문서 정리 요청) → 아래 Phase 0–7(측정 + 생성)을 실행한다.
 
@@ -350,6 +354,7 @@ If CLAUDE.md does not exist: create it.
 
 - Create the directory if it doesn't exist.
 - If significant architectural decisions are visible in the code that aren't already in docs/adr/, create ADRs for at most 3 of the most significant decisions only.
+- A decision qualifies only if all three hold: **hard to reverse**, **surprising without context**, **the result of a real trade-off**. Skip any that misses one. Body is 1–3 sentences (context, decision, why); follow the repo's existing numbering (정본: `../_conventions/glossary.md`).
 
 #### docs/spec/
 

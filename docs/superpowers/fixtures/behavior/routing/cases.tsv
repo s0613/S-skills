@@ -1,0 +1,11 @@
+id	task	expect	forbid	why
+L01	옵시디언에 있는 회의록 검토해줘	Step R	obsidian-writer	행위(검토)가 키워드(옵시디언)를 이긴다 — 2026-06-22
+L02	로그인 화면 UI 만들어줘	sj-design	sj-automation	#2 맨 단어 '화면·UI'가 생성 요청을 가로채지 않는다 — 2026-09-03
+L03	결제 완료 화면 다른 앱은 어떻게 하고 있어?	sj-ref	sj-automation|sj-design	조회 동사 → #29, 만들기 동사 없음
+L04	배포 후 잘 올라갔어? 프로덕션 체크해줘	sj-qa	sj-ship	배포 *후* 확인은 #13, ship 아님
+L05	프로젝트 상태 확인해줘	sj-secretary	sj-qa	맨 '상태 확인'은 #18, 배포 맥락 없음
+L06	현장 관계자 인터뷰 정리해서 업무 개선 에이전트 만들어줘	sj-ax	#8 |obsidian-writer	문제 발굴 전 구조 설계 금지 → #33
+L07	고객이 보낸 제안서.docx 읽고 요약해줘	sj-convert	docs-organize|sj-dev-si	포맷 명시 → #28
+L08	구조 점검해서 깊은 모듈 후보 찾아줘	docs-organize	Step R	architecture 모드는 #21, 리뷰(#23) 아님 — 2026-10-09 키워드 칸 누락
+L09	안드로이드 폰에서 로그인 버튼 눌러서 확인해줘	sj-mobile	sj-automation	폰 화면 조작 → #30
+L10	utils.ts의 formatDate 함수 이름을 toDisplayDate로 바꿔줘	none	Skill|sj-	매치 없음 → Step 1 (확신 없으면 매치하지 않는다)

@@ -57,14 +57,14 @@ flowchart LR
 ## 기능
 | ID | 기능 | 진입점 | 핵심 파일 | 테스트 | 의존 |
 |----|------|--------|-----------|--------|------|
-| F01 | docs-organize — 코드베이스 분석·docs/ 생성·건강 점수 산출, remediate 모드 | `skills/docs-organize/SKILL.md` | `skills/docs-organize/` | `docs/superpowers/fixtures/behavior/libscan/` | F08 |
+| F01 | docs-organize — 코드베이스 분석·docs/ 생성·건강 점수 산출, remediate 모드, architecture 모드(깊은 모듈 후보 보고 + 질문 라운드) | `skills/docs-organize/SKILL.md` | `skills/docs-organize/` | `docs/superpowers/fixtures/behavior/libscan/` | F08 |
 | F02 | harness — 프로젝트 상태 감지 후 docs-organize/test-scenario/pw-loop 오케스트레이션 (`/s-skills`) | `skills/harness/SKILL.md` | `skills/harness/` | 없음 | F01, F26, F04, F08, F06, F05 |
 | F03 | obsidian-writer — Obsidian 볼트에 기능·작업·프로젝트 문서 작성 | `skills/obsidian-writer/SKILL.md` | `skills/obsidian-writer/` | 없음 | — |
 | F04 | pw-loop — 기능 단위 Playwright 테스트 반복 루프 | `skills/pw-loop/SKILL.md` | `skills/pw-loop/` | 없음 | F25 |
 | F05 | sj-agent-dev — 비즈니스 에이전트 아키텍처 설계·구현 안내 (10가지 설계 축) | `skills/sj-agent-dev/SKILL.md` | `skills/sj-agent-dev/` | 없음 | — |
 | F06 | sj-agent-review — 에이전트 코드 리뷰, sj-agent-dev 10축 기준 PASS/WARN/FAIL 판정 | `skills/sj-agent-review/SKILL.md` | `skills/sj-agent-review/` | 없음 | F05 |
 | F07 | sj-automation — PC 자동화 + UI 조작 + 네이티브 앱 제작 통합 | `skills/sj-automation/SKILL.md` | `skills/sj-automation/` | 없음 | — |
-| F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F30, F32, F33, F34, F35 |
+| F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 연결 표(Step C) + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F30, F32, F33, F34, F35 |
 | F09 | sj-cso — OWASP Top 10 + STRIDE 보안 감사 | `skills/sj-cso/SKILL.md` | `skills/sj-cso/` | 없음 | — |
 | F10 | sj-design — 레퍼런스 DNA 기반 디자인 생성, 3안 제시 후 선택 구현 | `skills/sj-design/SKILL.md` | `skills/sj-design/` | 없음 | — |
 | F11 | sj-dev-si — SI 문서(제안서·WBS·결과보고서 등) 6종 + 주간보고·견적서·도메인 맵 작성 | `skills/sj-dev-si/SKILL.md` | `skills/sj-dev-si/` | 없음 | — |
@@ -80,7 +80,7 @@ flowchart LR
 | F21 | sj-secretary — 전 프로젝트 PROJECT.md 기반 상태 보고 (읽기 전용) | `skills/sj-secretary/SKILL.md` | `skills/sj-secretary/` | `docs/superpowers/fixtures/behavior/triage/` | — |
 | F22 | sj-seo — Google Search Console + Naver Search Advisor 색인 자동화 | `skills/sj-seo/SKILL.md` | `skills/sj-seo/` | 없음 | — |
 | F23 | sj-ship — 테스트 → 커버리지 감사 → PR 오픈 릴리즈 자동화 | `skills/sj-ship/SKILL.md` | `skills/sj-ship/` | 없음 | — |
-| F24 | sj-spec — 모호한 의도를 5단계로 실행 가능한 스펙으로 변환 | `skills/sj-spec/SKILL.md` | `skills/sj-spec/` | `docs/superpowers/fixtures/behavior/mapped/` | — |
+| F24 | sj-spec — 모호한 의도를 질문 라운드(결정 트리·추천 답)와 5단계로 실행 가능한 스펙으로 변환, 용어는 GLOSSARY.md에 기록 | `skills/sj-spec/SKILL.md` | `skills/sj-spec/` | `docs/superpowers/fixtures/behavior/mapped/` | — |
 | F25 | sj-tech-lead — pm-brief 기반 전문 서브에이전트 병렬 디스패치 + 리뷰 통합 | `skills/sj-tech-lead/SKILL.md` | `skills/sj-tech-lead/` | 없음 | F18, F24, F10 |
 | F26 | test-scenario — 기능별 테스트 시나리오 생성 + 통과율 추적 사이클 | `skills/test-scenario/SKILL.md` | `skills/test-scenario/` | 없음 | — |
 | F27 | sj-seed — 당근 SEED 디자인 시스템, 볼트 취향 프로필 `preserve` 계약 + 토큰·공식 컴포넌트로만 조립 | `skills/sj-seed/SKILL.md` | `skills/sj-seed/` | 없음 | — |

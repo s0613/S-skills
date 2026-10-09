@@ -1,6 +1,6 @@
 ---
 name: sj-spec
-version: 2.0.0
+version: 2.1.0
 description: |
   스펙 작성 전문가 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-spec.md).
   모호한 의도를 6단계(why·scope·technical·impact·draft·file)로 실행 가능한 정밀 스펙으로 변환한다.
@@ -9,6 +9,9 @@ allowed-tools:
   - Bash
   - Read
   - Write
+  - Edit
+  - Grep
+  - Glob
   - AskUserQuestion
 triggers:
   - /sj-spec
@@ -43,11 +46,15 @@ _PB="$_VAULT/20_실행/플레이북/sj-spec.md"
 - 가정은 스펙 `## 가정` 절에 은폐 없이 명시 (정본: `honest-report.md`).
 - 스펙에 `## 영향 범위` 절 필수 — `docs/FEATURE-MAP.md`가 있으면 의존/역방향 의존 기능을 ID로
   지목하고, 없으면 `미수행: FEATURE-MAP 없음`을 기록한다 (정본: `../_conventions/feature-map.md`).
+- Step 1은 **질문 라운드**다 — 결정 트리의 프론티어를 질문마다 추천 답을 달아 라운드로 묻고, 코드로 확인할 수 있는
+  사실은 묻지 않고 직접 찾는다. 사용자가 이해를 확인하기 전에는 Step 2로 가지 않는다 (정본: `../_conventions/grilling.md`).
+- 라운드에서 정해진 용어는 대상 repo `GLOSSARY.md`에 바로 기록하고(없으면 그때 생성) 스펙은 용어집 단어로 쓴다.
+  ADR은 되돌리기 어려움·놀라움·실제 트레이드오프 세 조건을 다 만족할 때만 제안한다 (정본: `../_conventions/glossary.md`).
 - 사용자가 없는 실행(서브에이전트·루프·픽스처)에서는 `AskUserQuestion` 대신 가정을 쓰고 `## 가정`에 기록하되, 사람 게이트는 가정하지 않고 `보류: 사람 승인 필요`로 남긴다 (정본: `../_conventions/noninteractive.md`).
 
 ## 3. 최소 계약 (플레이북 부재 시)
 
-1. Why(강제 질문 6개, 미답변은 가정으로 채움) → Scope(포함/제외/보류) →
+1. Why(강제 질문 6개를 첫 프론티어로 추천 답과 함께 묻고, 답이 연 하위 질문을 라운드로 이어감. 미답변·위임은 추천 답을 가정으로 기록) → Scope(포함/제외/보류) →
    Technical(코드베이스 탐색) → Impact(지도 있으면 의존·역방향 지목, 없으면 `미수행:` 기록) →
    Draft(자가검토 체크리스트) → File(저장 + task.txt 등록) 순으로 진행한다.
 2. 스펙 저장 후 사용자에게 경로를 보고하고 다음 단계(구현/보안검토)를 제안한다.

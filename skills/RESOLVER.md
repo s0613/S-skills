@@ -39,7 +39,7 @@ sj-company Step 0이 런타임에 이 테이블을 읽어 디스패치하고, CL
 | 18 | 비서 | 비서, secretary, 현황 보고, 요약 보고, 보고서 봐줘, 진행 상황 알려줘, 지금 어때, 프로젝트 현황, 프로젝트 상태, 상태 확인, 뭐가 완료됐어 | 배포·프로덕션 맥락이 붙으면 → #13 | `Skill("s-skills:sj-secretary")` |
 | 19 | 테스트 시나리오 | 테스트 시나리오, 검증 시나리오, test scenario, 기능 검증 목록, 테스트 케이스 만들어줘, 시나리오 작성, 통과율 추적 | | `Skill("s-skills:test-scenario")` |
 | 20 | PW Loop | playwright 테스트, playwright 실행, e2e 테스트 실행, e2e 돌려줘, 테스트 통과율, pw-loop, pw 실행, 테스트 돌려줘 | 전제: `playwright.config.ts`/`.js` 존재. 없으면 "playwright 설정 파일이 없습니다" 출력 후 Tiny 경로. **안드로이드 기기 키워드 동시 감지 시 → #30** — Playwright는 브라우저를 몰고, 네이티브 앱 화면은 몰지 못한다. **`e2e.config.*`가 있거나 #35 키워드(자연어 테스트·agent.act·tester-army 등) 동시 감지 시 → #35** — 같은 "e2e"라도 그 프로젝트는 Playwright 러너가 아니라 e2e 러너로 돈다 | `Skill("s-skills:pw-loop")` |
-| 21 | 문서 정리 | 문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize | `점수 올려`, `치유`, `remediate`, `N점까지`, `target` 포함 시 → docs-organize **remediate 모드**(REMEDIATE.md): 목표 점수까지 치유 플랜→승인→단계 실행. **변환 대상 파일 포맷(docx·pptx·xlsx·PDF·epub·오디오)이 명시되면 → #28** — 이 행은 *코드베이스를 읽어 docs/를 짓는* 요청이고, 남이 준 파일을 *읽을 수 있게 바꾸는* 요청은 변환이다 | `Skill("s-skills:docs-organize")` |
+| 21 | 문서 정리 | 문서 정리, docs 구조, docs 만들어줘, 문서 스코어, health score, docs 정리, 코드베이스 분석 문서, docs-organize, 구조 점검, 아키텍처 개선, 깊은 모듈, 리팩터링 후보 | `점수 올려`, `치유`, `remediate`, `N점까지`, `target` 포함 시 → docs-organize **remediate 모드**(REMEDIATE.md): 목표 점수까지 치유 플랜→승인→단계 실행. `구조 점검`, `아키텍처 개선`, `깊은 모듈`, `리팩터링 후보`, `architecture` 포함 시 → docs-organize **architecture 모드**(ARCHITECTURE.md): 깊게 만들 후보 HTML 보고 → 고른 하나를 질문 라운드로 (코드 수정 없음). **변환 대상 파일 포맷(docx·pptx·xlsx·PDF·epub·오디오)이 명시되면 → #28** — 이 행은 *코드베이스를 읽어 docs/를 짓는* 요청이고, 남이 준 파일을 *읽을 수 있게 바꾸는* 요청은 변환이다 | `Skill("s-skills:docs-organize")` |
 | 22 | Loop | 루프 만들어, 루프 돌려, 루프 프롬프트, 루프 설계, 반복 자동화, 계속 돌려줘, 야간에 알아서, 주기적으로 실행, 무인으로 돌려, 스케줄로 돌려, sj-loop | Playwright 테스트 반복은 #20이 먼저 매치되므로 여기 오지 않음 | `Skill("s-skills:sj-loop")` |
 | 23 | 리뷰 | 리뷰/검토/점검/검수 성격의 태스크 | 리뷰 대상이 Read 툴로 못 읽는 포맷(docx·pptx·xlsx·epub 등)이면 **#28로 먼저 변환한 뒤** 리뷰한다 — 읽지 못한 파일을 리뷰했다고 보고하지 않는다 | sj-company **리뷰 경로 (Step R)** — 대상 자동 감지 후 리뷰어 병렬 디스패치 |
 | 24 | GPT 자문 | GPT, ChatGPT, 지피티, GPT한테, GPT에 물어, GPT한테 물어봐, ChatGPT에 시켜, 다른 의견, 다른 모델, 딴 모델, 세컨드 오피니언, second opinion, 교차 검증, 브레인스토밍, 아이디어 발산, 리서치 해줘, 조사해줘, 최신 정보 | 이미지 생성(DALL-E)·이 레포 코드/버그 질문은 비대상(각각 미지원 안내·sj-investigate). **AX·현장 문제 발굴·데이터 검증 키워드(#33) 동시 감지 시 → #33** ("현장 문제 조사해줘"는 GPT 기억이 아니라 관계자 인터뷰 원문으로). "디버깅/에러 원인"은 #7이 먼저 매치. **한국 법령 키워드(#25) 동시 감지 시 → #25** ("법령 리서치 해줘"는 GPT가 아니라 법제처 DB로). **앱 UI·화면 레퍼런스 키워드(#29) 동시 감지 시 → #29** ("결제 화면 사례 조사해줘"는 GPT 기억이 아니라 유아이볼 DB로) | `Skill("s-skills:sj-gpt")` |
@@ -63,6 +63,30 @@ sj-company Step 0이 런타임에 이 테이블을 읽어 디스패치하고, CL
 2. **테이블 순서가 우선순위다** — 첫 매치가 이긴다 (UI 자동화 > PC 자동화, SEO > 마케팅, pw-loop > loop).
 3. **더 구체적인 스킬을 선호한다** — 같은 행 안에서 구분 조건이 명시돼 있으면 그것을 따른다 (agent 리뷰 → 리뷰 경로, design 다중 변형 → shotgun).
 4. **확신이 없으면 매치하지 않는다** — 크기 판정(Step 1)으로 내려가 일반 파이프라인을 타는 쪽이 잘못된 전문 스킬 디스패치보다 싸다.
+
+## 연결 표 — 다음 단계
+
+라우팅은 스킬 **하나**를 고른다. 그 스킬이 끝난 뒤 흔히 이어지는 다음 단계는 이 표가 정한다.
+sj-company **Step C**가 디스패치한 스킬이 끝나면 이 표를 보고 잇는다. 스킬을 직접 호출한 경우(`/spec` 등)에는 표를 쓰지 않는다 — 그 스킬의 완료 보고가 다음 단계를 제안할 뿐이다.
+
+| 끝난 스킬 | 이을 조건 (산출물로 확인) | 다음 | 넘기는 것 |
+|-----------|--------------------------|------|-----------|
+| sj-spec | 스펙 파일이 저장됐다 | sj-company **Step 1** (태스크: `{기능명} 구현`) | `task.txt`의 `[SPEC: 경로]` |
+| sj-investigate | 루트코즈가 확정됐고 수정은 아직 안 했다 | sj-company **Step 1** (태스크: `{원인} 수정`) | 조사 보고 경로 |
+| sj-design | 사용자가 시안을 승인했고 `.state/design-handoff.md`가 있다 | sj-company **Step 1** (Medium 이상) | `design-handoff.md` |
+| sj-cso | CRITICAL·HIGH 취약점이 있다 | sj-company **Step 1** (태스크: `{취약점} 수정`) | 감사 보고 경로 |
+| docs-organize (architecture 모드) | 고른 후보의 결정이 끝났다 | `Skill("s-skills:sj-spec")` (태스크: `{후보} 깊게 만들기`) | 결정 요약 |
+| sj-tech-lead (Medium 경로) | `.state/dev-summary.md`가 있다 | `Skill("s-skills:sj-qa")` | `pm-brief.md` (QA는 dev-summary를 읽지 않는다) |
+| sj-ax → sj-data-check | #33 디스패치 칸에 정해진 순서 | 다음 스킬 | `docs/ax/` 경로 |
+
+**연결 규칙:**
+
+1. **조건은 산출물로 확인한다.** 스킬이 "끝났다"고 말한 것이 아니라 파일이 실제로 있는지 본다. 스킬이 실패·`보류:`·QA `FAIL`로 끝났으면 잇지 않는다.
+2. **원 요청에 다음 행위가 이미 있으면 묻지 않고 잇는다** — "스펙 쓰고 구현까지", "원인 찾아서 고쳐줘". 사용자가 이미 말한 것을 다시 묻지 않는다.
+3. **그 외에는 한 번만 묻는다** — `이어서 {다음}을 진행할까요?` (예 / 여기서 멈춤). 멈추면 다음에 입력할 명령 한 줄을 남긴다.
+4. **한 번 호출에 연결은 최대 2번**(스킬 3개)까지. 그 뒤로는 묻지 않고 다음 명령만 제안한다.
+5. **사람 게이트로는 잇지 않는다.** push·PR·머지·배포(#10)는 표에 없다. sj-qa가 `PASS`로 끝나면 `/sj-company PR 올려줘`를 제안만 한다 ([human-gate](_conventions/human-gate.md)).
+6. **사용자가 없는 실행에서는 잇지 않는다.** 보고 끝에 `다음 단계 제안: {다음}`만 적는다 ([noninteractive](_conventions/noninteractive.md)).
 
 ## 횡단 컨벤션
 

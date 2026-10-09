@@ -24,6 +24,8 @@ tools:
 
 ## Step 1: 리뷰 대상 수집
 
+**디스패치 프롬프트에 `[TARGET]` 경로가 있으면 아래 자동 수집을 건너뛰고 그 경로만 본다** — 저장소 밖 경로(다른 repo·볼트)도 허용하고 읽기만 한다. 디렉토리면 그 안에서 이 리뷰어 담당 종류의 파일만 고른다. 경로가 없을 때만 아래 자동 수집을 쓴다.
+
 ```bash
 # 최근 변경 파일 (git diff)
 git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only --cached 2>/dev/null || git status --short 2>/dev/null | head -20
@@ -67,10 +69,18 @@ find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.py" 
 - 의미 없는 변수명 (a, b, tmp, data, result)
 - 중복 코드 (DRY 위반)
 
+### 설계 깊이 (정본: `skills/_conventions/deep-modules.md`)
+- 새 모듈이 패스스루인가 — 지워도 복잡성이 사라지기만 하면 얕다(삭제 테스트)
+- 어댑터가 하나뿐인 포트·인터페이스 (가짜 이음매)
+- 개념 하나를 이해하려면 작은 파일 여러 개를 오가야 함 (국소성 없음)
+- 새 이름이 `GLOSSARY.md`의 `_피할 말_`을 씀 (용어집 있을 때만)
+- 위 항목은 **Medium 이하** — 동작하는 코드를 구조 취향으로 Critical/High 처리하지 않는다
+
 ### 테스트
 - 핵심 로직에 테스트 없음
 - 해피패스만 테스트하고 에러케이스 없음
 - 모킹 과용 또는 실제 동작을 검증하지 않는 테스트
+- 인터페이스를 지나쳐 내부 상태를 단언하는 테스트 (구현을 바꾸면 같이 깨진다)
 
 ## Step 3: 리뷰 보고서 작성
 

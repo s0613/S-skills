@@ -1,6 +1,6 @@
 ---
 name: sj-company
-version: 4.0.0
+version: 4.1.0
 description: |
   SJ Company 하네스 v4 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-company.md).
   새 기능·수정·구현 태스크를 시작할 때, 또는 진행 중인 프로젝트를 이어서 진행할 때 사용.
@@ -49,6 +49,8 @@ _PB="$_VAULT/20_실행/플레이북/sj-company.md"
 ## 2. 불변 계약 (플레이북보다 우선)
 
 - **라우팅**: 인자가 있으면 실행 전 반드시 `../RESOLVER.md`(이 스킬 베이스 기준)를 Read해 위→아래 첫 매치 스킬로 디스패치. 키워드 수정은 RESOLVER.md에서.
+- **연결**: 디스패치한 스킬이 끝나면 RESOLVER **연결 표**로 다음 단계를 잇는다 — 조건은 산출물로 확인, 원 요청에 다음 행위가 있으면 묻지 않고, 아니면 1회만 묻는다. 한 호출에 최대 2번, 사람 게이트(push·PR·머지·배포)로는 잇지 않고, 사용자가 없는 실행에서는 `다음 단계 제안:`만 남긴다.
+- **라우팅만 검사**: `SJ_ROUTE_ONLY`가 설정돼 있으면 `ROUTE: #{행 번호} {디스패치 대상}` 한 줄만 출력하고 디스패치하지 않는다 (정본: `../_conventions/noninteractive.md`).
 - **사람 게이트**: ship(push·PR) 디스패치 전 브랜치 확인 + AskUserQuestion 필수 ([human-gate](../_conventions/human-gate.md)). PR 머지·프로덕션 배포는 어떤 경로에서도 자동 실행하지 않는다.
 - **산출물**: 사이클 휘발은 `.state/`(pm-brief·dev-summary·qa-verdict), 현재 상태는 `PROJECT.md`. 영속 파일 통째 재작성 전 archive 백업 ([archive-only](../_conventions/archive-only.md)).
 - **학습 환류**: 인사이트는 볼트 `30_경험/`(범용)·`40_프로젝트/{프로젝트}/`(한정)로 — notability 게이트·인용 형식·PII 마스킹은 [context-curation](../_conventions/context-curation.md). 레거시 `*-context.md`는 읽기만.
@@ -63,4 +65,5 @@ _PB="$_VAULT/20_실행/플레이북/sj-company.md"
    - Tiny/Small: 직접 최소 diff 구현 + 빌드 확인 + PROJECT.md 갱신
    - Medium: PM 브리핑·완료 조건을 `.state/task.txt`·`.state/pm-brief.md`에 기록 후 `Skill("s-skills:sj-tech-lead")`
    - Large: `.state/task.txt` 갱신 → `Skill("s-skills:sj-pm")` → `Skill("s-skills:sj-tech-lead")` → `Skill("s-skills:sj-qa")`
+   - RESOLVER 매치로 디스패치했으면 끝난 뒤 RESOLVER 연결 표를 확인해 위 연결 계약대로 잇는다.
 3. 완료 보고에 `미수행: 플레이북 없음` 한 줄을 남긴다.

@@ -236,6 +236,19 @@ grep -q '요구사항' "$C/spec.md" || echo "FAIL: 변환물이 원본 내용이
 이 스킬의 유일한 불변식이고, 그것이 없으면 스킬은 "느려지는 Read 툴"이 된다.
 빈 `spec.md`를 성공으로 세지 않는 것(`-s`)도 함께 고정한다 — 스캔 PDF의 전형적 증상이다.
 
+## 케이스 L — 라우팅 회귀 10문장 (sj-company, 라우팅만)
+
+- 픽스처: `routing/` — 문장·기대·금지는 [`routing/cases.tsv`](routing/cases.tsv), 단언은 [`routing/check.sh`](routing/check.sh)
+- 실행: 문장마다 **새 서브에이전트 하나**로 `SJ_ROUTE_ONLY=1`, `SJ_OUTPUT_FILE="$T/routing/out-{id}.txt"`를 주고
+  sj-company를 돌린다. 한 에이전트에 여러 문장을 주지 않는다 — 앞 문장의 판정이 뒤 문장을 끌고 간다.
+  기대값(`expect`·`forbid`·`why` 열)은 에이전트에게 보여 주지 않는다.
+- 단언: `bash docs/superpowers/fixtures/behavior/routing/check.sh "$T/routing"` — 마지막 줄이 `케이스 L 통과`여야 한다.
+
+`ROUTE:` 줄만 단언한다(케이스 F의 교훈 — 근거 문단의 기각 사유를 잡지 않는다).
+문장은 실제로 충돌했던 것(friction 2026-06-22·09-03, 2026-10-09 #21 키워드 칸 누락)과 경계 사례로 골랐다.
+**RESOLVER를 고칠 때마다 돌린다** — 행을 하나 추가하면 기존 행에 예외 조항이 붙는 구조라, 고친 행이 아니라
+다른 행이 깨진다. 새 충돌을 발견하면 `cases.tsv`에 한 줄 추가한다.
+
 ## 커버리지와 경계
 
 지금 덮는 것과 못 덮는 것을 밝혀 둔다 — 덮이지 않은 영역이 검증된 것처럼 보이지 않도록.
@@ -246,7 +259,7 @@ grep -q '요구사항' "$C/spec.md" || echo "FAIL: 변환물이 원본 내용이
 | sj-qa | 케이스 C |
 | sj-pm | 케이스 D |
 | sj-retro | 케이스 E (friction 소비 경로만) |
-| sj-company | 케이스 F·I·J (라우팅만) |
+| sj-company | 케이스 F·I·J·L (라우팅만 — Step C 연결·크기별 실행은 미커버) |
 | sj-secretary | 케이스 G (수신함·읽기 전용) |
 | docs-organize | 케이스 H (2차 훑기만 — 전체 문서 생성은 미커버) |
 | sj-convert | 케이스 K (Step 0 포맷 경계만 — 오디오·YouTube·ZIP 경로는 미커버) |

@@ -28,7 +28,10 @@ S-skills의 모든 스킬에 적용되는 공통 규칙. **규칙 본문은 여�
 | [obsidian-output.md](obsidian-output.md) | 사용자 대상 보고서는 볼트 `40_프로젝트/{프로젝트}/보고서/`에 정리본 저장 — 볼트 없으면 비차단 | sj-tech-lead, sj-qa, sj-retro, sj-investigate, sj-cso, sj-ship |
 | [report-diagram.md](report-diagram.md) | 보고서에 그림이 필요하면 diagram-design 스킬로 — 즉석 mermaid 금지, 원본 HTML은 `docs/diagrams/`·볼트엔 SVG·PR엔 PNG, 미설치면 그림 없이 비차단 | sj-tech-lead, sj-investigate, sj-cso, sj-retro, sj-ship, sj-dev-si, docs-organize |
 | [feature-map.md](feature-map.md) | 기능 목록·연결·수정 지점은 `docs/FEATURE-MAP.md`에 — 표가 정본, 지도 불일치는 경고(FAIL 아님), 없으면 비차단 | sj-spec, sj-tech-lead, sj-qa, docs-organize |
-| [noninteractive.md](noninteractive.md) | 사용자 없는 실행은 질문 대신 가정 + `## 가정` 기록 — 단 사람 게이트는 가정 금지, `보류:`로 남기고 나머지 진행 | 강제 질문을 가진 역할 스킬, 행동 픽스처, 루프·크론 |
+| [noninteractive.md](noninteractive.md) | 사용자 없는 실행은 질문 대신 가정 + `## 가정` 기록 — 단 사람 게이트는 가정 금지, `보류:`로 남기고 나머지 진행. `SJ_OUTPUT_FILE` 출력 캡처, `SJ_ROUTE_ONLY` 라우팅만 검사 | 강제 질문을 가진 역할 스킬, 행동 픽스처, 루프·크론 |
+| [grilling.md](grilling.md) | 만들기 전에 결정 트리를 끝까지 — 프론티어를 추천 답 달린 질문으로 라운드마다 묻고, 사실은 직접 찾고 결정만 묻는다. 비대화형이면 추천 답을 가정으로 | sj-spec, sj-ax, docs-organize |
+| [glossary.md](glossary.md) | 대상 repo `GLOSSARY.md`에 용어 하나씩(정의 1~2문장 + `_피할 말_`, 구현 세부 금지, 필요할 때 생성) — ADR은 되돌리기 어려움·놀라움·실제 트레이드오프 세 조건을 다 만족할 때만 | sj-spec, sj-ax, docs-organize (쓰기), sj-tech-lead, sj-reviewer-code (읽기) |
+| [deep-modules.md](deep-modules.md) | 작은 인터페이스 뒤에 많은 동작 — 삭제 테스트, 인터페이스가 곧 테스트 표면, 어댑터 하나면 가짜 이음매. 리뷰에선 Medium 이하 | sj-tech-lead, sj-reviewer-code, docs-organize |
 | [external-tools.md](external-tools.md) | 외부 도구 의존은 릴리즈 페이지 링크가 아니라 붙여넣을 설치 명령으로 — 버전 박제 금지(`releases/latest`), 설치는 승인 후 실행 가능하나 권한 부여·sudo·키 발급은 사람 게이트 | sj-screencast, sj-law, sj-gpt, sj-seed, sj-seo, pw-loop, sj-automation |
 
 ## 스킬에서 참조하는 방법
