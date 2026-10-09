@@ -6,6 +6,34 @@
 
 ## [Unreleased]
 
+## [4.16.0] - 2026-10-09
+
+**만들기 전에 끝까지 묻고, 같은 것을 같은 말로 부르고, 작은 인터페이스 뒤에 동작을 모은다** — [mattpocock/skills](https://github.com/mattpocock/skills)(MIT)의 grilling·domain-modeling·codebase-design·improve-codebase-architecture를 하네스 컨벤션으로 옮겼다. sj-spec은 강제 질문 6개를 한 번 던지고 빈칸을 가정으로 채웠는데, 그 가정이 그대로 구현이 됐다.
+
+### Added
+- **sj-company Step C — 연결 표** (RESOLVER `## 연결 표`) — 라우팅은 스킬 하나를 고르고 끝났는데, 이제 끝난 스킬의 다음 단계를 잇는다: 스펙→구현, 조사→수정, 디자인 승인→구현, 보안 CRITICAL·HIGH→수정, 구조 점검→스펙, Medium 구현→QA. 조건은 산출물로 확인하고, 원 요청에 다음 행위가 있으면 묻지 않고, 아니면 한 번만 묻는다. 한 호출에 최대 2번, push·PR·머지·배포로는 잇지 않고, 사용자가 없는 실행에서는 `다음 단계 제안:`만 남긴다. 연결로 온 태스크는 라우팅을 다시 돌지 않는다.
+- **`SJ_ROUTE_ONLY`** (noninteractive 컨벤션) — sj-company가 `ROUTE: #{행} {대상}` 한 줄만 내고 디스패치하지 않는다. 라우팅 판정을 하위 스킬 실행 없이 검사한다.
+- **행동 픽스처 케이스 L** — 실제로 충돌했던 문장과 경계 사례 10개(`routing/cases.tsv`)를 문장마다 새 서브에이전트로 돌리고 `routing/check.sh`가 `ROUTE:` 줄을 대조한다. RESOLVER를 고칠 때마다 돌린다.
+- **컨벤션 `grilling.md`** — 결정 트리의 프론티어를 추천 답 달린 질문으로 라운드마다 묻는다. 사실은 직접 찾고 결정만 묻는다. 비대화형이면 추천 답을 가정으로.
+- **컨벤션 `glossary.md`** — 대상 repo `GLOSSARY.md`(용어 + `_피할 말_`, 구현 세부 금지, 필요할 때 생성)와 ADR 3조건(되돌리기 어려움·놀라움·실제 트레이드오프).
+- **컨벤션 `deep-modules.md`** — 모듈·인터페이스·깊이·이음매·어댑터 어휘, 삭제 테스트, 의존성 종류별 테스트 방법, "겹치지 말고 바꾼다".
+- **docs-organize architecture 모드** (`ARCHITECTURE.md`) — 핫스팟 → 탐색 → 후보 HTML(전·후 그림·추천 강도) → 고른 하나를 질문 라운드로 → sj-spec 인계. 코드 수정 없음. RESOLVER #21에 키워드 추가.
+
+### Changed
+- **sj-company 4.1.0** (플레이북 4.1.0) — Step R 리뷰 경로가 태스크 속 실제 경로를 리뷰 대상으로 받는다. git diff 감지를 건너뛰고 `[TARGET]`으로 넘기며, 다른 repo·볼트 경로도 된다(friction 2026-08-18). 리뷰어 3개(`sj-reviewer-code`·`doc`·`design`)는 `[TARGET]`이 있으면 자동 수집을 건너뛴다. Medium 경로는 sj-tech-lead 뒤에 sj-qa로 이을 수 있다.
+- **sj-spec 2.1.0** — Step 1 WHY가 질문 라운드로 바뀌었다(플레이북 2.1.0). 용어집 기록, 템플릿에 `## 가정` 절, 조건부 ADR 제안.
+- **sj-ax 1.1.0** — Step 4의 가정을 추천 답 달린 질문으로 묻고, 현장 용어를 용어집에 기록한다.
+- **sj-tech-lead 플레이북 3.1.0** — Dispatch Card에 `Glossary`·`ADR` 경로와 `[BUILD]` 깊은 모듈 한 줄, Step 6에 "얕은 모듈" 검사(재디스패치 사유 아님).
+- **sj-reviewer-code** — "설계 깊이" 검사 항목(Medium 이하)과 인터페이스를 지나친 테스트 항목.
+- **docs-organize 1.3.0** — 기본 모드 ADR 생성에 3조건 게이트.
+
+### Fixed
+- **RESOLVER #21** — architecture 모드 키워드(`구조 점검`·`아키텍처 개선`·`깊은 모듈`·`리팩터링 후보`)가 제외 조건 칸에만 있고 감지 키워드 칸에 없어서, "구조 점검해줘"가 #23 리뷰로 빠졌다. 감지 칸에 넣었다(케이스 L08이 고정).
+
+### Notes
+- 케이스 L은 10/10 통과했다(Sonnet 서브에이전트, 문장마다 새 컨텍스트). Step C 연결과 Step R `[TARGET]`은 아직 실행해 보지 않았다.
+- 행동 픽스처 케이스 A(`mapped/`, sj-spec 비대화형)는 통과했다. 영향 범위 단언 3개를 모두 통과했고, 추천 답이 `## 가정`에 `(사용자 미답변)`으로 기록됐고, 코드에서 확인한 사실은 `(확인한 사실: 경로)`로 따로 표시됐고, `GLOSSARY.md`가 생성됐다. 대화형 라운드 진행과 architecture 모드는 아직 실행해 보지 않았다.
+
 ## [4.15.0] - 2026-10-08
 
 **AI가 답을 화면으로 돌려줄 때, 모델은 화면을 설계하고 코딩하지 않는다.**
