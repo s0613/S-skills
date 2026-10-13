@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.16.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.17.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -214,6 +214,7 @@ s-skills は他の人の成果の上に立っています。組み込んで使�
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
 | [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
+| [morluto/rea](https://github.com/morluto/rea) | `/rea` | MIT |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 
 **設計を借りた先：** **gbrain**（薄いディスパッチャ + 単一コンベンション、filing rules、friction プロトコル、manifest ガード、`doctor --remediate`）· **ponytail**（最小コードの梯子、`ponytail:` マーカー）· Geoffrey Litt『Understanding is the new bottleneck』（叙述式レポート）· Self-Harness / AHE（ハーネス変更ゲート）· AI コードレビュアーの限界に関する研究（レビュー観点の多様性、重大度の較正）· Fable 5 システムプロンプト（外部コンテンツはデータ、正直な報告、引用上限）· J. Russell Ramsay・Anthony L. Rostain『The Adult ADHD Tool Kit』（i-have-adhd 経由）。

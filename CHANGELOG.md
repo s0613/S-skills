@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+## [4.17.0] - 2026-10-13
+
 ### Added
 - **`sj-rea` 스킬** (`/rea`, `/리버스`, `/역공학`) — [morluto/rea](https://github.com/morluto/rea)(MIT) MCP로 소스 없는 배포물을 열어 기능 동작을 Evidence ID와 함께 설명한다. 업스트림 `reverse-engineer-anything` 스킬 원문을 `skills/sj-rea/vendor/`에 절차 정본으로 두고, SKILL.md는 하네스 계약(소스 repo 되돌리기·권한 확인·setup 승인 게이트·관찰/추론/미확인 보고·재구현은 sj-spec 인계)만 얹는다. RESOLVER #36 — #30(APK 디컴파일)이 이 행으로 넘겨준다. FEATURE-MAP F36.
 

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.16.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.17.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="#옵시디언-연동--하네스의-장기-기억"><img src="https://img.shields.io/badge/Obsidian-long--term%20memory-7c3aed?style=flat-square&logo=obsidian&logoColor=white&labelColor=0d0d0d" alt="obsidian"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
@@ -254,6 +254,7 @@ claude plugin install diagram-design@diagram-design
 | `/outsource` | 막혔을 때 전문가 위임 — 맥락 리포트 + 메일 초안 자동 작성 |
 | `/convert` | Word·PPT·Excel·EPub·오디오 등 Read 툴이 못 읽는 문서를 Markdown으로 변환 |
 | `/mobile` | ARTEMIS로 안드로이드 실기기·에뮬레이터 조작·탐색 + 스크린샷·logcat 증거 수집 |
+| `/rea` | REA로 소스 없는 앱·바이너리(네이티브·Electron·APK·.NET·펌웨어)를 열어 기능 동작을 증거와 함께 설명 |
 
 ---
 
@@ -286,6 +287,7 @@ skills/
 ├── sj-agent-review/  ← 에이전트 리뷰
 ├── sj-convert/       ← 문서 변환 (markitdown — Read 툴이 못 읽는 포맷)
 ├── sj-mobile/        ← 안드로이드 실기기 자동화 (ARTEMIS — 폰을 직접 걸어 본다)
+├── sj-rea/           ← 리버스 엔지니어링 (REA — 배포물을 증거로 뜯어본다)
 ├── sj-jev/           ← Jev 판단 모델 배선 (TypeSafe — 판단을 타입으로 받는다)
 ├── sj-loop/          ← 루프 엔지니어링
 └── sj-outsource/     ← 전문가 위임
@@ -308,6 +310,7 @@ s-skills는 남의 작업 위에 서 있습니다. 가져다 쓰는 것과 아�
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` — 화면 설명 영상 녹화·편집·렌더 | MIT |
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` — 법제처 법령·판례 원문 조회 | MIT |
 | [google/artemis](https://github.com/google/artemis) — Google | `/mobile` — 안드로이드 실기기·에뮬레이터 자동화 및 테스트 | Apache-2.0 |
+| [morluto/rea](https://github.com/morluto/rea) | `/rea` | MIT |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` — GPT 교차 자문·세컨드 오피니언 | 벤더 도구 |
 
 ### 설계를 빌린 곳
