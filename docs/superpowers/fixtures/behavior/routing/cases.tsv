@@ -1,7 +1,6 @@
 id	task	expect	forbid	why
 L01	옵시디언에 있는 회의록 검토해줘	Step R	obsidian-writer	행위(검토)가 키워드(옵시디언)를 이긴다 — 2026-06-22
 L02	로그인 화면 UI 만들어줘	sj-design	sj-automation	#2 맨 단어 '화면·UI'가 생성 요청을 가로채지 않는다 — 2026-09-03
-L03	결제 완료 화면 다른 앱은 어떻게 하고 있어?	sj-ref	sj-automation|sj-design	조회 동사 → #29, 만들기 동사 없음
 L04	배포 후 잘 올라갔어? 프로덕션 체크해줘	sj-qa	sj-ship	배포 *후* 확인은 #13, ship 아님
 L05	프로젝트 상태 확인해줘	sj-secretary	sj-qa	맨 '상태 확인'은 #18, 배포 맥락 없음
 L06	현장 관계자 인터뷰 정리해서 업무 개선 에이전트 만들어줘	sj-ax	#8 |obsidian-writer	문제 발굴 전 구조 설계 금지 → #33

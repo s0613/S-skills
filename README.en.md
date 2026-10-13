@@ -194,7 +194,6 @@ skills/
 ├── sj-agent-dev/     ← agent design
 ├── sj-agent-review/  ← agent review
 ├── sj-convert/       ← document conversion (markitdown — formats the Read tool can't open)
-├── sj-ref/           ← app UI references (uibowl — real shipped screens)
 ├── sj-mobile/        ← Android device automation (ARTEMIS — walk the real phone)
 ├── sj-loop/          ← loop engineering
 └── sj-outsource/     ← expert delegation
@@ -214,7 +213,6 @@ s-skills stands on other people's work. Integrated tools first, borrowed ideas s
 | [microsoft/markitdown](https://github.com/microsoft/markitdown) | `/convert` | MIT |
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
-| [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
 | [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 

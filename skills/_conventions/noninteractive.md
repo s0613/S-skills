@@ -50,7 +50,7 @@
 **`SJ_ROUTE_ONLY`가 설정돼 있으면 라우팅을 결정한 뒤 한 줄만 출력하고 멈춘다:**
 
 ```
-ROUTE: #{RESOLVER 행 번호} {디스패치 대상}      예) ROUTE: #29 sj-ref
+ROUTE: #{RESOLVER 행 번호} {디스패치 대상}      예) ROUTE: #25 sj-law
 ROUTE: #23 Step R                               (리뷰 경로)
 ROUTE: none Step 1                              (매치 없음 → 크기 판정)
 ```

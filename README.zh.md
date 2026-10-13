@@ -194,7 +194,6 @@ skills/
 ├── sj-agent-dev/     ← 代理设计
 ├── sj-agent-review/  ← 代理评审
 ├── sj-convert/       ← 文档转换 (markitdown — Read 工具无法读取的格式)
-├── sj-ref/           ← 应用 UI 参考 (uibowl — 已上线的真实界面)
 ├── sj-mobile/        ← 安卓真机自动化 (ARTEMIS — 在真实手机上实际走一遍)
 ├── sj-loop/          ← 循环工程
 └── sj-outsource/     ← 专家委派
@@ -214,7 +213,6 @@ s-skills 建立在他人的成果之上。先列集成的工具，再列借鉴�
 | [microsoft/markitdown](https://github.com/microsoft/markitdown) | `/convert` | MIT |
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
-| [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
 | [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 

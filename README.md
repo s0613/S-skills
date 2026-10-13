@@ -253,7 +253,6 @@ claude plugin install diagram-design@diagram-design
 | `/sj-loop` | 루프 프롬프트 생성 + 드라이런·세션 반복·클라우드 스케줄 실행 |
 | `/outsource` | 막혔을 때 전문가 위임 — 맥락 리포트 + 메일 초안 자동 작성 |
 | `/convert` | Word·PPT·Excel·EPub·오디오 등 Read 툴이 못 읽는 문서를 Markdown으로 변환 |
-| `/ref` | 유아이볼로 출시된 앱·웹 화면 레퍼런스 조회 (패턴·컴포넌트·문구·MAU) |
 | `/mobile` | ARTEMIS로 안드로이드 실기기·에뮬레이터 조작·탐색 + 스크린샷·logcat 증거 수집 |
 
 ---
@@ -286,7 +285,6 @@ skills/
 ├── sj-agent-dev/     ← 에이전트 설계
 ├── sj-agent-review/  ← 에이전트 리뷰
 ├── sj-convert/       ← 문서 변환 (markitdown — Read 툴이 못 읽는 포맷)
-├── sj-ref/           ← 앱 레퍼런스 조회 (유아이볼 — 출시된 실제 화면)
 ├── sj-mobile/        ← 안드로이드 실기기 자동화 (ARTEMIS — 폰을 직접 걸어 본다)
 ├── sj-jev/           ← Jev 판단 모델 배선 (TypeSafe — 판단을 타입으로 받는다)
 ├── sj-loop/          ← 루프 엔지니어링
@@ -309,7 +307,6 @@ s-skills는 남의 작업 위에 서 있습니다. 가져다 쓰는 것과 아�
 | [microsoft/markitdown](https://github.com/microsoft/markitdown) — Microsoft | `/convert` — docx·pptx·xlsx·epub·오디오를 Markdown으로 | MIT |
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` — 화면 설명 영상 녹화·편집·렌더 | MIT |
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` — 법제처 법령·판례 원문 조회 | MIT |
-| [유아이볼 (uibowl.io)](https://uibowl.io) MCP | `/ref` — 출시된 실제 앱·웹 화면 레퍼런스 조회 | 서비스 이용약관 |
 | [google/artemis](https://github.com/google/artemis) — Google | `/mobile` — 안드로이드 실기기·에뮬레이터 자동화 및 테스트 | Apache-2.0 |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` — GPT 교차 자문·세컨드 오피니언 | 벤더 도구 |
 

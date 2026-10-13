@@ -194,7 +194,6 @@ skills/
 ├── sj-agent-dev/     ← エージェント設計
 ├── sj-agent-review/  ← エージェントレビュー
 ├── sj-convert/       ← ドキュメント変換 (markitdown — Read ツールが読めない形式)
-├── sj-ref/           ← アプリUIリファレンス (uibowl — 実際にリリースされた画面)
 ├── sj-mobile/        ← Android実機自動化 (ARTEMIS — 実機を実際に操作して確認)
 ├── sj-loop/          ← ループエンジニアリング
 └── sj-outsource/     ← 専門家委譲
@@ -214,7 +213,6 @@ s-skills は他の人の成果の上に立っています。組み込んで使�
 | [microsoft/markitdown](https://github.com/microsoft/markitdown) | `/convert` | MIT |
 | [getopenscreen/openscreen](https://github.com/getopenscreen/openscreen) | `/screencast` | MIT |
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
-| [uibowl.io](https://uibowl.io) MCP | `/ref` | Service ToS |
 | [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 
