@@ -294,6 +294,18 @@
       ]
     },
     {
+      "name": "sj-rea",
+      "path": "skills/sj-rea/SKILL.md",
+      "version": "1.0.0",
+      "description": "리버스 엔지니어링 전문가. [REA](https://github.com/morluto/rea)(morluto, MIT) MCP로",
+      "triggers": [
+        "/rea",
+        "/sj-rea",
+        "/리버스",
+        "/역공학"
+      ]
+    },
+    {
       "name": "sj-retro",
       "path": "skills/sj-retro/SKILL.md",
       "version": "2.0.0",

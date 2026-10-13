@@ -63,6 +63,7 @@ curl -sL https://api.github.com/repos/{owner}/{repo}/releases/latest \
 | sj-seed | seed-docs MCP / seed-design 스킬 | `claude mcp add seed-docs -- npx -y @seed-design/docs-mcp` / `npx skills add https://github.com/daangn/seed-design --skill seed-design --global` |
 | sj-seo | Playwright MCP | `claude mcp add playwright npx @playwright/mcp@latest --scope user` |
 | sj-e2e | e2e (TesterArmy, Apache-2.0) | `npx e2e init` (pnpm: `pnpm dlx e2e init`) — 승인 후. 수동: `npm install --save-dev e2e @e2e-dev/web ai@^7` (모바일은 `@e2e-dev/mobile` + `npx agent-device doctor`). CI 브라우저: `npx @e2e-dev/web install chromium --with-deps`. 전제: Node 22.22.3+ 또는 24.8+. 모델 로그인(`npx e2e login <provider>`)·API 키는 사람 게이트. 텔레메트리 끄기: `E2E_TELEMETRY_DISABLED=1` |
+| sj-rea | REA (morluto, MIT) | `npx rea-agents setup` — 계획 확인 후 승인, 적용 뒤 세션 재시작. MCP 없이 JS만: `npx -y rea-agents@latest analyze-javascript-application <절대경로> --json`. 상시 CLI: `npm install --global rea-agents` → `rea update`. 네이티브 엔진(Hopper·Ghidra·IDA) 설치·라이선스는 사람 게이트 |
 | pw-loop | Playwright | `npm install -D @playwright/test && npx playwright install --with-deps chromium` |
 | sj-automation | 플랫폼별 (PyAutoGUI·xdotool·AutoHotkey 등) | SKILL.md OS 감지 표 참조 |
 | sj-convert | markitdown (Microsoft, MIT) | 무설치: `uvx --python 3.12 --from 'markitdown[all]' markitdown <파일>` / 설치: `pipx install 'markitdown[all]'` — Python ≥ 3.10 필수 |
