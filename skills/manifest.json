@@ -252,8 +252,8 @@
     {
       "name": "sj-motion",
       "path": "skills/sj-motion/SKILL.md",
-      "version": "1.0.0",
-      "description": "2D 모션그래픽 광고 영상 프롬프트 전문가. 주제·제품·브랜드·레퍼런스 이미지·짧은 아이디어를 받아",
+      "version": "2.0.0",
+      "description": "2D 모션그래픽 광고 영상 전문가. 주제·제품·브랜드·레퍼런스 이미지·짧은 아이디어를 받아",
       "triggers": [
         "/motion",
         "/sj-motion",
@@ -291,19 +291,6 @@
         "/qa",
         "/canary",
         "/benchmark"
-      ]
-    },
-    {
-      "name": "sj-ref",
-      "path": "skills/sj-ref/SKILL.md",
-      "version": "1.0.0",
-      "description": "앱 UI 레퍼런스 탐색 전문가. [유아이볼](https://uibowl.io) MCP로 실제 출시된 앱·웹·게임",
-      "triggers": [
-        "/ref",
-        "/sj-ref",
-        "/레퍼런스",
-        "/유아이볼",
-        "/uibowl"
       ]
     },
     {
