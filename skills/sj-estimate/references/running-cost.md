@@ -68,6 +68,31 @@
 
 환율은 **1,400원/USD**로 계산하고 견적서에 환율을 명시한다.
 
+### 단가 대조 — 아래 표를 견적에 쓰기 전에
+
+아래 구성표의 단가는 **2026-09 기준**이다. AWS 가격은 바뀌므로 견적서에 숫자를 옮기기 전에
+Price List API로 현재 온디맨드 단가를 대조한다. 조회 전용·무료이고 계정 자원을 건드리지 않는다.
+
+- **경로**: AWS MCP Server(`aws-core` 플러그인)가 연결돼 있으면 그쪽으로, 없으면 AWS CLI로.
+  CLI도 전역 aws-cost 규칙(`~/.claude/rules/common/aws-cost.md`)대로 `aws sts get-caller-identity`가 먼저다.
+- **함정**: 엔드포인트는 `us-east-1`이고 서울은 `location` 필터로 거른다. 서비스 코드는 Cost Explorer
+  이름과 다르다(`AmazonEC2`·`AmazonRDS`·`AmazonS3`·`AmazonCloudFront`).
+
+```bash
+aws pricing get-products --region us-east-1 --service-code AmazonEC2 \
+  --filters Type=TERM_MATCH,Field=location,Value="Asia Pacific (Seoul)" \
+            Type=TERM_MATCH,Field=instanceType,Value=t4g.medium \
+            Type=TERM_MATCH,Field=operatingSystem,Value=Linux \
+            Type=TERM_MATCH,Field=tenancy,Value=Shared \
+            Type=TERM_MATCH,Field=preInstalledSw,Value=NA \
+            Type=TERM_MATCH,Field=capacitystatus,Value=Used \
+  --max-results 1 --query 'PriceList[0]' --output text
+```
+
+- **차이가 10% 넘으면** 견적에는 조회한 현재 단가를 쓰고, 호출자 보고에 `단가표 갱신 필요: {항목} {표}→{현재}`를
+  남긴다. 이 파일 수정은 사람이 확인한 뒤에 한다(조회 한 번으로 표를 덮어쓰지 않는다).
+- **둘 다 없으면** 표 단가로 진행하고 `미수행: AWS 단가 실시간 대조 — 2026-09 단가표 사용`을 내부 검토란에 적는다. 비차단.
+
 ### 어느 구성으로 쓸 것인가 — 먼저 정한다
 
 | 다루는 데이터 | 구성 | 월 실비 |

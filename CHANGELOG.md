@@ -6,6 +6,12 @@
 
 ## [Unreleased]
 
+## [4.19.0] - 2026-10-25
+
+### Changed
+- **`sj-estimate` v1.1.0** — AWS 실비 단가표(2026-09 기준)를 견적에 옮기기 전에 Price List API로 현재 온디맨드 단가를 대조한다(`running-cost.md` 2절 「단가 대조」). 경로는 [Agent Toolkit for AWS](https://github.com/aws/agent-toolkit-for-aws)(Apache-2.0) `aws-core` 플러그인 MCP 또는 AWS CLI. 차이 10% 초과 시 현재 단가를 쓰고 `단가표 갱신 필요`를 보고하며, 표 수정은 사람 확인 후. 둘 다 없으면 `미수행:` 후 표 단가(비차단).
+- **external-tools 인덱스** — `aws-core` 행 추가. 원격 MCP가 핵심이고 AWS가 계속 갱신하므로 S-skills에 내장하지 않고 옆에 설치한다. 에이전트 요청은 IAM 조건 키로 읽기 전용에 묶도록 권고(IAM 변경은 사람 게이트).
+
 ## [4.18.0] - 2026-10-25
 
 ### Changed
