@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+## [4.18.0] - 2026-10-25
+
+### Changed
+- **`sj-cso` v3.0.0** — 감사 엔진을 grep 기반 OWASP+STRIDE 플레이북에서 [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill)(MIT) 다단계 워크플로(정찰 → 커버리지 장부 헌팅 → 반증 검증 → `findings.json` → 독립 재검증)로 교체. 업스트림 원문은 `skills/sj-cso/vendor/`에 내장하고, SKILL.md는 하네스 계약(모드·프로필 1회 확인, fork 금지, `cso-report.md`·볼트 정리본 파생, `confirmed`만 CRITICAL/HIGH)만 얹는다. 역할 스킬 13→12, 볼트 플레이북 `sj-cso.md`는 archive로.
+
 ## [4.17.0] - 2026-10-13
 
 ### Added
