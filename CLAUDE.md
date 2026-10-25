@@ -49,7 +49,7 @@
 
 PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별로 처리한다.
 
-> **v4 구조**: 역할 스킬 13개는 **얇은 디스패처**다 — 절차 정본은 옵시디언 볼트
+> **v4 구조**: 역할 스킬 12개는 **얇은 디스패처**다 — 절차 정본은 옵시디언 볼트
 > `20_실행/플레이북/{스킬}.md`, 역할→지식 폴더 라우팅은 볼트 `00_SYSTEM/START-HERE.md`
 > "하네스 역할 라우팅" 섹션. SKILL.md에는 플레이북 로드 커널·불변 산출물 계약·최소 계약 폴백만 남는다.
 > 절차 수정은 플레이북에서, 계약 수정은 SKILL.md에서. 볼트 없으면 최소 계약으로 비차단 동작.
@@ -71,7 +71,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 
 - **s-skills:sj-spec** (`/spec`, `/sj-spec`) — 스펙 작성 전문가. 모호한 의도를 6단계(why·scope·technical·impact·draft·file)로 실행 가능한 정밀 스펙으로 변환 v2.1.0. Why는 **질문 라운드** — 강제 질문 6개가 첫 프론티어, 질문마다 추천 답("예"면 수락), 코드로 확인할 사실은 묻지 않고 직접 찾고, 이해 확인 전엔 Scope로 가지 않는다. 정해진 용어는 대상 repo `GLOSSARY.md`에 바로, ADR은 3조건일 때만 제안. `docs/FEATURE-MAP.md` 있으면 `## 영향 범위` 절에 의존·역방향 의존 기능을 ID로 지목
 - **s-skills:sj-investigate** (`/investigate`, `/sj-investigate`) — 체계적 루트코즈 디버깅 v2.0.0. 가설 수립→검증 강제, 조사 없는 수정 금지. Step 4b 이해 도구 옵션(마이크로월드) — 상태 변화 추적형 문제·검증 반복 실패 시 사람이 직접 탐색할 일회용 도구(단계별 실행·상태 시각화·before/after 뷰) 제작을 1회 제안. 조사 결과 옵시디언 저장.
-- **s-skills:sj-cso** (`/cso`, `/sj-cso`) — CSO 보안 감사 v2.0.0. OWASP Top 10 + STRIDE 위협 모델링, 8/10 이상 확신 취약점만 보고. 감사 보고서 정리본 옵시디언 저장.
+- **s-skills:sj-cso** (`/cso`, `/sj-cso`) — CSO 보안 감사 v3.0.0. [security-audit](https://github.com/cloudflare/security-audit-skill)(Cloudflare, MIT) 다단계 워크플로를 `vendor/`에 내장해 감사 엔진으로 쓴다 — 정찰 → 커버리지 장부 기반 헌팅 → 후보마다 **찾지 않은 새 에이전트의 반증 검증** → 스키마 검증된 `findings.json` → 독립 재검증. `confirmed`만 취약점(심각도 포함)으로, 막힌 단서는 미확인 사실과 함께 `needs_validation`(심각도 없음)으로 남긴다. 이전 run 장부를 읽어 누적하므로 반복할수록 커버리지가 는다. 질문·단건 리뷰는 guidance 모드(산출물 없음), 감사 요청은 full audit — 프로필(quick/standard/deep)과 예상 에이전트 수를 먼저 1회 묻는다. 헌터·검증자는 항상 새 Agent(fork 금지 — 독립성). 하네스 계약은 SKILL.md가 얹는다: `findings.json`에서 `.state/cso-report.md`(CRITICAL/HIGH 절 → RESOLVER 연결 표 유지, `## 미수행 검사` 필수)와 볼트 정리본을 파생. 샌드박스 조건을 못 갖추면 대상 코드를 실행하지 않는다.
 - **s-skills:sj-ship** (`/ship`, `/sj-ship`) — 릴리즈 엔지니어 자동화. 테스트→커버리지 감사→PR 오픈까지 한 번에. sj-company 통해 호출 시 push 전 브랜치 확인 필수. PR 본문 서술식(배경→의도→읽기 순서→세부) + 릴리즈 보고 옵시디언 저장.
 - **s-skills:sj-retro** (`/retro`, `/sj-retro`) — 주간 회고. 커밋·테스트·QA 지표 + 프로세스 마찰(friction)로 Keep/Improve/Try 도출. 반복 friction이 최우선 개선 후보. Self-Harness 게이트(Step 5b): 하네스 변경 제안은 회귀 통과 시에만 "채택 후보", 채택은 사람 게이트. Step 4c: 취향 프로필 신선도 점검 — 이번 주 디자인 거부/승인이 볼트 프로필에 미승격이면 승격 후보 나열(편집은 사람 게이트). 회고 보고서 옵시디언 저장.
 
@@ -165,7 +165,7 @@ PM → 디자인 → 개발 → QA → 배포까지 전체 흐름을 역할별�
 
 ## 아키텍처 원칙 (v4.0.0 기준)
 
-- **플레이북 구조 (v4)**: 역할 스킬 13개(sj-company·pm·design·tech-lead·qa·spec·investigate·cso·ship·retro·secretary·marketing·dev-si)의 절차 정본은 볼트 `20_실행/플레이북/{스킬}.md`. SKILL.md는 얇은 디스패처(플레이북 로드 커널 + 불변 산출물 계약 + 최소 계약 폴백, 80줄 이하). 역할→플레이북+지식 폴더 맵은 볼트 `00_SYSTEM/START-HERE.md` "하네스 역할 라우팅"이 정본. 플레이북은 신뢰된 절차 문서지만 SKILL.md의 불변 계약(산출물 경로·사람 게이트)을 뒤집을 수 없다. 도구 배선형 스킬(seed·law·gpt·seo·automation·loop·agent-*·outsource·harness·docs-organize·obsidian-writer·pw-loop·test-scenario)은 기존 구조 유지.
+- **플레이북 구조 (v4)**: 역할 스킬 12개(sj-company·pm·design·tech-lead·qa·spec·investigate·ship·retro·secretary·marketing·dev-si)의 절차 정본은 볼트 `20_실행/플레이북/{스킬}.md`. SKILL.md는 얇은 디스패처(플레이북 로드 커널 + 불변 산출물 계약 + 최소 계약 폴백, 80줄 이하). 역할→플레이북+지식 폴더 맵은 볼트 `00_SYSTEM/START-HERE.md` "하네스 역할 라우팅"이 정본. 플레이북은 신뢰된 절차 문서지만 SKILL.md의 불변 계약(산출물 경로·사람 게이트)을 뒤집을 수 없다. 도구 배선형 스킬(cso·rea·seed·law·gpt·seo·automation·loop·agent-*·outsource·harness·docs-organize·obsidian-writer·pw-loop·test-scenario)은 기존 구조 유지.
 - **비대화형 실행**: 사용자가 없는 실행(서브에이전트·루프·크론·행동 픽스처)에서는 `AskUserQuestion` 대신 가정을 쓰고 산출물 `## 가정`에 기록한다. 되돌릴 수 있는 선택은 좁은 쪽 기본값. **사람 게이트는 가정하지 않는다** — PR 머지·배포·파괴적 작업·외부 발송은 `보류: 사람 승인 필요`로 남기고 나머지를 끝낸다(전체 중단도, 승인 가정도 틀렸다). `SJ_OUTPUT_FILE`이 있으면 화면 보고를 그 경로에도 써 화면 전용 스킬도 단언 가능하게 한다 (정본: [skills/_conventions/noninteractive.md](skills/_conventions/noninteractive.md)).
 - **기능 지도·추적성**: 기능 목록·연결·수정 지점은 대상 repo `docs/FEATURE-MAP.md`에 — 표가 정본이고 mermaid는 파생. sj-spec이 구현 전 영향 범위(역방향 포함)를 지목, sj-tech-lead가 구현 후 행을 갱신, sj-qa가 drift 검사 후 FAIL 시 의심 지점(기능 ID + 파일 경로)을 판정문에 명시, docs-organize가 기존 프로젝트에 최초 생성. 지도 불일치는 FAIL이 아니라 경고이며 지도가 없으면 비차단 (정본: [skills/_conventions/feature-map.md](skills/_conventions/feature-map.md)).
 

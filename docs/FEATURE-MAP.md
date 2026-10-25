@@ -65,7 +65,7 @@ flowchart LR
 | F06 | sj-agent-review — 에이전트 코드 리뷰, sj-agent-dev 10축 기준 PASS/WARN/FAIL 판정 | `skills/sj-agent-review/SKILL.md` | `skills/sj-agent-review/` | 없음 | F05 |
 | F07 | sj-automation — PC 자동화 + UI 조작 + 네이티브 앱 제작 통합 | `skills/sj-automation/SKILL.md` | `skills/sj-automation/` | 없음 | — |
 | F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 연결 표(Step C) + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F32, F33, F34, F35, F36 |
-| F09 | sj-cso — OWASP Top 10 + STRIDE 보안 감사 | `skills/sj-cso/SKILL.md` | `skills/sj-cso/` | 없음 | — |
+| F09 | sj-cso — security-audit(Cloudflare) 다단계 보안 감사 + 하네스 보고 | `skills/sj-cso/SKILL.md` | `skills/sj-cso/` | 없음 | — |
 | F10 | sj-design — 레퍼런스 DNA 기반 디자인 생성, 3안 제시 후 선택 구현 | `skills/sj-design/SKILL.md` | `skills/sj-design/` | 없음 | — |
 | F11 | sj-dev-si — SI 문서(제안서·WBS·결과보고서 등) 6종 + 주간보고·견적서·도메인 맵 작성 | `skills/sj-dev-si/SKILL.md` | `skills/sj-dev-si/` | 없음 | — |
 | F12 | sj-gpt — codex MCP 경유 GPT 자문 위임(리서치·세컨드 오피니언) | `skills/sj-gpt/SKILL.md` | `skills/sj-gpt/` | 없음 | — |

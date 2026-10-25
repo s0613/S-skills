@@ -110,8 +110,8 @@
     {
       "name": "sj-cso",
       "path": "skills/sj-cso/SKILL.md",
-      "version": "2.0.0",
-      "description": "CSO(Chief Security Officer) 역할 보안 감사 에이전트 — 얇은 디스패처. 절차 정본은",
+      "version": "3.0.0",
+      "description": "CSO 보안 감사 전문가. [security-audit](https://github.com/cloudflare/security-audit-skill)(Cloudflare, MIT)",
       "triggers": [
         "/sj-cso",
         "/cso"
