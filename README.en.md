@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.20.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.21.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -198,6 +198,7 @@ skills/
 ├── sj-questionnaire/ ← questionnaire (the answers are in someone else's head)
 ├── sj-wizard/        ← wizard (human-only steps as a runnable script)
 ├── sj-wait/          ← re-explain (/잠깐)
+├── sj-scrape/        ← web scraping (Scrapling — within permission, with provenance)
 ├── sj-loop/          ← loop engineering
 └── sj-outsource/     ← expert delegation
 ```
@@ -218,6 +219,7 @@ s-skills stands on other people's work. Integrated tools first, borrowed ideas s
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` | MIT |
 | [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
 | [morluto/rea](https://github.com/morluto/rea) | `/rea` | MIT |
+| [D4Vinci/Scrapling](https://github.com/D4Vinci/Scrapling) | `/크롤링` | BSD-3-Clause |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 
 **Ideas borrowed:** **mattpocock/skills** (grilling, glossary and deep-module conventions, `/docs-organize architecture`, `/질문지`·`/위저드`·`/잠깐`; `template.sh` copied with its MIT license under `skills/sj-wizard/vendor/`) · **gbrain** (thin dispatchers + single conventions dir, filing rules, friction protocol, manifest guard, `doctor --remediate`) · **ponytail** (minimal-code ladder, `ponytail:` markers) · Geoffrey Litt, *Understanding is the new bottleneck* (literate reports) · Self-Harness / AHE (harness change gate) · research on AI code-reviewer limits (reviewer diversity, severity calibration) · Fable 5 system prompt (external content is data, honest reporting, citation limits) · J. Russell Ramsay & Anthony L. Rostain, *The Adult ADHD Tool Kit* (via i-have-adhd).

@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+## [4.21.0] - 2026-11-05
+
+### Added
+- **`sj-scrape` 스킬** (`/크롤링`, `/스크래핑`, `/scrape`) — [D4Vinci/Scrapling](https://github.com/D4Vinci/Scrapling)(BSD-3-Clause)으로 웹 스크래핑·크롤링. 업스트림 공식 스킬을 `skills/sj-scrape/vendor/`에 API·CLI 레퍼런스로 두고(`SCRAPLING-SKILL.md`로 이름을 바꿔 중첩 스킬 로드를 막음, `UPSTREAM_COMMIT`), SKILL.md가 절차와 게이트를 얹는다: 읽기만이면 WebFetch, API·RSS가 있으면 그쪽으로 되돌리기 → robots.txt(`scripts/robots_check.py` — 스파이더 `robots_txt_obey`와 같은 protego 파서, 없음·확인 실패를 구분)·약관·개인정보 선확인 → `uvx`/`uv run`으로 무설치 실행, HTTP `extract get --no-stealthy-headers`부터(막힐 때만 위장 헤더, 로그 기록) → 스파이더는 `robots_txt_obey`·낮은 동시성·`download_delay` 필수 → 봇 차단 우회·로그인 세션·프록시·대량 수집은 사람 게이트 → `data/scrape/`에 `source_url` 포함 결과 + `crawl-log.md`. RESOLVER #39 — #2·#28·#33이 넘겨준다. FEATURE-MAP F40. external-tools 인덱스 행 추가.
+
 ## [4.20.0] - 2026-11-05
 
 **사람만 할 수 있는 일을 사람에게 잘 넘긴다** — [mattpocock/skills](https://github.com/mattpocock/skills)(MIT) 2차 탐방에서 남의 머릿속에 있는 답(질문지), 사람만 누를 수 있는 버튼(위저드), 안 들어온 설명(다시 설명) 세 갈래를 스킬로 가져왔다. 기존 스킬 수정 후보 4건은 실패 기록이 없어 셀프-하네스 게이트에 따라 볼트 원장에 보류로 남겼다.

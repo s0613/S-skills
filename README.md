@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.20.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.21.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="#옵시디언-연동--하네스의-장기-기억"><img src="https://img.shields.io/badge/Obsidian-long--term%20memory-7c3aed?style=flat-square&logo=obsidian&logoColor=white&labelColor=0d0d0d" alt="obsidian"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
@@ -258,6 +258,7 @@ claude plugin install diagram-design@diagram-design
 | `/질문지` | 답을 가진 제3자 한 사람(고객 대표·현업 담당자)에게 보낼 질문지 — 받는 사람과 돌려받을 것만 묻고 빈칸을 겨눈다 |
 | `/위저드` | 키 발급·콘솔 클릭·시크릿 등록처럼 사람만 할 수 있는 단계를 대화형 bash 스크립트로 — 값은 숨김 입력으로 `.env`·GitHub 시크릿에 |
 | `/잠깐` | 방금 답이 안 들어왔을 때 — 맥락을 붙여 쉬운 말로 다시 설명 (사용자 호출 전용) |
+| `/크롤링` | Scrapling으로 웹 데이터 수집 — robots·약관 먼저 확인, 우회·로그인은 사람 확인, 결과에 출처 URL과 수집 로그 |
 
 ---
 
@@ -294,6 +295,7 @@ skills/
 ├── sj-questionnaire/ ← 질문지 (답은 남의 머릿속에 — 보내는 일만 묻는다)
 ├── sj-wizard/        ← 위저드 (사람만 할 수 있는 단계를 실행되는 스크립트로)
 ├── sj-wait/          ← 다시 설명 (/잠깐)
+├── sj-scrape/        ← 웹 스크래핑 (Scrapling — 허락된 범위에서 출처와 함께)
 ├── sj-jev/           ← Jev 판단 모델 배선 (TypeSafe — 판단을 타입으로 받는다)
 ├── sj-loop/          ← 루프 엔지니어링
 └── sj-outsource/     ← 전문가 위임
@@ -317,6 +319,7 @@ s-skills는 남의 작업 위에 서 있습니다. 가져다 쓰는 것과 아�
 | [chrisryugj/korean-law-mcp](https://github.com/chrisryugj/korean-law-mcp) | `/law` — 법제처 법령·판례 원문 조회 | MIT |
 | [google/artemis](https://github.com/google/artemis) — Google | `/mobile` — 안드로이드 실기기·에뮬레이터 자동화 및 테스트 | Apache-2.0 |
 | [morluto/rea](https://github.com/morluto/rea) | `/rea` | MIT |
+| [D4Vinci/Scrapling](https://github.com/D4Vinci/Scrapling) — Karim Shoair | `/크롤링` — 웹 스크래핑·크롤링 (공식 스킬 사본은 `skills/sj-scrape/vendor/`) | BSD-3-Clause |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` — GPT 교차 자문·세컨드 오피니언 | 벤더 도구 |
 
 ### 설계를 빌린 곳

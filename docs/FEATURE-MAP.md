@@ -47,6 +47,7 @@ flowchart LR
   F08 --> F36[sj-rea]
   F08 --> F37[sj-questionnaire]
   F08 --> F38[sj-wizard]
+  F08 --> F40[sj-scrape]
   F16 --> F22
   F19 --> F18
   F20 --> F08
@@ -66,7 +67,7 @@ flowchart LR
 | F05 | sj-agent-dev — 비즈니스 에이전트 아키텍처 설계·구현 안내 (10가지 설계 축) | `skills/sj-agent-dev/SKILL.md` | `skills/sj-agent-dev/` | 없음 | — |
 | F06 | sj-agent-review — 에이전트 코드 리뷰, sj-agent-dev 10축 기준 PASS/WARN/FAIL 판정 | `skills/sj-agent-review/SKILL.md` | `skills/sj-agent-review/` | 없음 | F05 |
 | F07 | sj-automation — PC 자동화 + UI 조작 + 네이티브 앱 제작 통합 | `skills/sj-automation/SKILL.md` | `skills/sj-automation/` | 없음 | — |
-| F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 연결 표(Step C) + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F32, F33, F34, F35, F36, F37, F38 |
+| F08 | sj-company — 하네스 v4 디스패처, RESOLVER 라우팅 + 연결 표(Step C) + 크기별 파이프라인 실행 (`/sj-company`) | `skills/sj-company/SKILL.md` | `skills/sj-company/` | `docs/superpowers/fixtures/behavior/routing/` | F18, F25, F19, F03, F07, F22, F16, F24, F13, F05, F09, F23, F17, F20, F10, F21, F26, F04, F01, F15, F12, F14, F27, F28, F29, F32, F33, F34, F35, F36, F37, F38, F40 |
 | F09 | sj-cso — security-audit(Cloudflare) 다단계 보안 감사 + 하네스 보고 | `skills/sj-cso/SKILL.md` | `skills/sj-cso/` | 없음 | — |
 | F10 | sj-design — 레퍼런스 DNA 기반 디자인 생성, 3안 제시 후 선택 구현 | `skills/sj-design/SKILL.md` | `skills/sj-design/` | 없음 | — |
 | F11 | sj-dev-si — SI 문서(제안서·WBS·결과보고서 등) 6종 + 주간보고·견적서·도메인 맵 작성 | `skills/sj-dev-si/SKILL.md` | `skills/sj-dev-si/` | 없음 | — |
@@ -97,6 +98,7 @@ flowchart LR
 | F37 | sj-questionnaire — 답을 가진 제3자 한 사람에게 보낼 Markdown 질문지 작성, 보내는 일(받는 사람·돌려받을 것)만 묻고 항목→질문 대응표로 완료 확인, 발송은 사람 게이트 | `skills/sj-questionnaire/SKILL.md` | `skills/sj-questionnaire/` | 없음 | — |
 | F38 | sj-wizard — 사람만 할 수 있는 단계(키 발급·콘솔·시크릿·루트 계정)를 대화형 bash 위저드로 생성, 업스트림 template.sh vendor 정본, 정적 검증만 하고 실행은 사람 | `skills/sj-wizard/SKILL.md` | `skills/sj-wizard/` | 없음 | — |
 | F39 | sj-wait — 사용자 호출 전용 `/잠깐`, 방금 답을 맥락을 붙여 쉬운 말·GLOSSARY 용어로 다시 설명 | `skills/sj-wait/SKILL.md` | `skills/sj-wait/` | 없음 | — |
+| F40 | sj-scrape — Scrapling으로 웹 스크래핑·크롤링(CLI 추출·스파이더), robots·약관 선확인, 봇 차단 우회·로그인·프록시는 사람 게이트, 결과에 source_url·crawl-log, 업스트림 스킬 vendor 레퍼런스 | `skills/sj-scrape/SKILL.md` | `skills/sj-scrape/`, `skills/sj-scrape/scripts/robots_check.py` | 없음 | — |
 
 ## 미매핑
 - `skills/RESOLVER.md` — 라우팅 단일 사실 테이블 자체. 스킬(기능)이 아니라 F08(sj-company)이 소비하는 설정 파일이라 행으로 만들지 않았다.

@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "4.20.0",
+  "version": "4.21.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -324,6 +324,18 @@
       "triggers": [
         "/sj-retro",
         "/retro"
+      ]
+    },
+    {
+      "name": "sj-scrape",
+      "path": "skills/sj-scrape/SKILL.md",
+      "version": "1.0.0",
+      "description": "웹 스크래핑·크롤링 전문가. [Scrapling](https://github.com/D4Vinci/Scrapling)(D4Vinci, BSD-3-Clause)으로",
+      "triggers": [
+        "/scrape",
+        "/sj-scrape",
+        "/크롤링",
+        "/스크래핑"
       ]
     },
     {
