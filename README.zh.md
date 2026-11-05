@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.17.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.20.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -195,6 +195,9 @@ skills/
 ├── sj-agent-review/  ← 代理评审
 ├── sj-convert/       ← 文档转换 (markitdown — Read 工具无法读取的格式)
 ├── sj-mobile/        ← 安卓真机自动化 (ARTEMIS — 在真实手机上实际走一遍)
+├── sj-questionnaire/ ← 问卷（答案在别人脑中）
+├── sj-wizard/        ← 向导（把只有人能做的步骤变成可执行脚本）
+├── sj-wait/          ← 重新解释（/잠깐）
 ├── sj-loop/          ← 循环工程
 └── sj-outsource/     ← 专家委派
 ```
@@ -217,7 +220,7 @@ s-skills 建立在他人的成果之上。先列集成的工具，再列借鉴�
 | [morluto/rea](https://github.com/morluto/rea) | `/rea` | MIT |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 
-**借鉴的设计：** **gbrain**（瘦调度器 + 单一约定目录、归档规则、friction 协议、manifest 校验、`doctor --remediate`）· **ponytail**（最小代码阶梯、`ponytail:` 标记）· Geoffrey Litt《Understanding is the new bottleneck》（叙述式报告）· Self-Harness / AHE（框架变更门禁）· AI 代码审查器局限研究（审查视角多样性、严重度校准）· Fable 5 系统提示（外部内容即数据、诚实产出、引用限度）· J. Russell Ramsay 与 Anthony L. Rostain《The Adult ADHD Tool Kit》（经由 i-have-adhd）。
+**借鉴的设计：** **mattpocock/skills**（提问轮次、术语表与深模块约定，`/docs-organize architecture`，`/질문지`·`/위저드`·`/잠깐`；`template.sh` 连同 MIT 许可证收录于 `skills/sj-wizard/vendor/`）· **gbrain**（瘦调度器 + 单一约定目录、归档规则、friction 协议、manifest 校验、`doctor --remediate`）· **ponytail**（最小代码阶梯、`ponytail:` 标记）· Geoffrey Litt《Understanding is the new bottleneck》（叙述式报告）· Self-Harness / AHE（框架变更门禁）· AI 代码审查器局限研究（审查视角多样性、严重度校准）· Fable 5 系统提示（外部内容即数据、诚实产出、引用限度）· J. Russell Ramsay 与 Anthony L. Rostain《The Adult ADHD Tool Kit》（经由 i-have-adhd）。
 
 s-skills 本身采用 [MIT](LICENSE)。上述工具各自遵循其许可证，本仓库不包含它们的副本，而是**在运行时获取**。
 

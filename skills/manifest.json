@@ -1,6 +1,6 @@
 {
   "name": "s-skills",
-  "version": "4.19.0",
+  "version": "4.20.0",
   "generated_by": "scripts/skill-manifest.py --write (do not edit by hand)",
   "skills": [
     {
@@ -294,6 +294,17 @@
       ]
     },
     {
+      "name": "sj-questionnaire",
+      "path": "skills/sj-questionnaire/SKILL.md",
+      "version": "1.0.0",
+      "description": "질문지 작성 전문가. 내가 혼자 답할 수 없는 결정을, 그 답을 가진 **한 사람**(고객 대표·현업 담당자·",
+      "triggers": [
+        "/questionnaire",
+        "/sj-questionnaire",
+        "/질문지"
+      ]
+    },
+    {
       "name": "sj-rea",
       "path": "skills/sj-rea/SKILL.md",
       "version": "1.0.0",
@@ -385,6 +396,28 @@
       "description": "Tech Lead 역할 에이전트 — 얇은 디스패처. 절차 정본은 옵시디언 플레이북(20_실행/플레이북/sj-tech-lead.md).",
       "triggers": [
         "/tech-lead"
+      ]
+    },
+    {
+      "name": "sj-wait",
+      "path": "skills/sj-wait/SKILL.md",
+      "version": "1.0.0",
+      "description": "잠깐, 방금 말이 안 들어왔다 — 맥락을 붙여 쉬운 말로 다시 설명하게 한다.",
+      "triggers": [
+        "/잠깐",
+        "/뭐라고",
+        "/wait-what"
+      ]
+    },
+    {
+      "name": "sj-wizard",
+      "path": "skills/sj-wizard/SKILL.md",
+      "version": "1.0.0",
+      "description": "위저드 제작 전문가. **사람만 할 수 있는 단계**(API 키 발급, 콘솔·대시보드 클릭, CI 시크릿 등록,",
+      "triggers": [
+        "/wizard",
+        "/sj-wizard",
+        "/위저드"
       ]
     },
     {

@@ -6,6 +6,18 @@
 
 ## [Unreleased]
 
+## [4.20.0] - 2026-11-05
+
+**사람만 할 수 있는 일을 사람에게 잘 넘긴다** — [mattpocock/skills](https://github.com/mattpocock/skills)(MIT) 2차 탐방에서 남의 머릿속에 있는 답(질문지), 사람만 누를 수 있는 버튼(위저드), 안 들어온 설명(다시 설명) 세 갈래를 스킬로 가져왔다. 기존 스킬 수정 후보 4건은 실패 기록이 없어 셀프-하네스 게이트에 따라 볼트 원장에 보류로 남겼다.
+
+### Changed
+- **CLAUDE.md 축소** (54KB → 7KB) — 스킬별 설명과 원칙 본문은 각 SKILL.md·`skills/_conventions/`에 정본이 있어, 매 세션 읽히는 사본을 정본 위치 표·스킬 지도·repo 불변식으로 줄였다. 절차를 바꿨는데 설명 사본 3곳이 남았던 friction(2026-08-28 sj-spec meta, harness guard)이 근거.
+
+### Added
+- **`sj-questionnaire` 스킬** (`/질문지`) — 혼자 못 정하는 결정을, 답을 가진 제3자 한 사람이 채울 Markdown 질문지로 만든다. 주제가 아니라 보내는 일(받는 사람·돌려받을 것)만 묻고, 돌려받을 항목마다 질문이 있는지 대응표로 확인한다. 발송은 사람 게이트. RESOLVER #37 — #32(견적)가 "물어볼 질문지"만 요청하면 넘겨준다. FEATURE-MAP F37. [mattpocock/skills](https://github.com/mattpocock/skills) `to-questionnaire`(MIT) 차용.
+- **`sj-wizard` 스킬** (`/위저드`) — 키 발급·콘솔 클릭·CI 시크릿·루트 계정 작업처럼 사람만 할 수 있는 단계를 대화형 bash 위저드로 만든다. 업스트림 `template.sh`를 `skills/sj-wizard/vendor/`에 원문 그대로 두고(MIT, `UPSTREAM_COMMIT`), 에이전트는 단계만 쓰고 `bash -n`·shellcheck·값 추적으로 정적 검증한다 — 실행은 사람. AWS가 끼면 계정 확인·예산 경보 단계를 먼저 둔다. RESOLVER #38 — #2·#3이 "사람이 해야 하는 단계 안내"를 넘겨준다. FEATURE-MAP F38. `wizard`(MIT) 차용.
+- **`sj-wait` 스킬** (`/잠깐`, `/뭐라고`) — 사용자 호출 전용(`disable-model-invocation`). 방금 답이 안 들어왔을 때 맥락을 붙여 짧은 문장·GLOSSARY 용어로 다시 설명하게 하는 두 줄짜리 스킬. FEATURE-MAP F39. `wait-what`(MIT) 차용.
+
 ## [4.19.0] - 2026-10-25
 
 ### Changed

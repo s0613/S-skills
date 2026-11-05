@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.17.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.20.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
 </p>
@@ -195,6 +195,9 @@ skills/
 ├── sj-agent-review/  ← エージェントレビュー
 ├── sj-convert/       ← ドキュメント変換 (markitdown — Read ツールが読めない形式)
 ├── sj-mobile/        ← Android実機自動化 (ARTEMIS — 実機を実際に操作して確認)
+├── sj-questionnaire/ ← 質問票（答えは他の人の頭の中に）
+├── sj-wizard/        ← ウィザード（人にしかできない手順を実行できるスクリプトに）
+├── sj-wait/          ← 言い直し（/잠깐）
 ├── sj-loop/          ← ループエンジニアリング
 └── sj-outsource/     ← 専門家委譲
 ```
@@ -217,7 +220,7 @@ s-skills は他の人の成果の上に立っています。組み込んで使�
 | [morluto/rea](https://github.com/morluto/rea) | `/rea` | MIT |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 
-**設計を借りた先：** **gbrain**（薄いディスパッチャ + 単一コンベンション、filing rules、friction プロトコル、manifest ガード、`doctor --remediate`）· **ponytail**（最小コードの梯子、`ponytail:` マーカー）· Geoffrey Litt『Understanding is the new bottleneck』（叙述式レポート）· Self-Harness / AHE（ハーネス変更ゲート）· AI コードレビュアーの限界に関する研究（レビュー観点の多様性、重大度の較正）· Fable 5 システムプロンプト（外部コンテンツはデータ、正直な報告、引用上限）· J. Russell Ramsay・Anthony L. Rostain『The Adult ADHD Tool Kit』（i-have-adhd 経由）。
+**設計を借りた先：** **mattpocock/skills**（質問ラウンド・用語集・深いモジュールのコンベンション、`/docs-organize architecture`、`/질문지`·`/위저드`·`/잠깐`。`template.sh` は MIT ライセンスとともに `skills/sj-wizard/vendor/` に同梱）· **gbrain**（薄いディスパッチャ + 単一コンベンション、filing rules、friction プロトコル、manifest ガード、`doctor --remediate`）· **ponytail**（最小コードの梯子、`ponytail:` マーカー）· Geoffrey Litt『Understanding is the new bottleneck』（叙述式レポート）· Self-Harness / AHE（ハーネス変更ゲート）· AI コードレビュアーの限界に関する研究（レビュー観点の多様性、重大度の較正）· Fable 5 システムプロンプト（外部コンテンツはデータ、正直な報告、引用上限）· J. Russell Ramsay・Anthony L. Rostain『The Adult ADHD Tool Kit』（i-have-adhd 経由）。
 
 s-skills 自体は [MIT](LICENSE) です。上記のツールはそれぞれのライセンスに従い、本リポジトリはコピーを同梱せず**実行時に取得**します。
 

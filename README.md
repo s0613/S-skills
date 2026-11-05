@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.17.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
+  <a href="https://github.com/s0613/S-skills/releases"><img src="https://img.shields.io/badge/version-4.20.0-f7a521?style=flat-square&labelColor=0d0d0d" alt="version"></a>
   <a href="https://github.com/s0613/S-skills"><img src="https://img.shields.io/badge/claude--plugin-install-f7a521?style=flat-square&labelColor=0d0d0d" alt="plugin"></a>
   <a href="#옵시디언-연동--하네스의-장기-기억"><img src="https://img.shields.io/badge/Obsidian-long--term%20memory-7c3aed?style=flat-square&logo=obsidian&logoColor=white&labelColor=0d0d0d" alt="obsidian"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-f7a521?style=flat-square&labelColor=0d0d0d" alt="license"></a>
@@ -255,6 +255,9 @@ claude plugin install diagram-design@diagram-design
 | `/convert` | Word·PPT·Excel·EPub·오디오 등 Read 툴이 못 읽는 문서를 Markdown으로 변환 |
 | `/mobile` | ARTEMIS로 안드로이드 실기기·에뮬레이터 조작·탐색 + 스크린샷·logcat 증거 수집 |
 | `/rea` | REA로 소스 없는 앱·바이너리(네이티브·Electron·APK·.NET·펌웨어)를 열어 기능 동작을 증거와 함께 설명 |
+| `/질문지` | 답을 가진 제3자 한 사람(고객 대표·현업 담당자)에게 보낼 질문지 — 받는 사람과 돌려받을 것만 묻고 빈칸을 겨눈다 |
+| `/위저드` | 키 발급·콘솔 클릭·시크릿 등록처럼 사람만 할 수 있는 단계를 대화형 bash 스크립트로 — 값은 숨김 입력으로 `.env`·GitHub 시크릿에 |
+| `/잠깐` | 방금 답이 안 들어왔을 때 — 맥락을 붙여 쉬운 말로 다시 설명 (사용자 호출 전용) |
 
 ---
 
@@ -288,6 +291,9 @@ skills/
 ├── sj-convert/       ← 문서 변환 (markitdown — Read 툴이 못 읽는 포맷)
 ├── sj-mobile/        ← 안드로이드 실기기 자동화 (ARTEMIS — 폰을 직접 걸어 본다)
 ├── sj-rea/           ← 리버스 엔지니어링 (REA — 배포물을 증거로 뜯어본다)
+├── sj-questionnaire/ ← 질문지 (답은 남의 머릿속에 — 보내는 일만 묻는다)
+├── sj-wizard/        ← 위저드 (사람만 할 수 있는 단계를 실행되는 스크립트로)
+├── sj-wait/          ← 다시 설명 (/잠깐)
 ├── sj-jev/           ← Jev 판단 모델 배선 (TypeSafe — 판단을 타입으로 받는다)
 ├── sj-loop/          ← 루프 엔지니어링
 └── sj-outsource/     ← 전문가 위임
@@ -324,6 +330,7 @@ s-skills는 남의 작업 위에 서 있습니다. 가져다 쓰는 것과 아�
 | AI 코드 리뷰어 한계 연구 | 리뷰어 다양성·심각도 보정 — 렌즈 분리, 사소한 이슈로 차단 금지 |
 | Fable 5 시스템 프롬프트 | 외부 콘텐츠는 데이터 · 정직 산출 계약 · 인용 한도 |
 | J. Russell Ramsay · Anthony L. Rostain, *The Adult ADHD Tool Kit* | i-have-adhd를 경유해 출력 규칙 10개의 근거 |
+| [mattpocock/skills](https://github.com/mattpocock/skills) — Matt Pocock (MIT) | 질문 라운드·용어집·깊은 모듈 컨벤션, `/docs-organize architecture`, `/질문지`·`/위저드`·`/잠깐` (`template.sh` 사본은 `skills/sj-wizard/vendor/`에 라이선스와 함께) |
 
 s-skills 자체는 [MIT](LICENSE)입니다. 위 도구들은 각자의 라이선스를 따르며, 이 저장소는 그 사본을 담지 않고 **런타임에 받아 씁니다**.
 
