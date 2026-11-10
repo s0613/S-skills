@@ -10,6 +10,7 @@
 | claude.ai (Team·Enterprise) | **Claude Motion** (베타, 2026-10) — 채팅에서 `/motion` 또는 Output→Motion | 코드 기반 애니메이션 → MP4. 실사 푸티지·인물 없음. 관리자가 코드 실행·Artifacts·Motion 템플릿을 켜야 함. Free·Pro·Max 미포함 |
 | Claude Code (HTML 선호) | **HyperFrames** (`heygen-com/hyperframes`, Apache-2.0) | `npx skills add heygen-com/hyperframes` → `/hyperframes` 계열 스킬이 HTML/GSAP 구성 → 로컬 렌더 |
 | Claude Code (React·데이터 반복) | **Remotion** (`remotion-dev/skills`) | `npx skills add remotion-dev/skills`. 데이터 주입·템플릿 재사용에 강함. 회사 규모에 따라 유료 라이선스 |
+| Claude Code (렌더·검수까지) | **raea** (`shinyobjectz/raea`, FSL-1.1-ALv2) | `curl -fsSL https://raea.io/install \| sh`(설치는 사람 승인). Remotion과 비슷한 API로 쓰고 로컬 GPU에서 렌더, `raea check`가 잘린 글자·대비·안전 영역·음량을 검수. 렌더는 sj-raea가 맡는다 |
 
 플랜·설치 여부는 **확인하고 고른다**(`ls ~/.claude/skills ~/.agents/skills`). 아무것도 없으면 설치 명령을 보여 주고
 설치는 사람 승인 후. 이 스킬이 렌더를 대신 돌리지는 않는다 — 브리프를 넘긴다.

@@ -6,6 +6,11 @@
 
 ## [Unreleased]
 
+## [4.22.0] - 2026-11-10
+
+### Added
+- **`sj-raea` 스킬** (`/raea`, `/렌더`) — [shinyobjectz/raea](https://github.com/shinyobjectz/raea)(FSL-1.1-ALv2)로 영상·모션그래픽·3D·게임을 React/TypeScript 컴포지션으로 쓰고 로컬 GPU에서 렌더한다. sj-motion이 브리프를 쓰고 멈추는 자리를 이어받는다. raea가 canary(매일 바뀜)라 업스트림 스킬 사본을 두지 않고, 설치본의 `raea skill`·`raea help`·`raea guide`를 API 정본으로 읽는다. 절차: 설치 확인(설치는 사람 게이트 — `~/.claude/skills`에 업스트림 스킬이 추가되는 것까지 알림) → 워크스페이스 또는 `video/raea/{날짜}-{slug}/` → pitch·explain·story는 스토리보드 승인 먼저 → 저장마다 `raea check --quick` + 핵심 프레임 스틸을 Read로 육안 확인(한글 □ 깨짐) → 최종 렌더 + `raea check` P0·P1 0까지 → `render-log.md`(버전·명령·check 수치). `raea gen`(유료 제공자)·대용량 모델 다운로드·`library add`·`brand`·`controller set`·게시는 사람 게이트. RESOLVER #40 — #27·#34가 `raea` 동시 감지 시 넘겨준다. 연결 표에 sj-motion → sj-raea. FEATURE-MAP F41. external-tools 행, sj-motion 코드 렌더 도구 목록에 raea 추가.
+
 ## [4.21.0] - 2026-11-05
 
 ### Added

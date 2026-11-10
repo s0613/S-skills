@@ -259,6 +259,7 @@ claude plugin install diagram-design@diagram-design
 | `/위저드` | 키 발급·콘솔 클릭·시크릿 등록처럼 사람만 할 수 있는 단계를 대화형 bash 스크립트로 — 값은 숨김 입력으로 `.env`·GitHub 시크릿에 |
 | `/잠깐` | 방금 답이 안 들어왔을 때 — 맥락을 붙여 쉬운 말로 다시 설명 (사용자 호출 전용) |
 | `/크롤링` | Scrapling으로 웹 데이터 수집 — robots·약관 먼저 확인, 우회·로그인은 사람 확인, 결과에 출처 URL과 수집 로그 |
+| `/raea` | raea로 영상·모션그래픽·3D·게임을 코드로 쓰고 내 GPU에서 렌더 — 스틸을 눈으로 보고 `raea check` 검수까지 |
 
 ---
 
@@ -296,6 +297,7 @@ skills/
 ├── sj-wizard/        ← 위저드 (사람만 할 수 있는 단계를 실행되는 스크립트로)
 ├── sj-wait/          ← 다시 설명 (/잠깐)
 ├── sj-scrape/        ← 웹 스크래핑 (Scrapling — 허락된 범위에서 출처와 함께)
+├── sj-raea/         ← 코드 렌더 영상 (raea — 렌더하고 보고 검수한 파일만)
 ├── sj-jev/           ← Jev 판단 모델 배선 (TypeSafe — 판단을 타입으로 받는다)
 ├── sj-loop/          ← 루프 엔지니어링
 └── sj-outsource/     ← 전문가 위임
@@ -320,6 +322,7 @@ s-skills는 남의 작업 위에 서 있습니다. 가져다 쓰는 것과 아�
 | [google/artemis](https://github.com/google/artemis) — Google | `/mobile` — 안드로이드 실기기·에뮬레이터 자동화 및 테스트 | Apache-2.0 |
 | [morluto/rea](https://github.com/morluto/rea) | `/rea` | MIT |
 | [D4Vinci/Scrapling](https://github.com/D4Vinci/Scrapling) — Karim Shoair | `/크롤링` — 웹 스크래핑·크롤링 (공식 스킬 사본은 `skills/sj-scrape/vendor/`) | BSD-3-Clause |
+| [shinyobjectz/raea](https://github.com/shinyobjectz/raea) — Shane Murphy | `/raea` — 코드 렌더 영상·3D·게임 (사본 없음, 설치본의 `raea skill`을 읽는다) | FSL-1.1-ALv2 |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` — GPT 교차 자문·세컨드 오피니언 | 벤더 도구 |
 
 ### 설계를 빌린 곳

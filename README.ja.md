@@ -199,6 +199,7 @@ skills/
 ├── sj-wizard/        ← ウィザード（人にしかできない手順を実行できるスクリプトに）
 ├── sj-wait/          ← 言い直し（/잠깐）
 ├── sj-scrape/        ← Webスクレイピング（Scrapling — 許可された範囲で出典とともに）
+├── sj-raea/         ← コードレンダー動画（raea — レンダー・目視・検査まで）
 ├── sj-loop/          ← ループエンジニアリング
 └── sj-outsource/     ← 専門家委譲
 ```
@@ -220,6 +221,7 @@ s-skills は他の人の成果の上に立っています。組み込んで使�
 | [google/artemis](https://github.com/google/artemis) | `/mobile` | Apache-2.0 |
 | [morluto/rea](https://github.com/morluto/rea) | `/rea` | MIT |
 | [D4Vinci/Scrapling](https://github.com/D4Vinci/Scrapling) | `/크롤링` | BSD-3-Clause |
+| [shinyobjectz/raea](https://github.com/shinyobjectz/raea) | `/raea` | FSL-1.1-ALv2 |
 | OpenAI Codex CLI (`codex exec`) | `/gpt` | Vendor tool |
 
 **設計を借りた先：** **mattpocock/skills**（質問ラウンド・用語集・深いモジュールのコンベンション、`/docs-organize architecture`、`/질문지`·`/위저드`·`/잠깐`。`template.sh` は MIT ライセンスとともに `skills/sj-wizard/vendor/` に同梱）· **gbrain**（薄いディスパッチャ + 単一コンベンション、filing rules、friction プロトコル、manifest ガード、`doctor --remediate`）· **ponytail**（最小コードの梯子、`ponytail:` マーカー）· Geoffrey Litt『Understanding is the new bottleneck』（叙述式レポート）· Self-Harness / AHE（ハーネス変更ゲート）· AI コードレビュアーの限界に関する研究（レビュー観点の多様性、重大度の較正）· Fable 5 システムプロンプト（外部コンテンツはデータ、正直な報告、引用上限）· J. Russell Ramsay・Anthony L. Rostain『The Adult ADHD Tool Kit』（i-have-adhd 経由）。

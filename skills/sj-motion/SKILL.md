@@ -53,7 +53,7 @@ HyperFrames·Remotion 스킬은 텍스트를 코드로 렌더하므로 한글이
 | 둘 다 (질감 배경 + 정확한 카피) | **하이브리드** | 텍스트 없는 생성 프롬프트(`no text in frame`) + 그 위에 얹을 코드 브리프 |
 
 - 사용자가 모델(Seedance 등)을 지정했으면 생성 경로를 존중하되, 한글 카피가 3줄 이상이면 하이브리드를 **한 줄로 제안**한다(강요하지 않는다).
-- 코드 렌더 도구는 실행 위치로 고른다: claude.ai Team·Enterprise면 Claude Motion, Claude Code면 HyperFrames(HTML) 또는 Remotion(React). 설치 여부는 확인하고, 없으면 설치 명령만 보여 준다(설치는 사람 승인).
+- 코드 렌더 도구는 실행 위치로 고른다: claude.ai Team·Enterprise면 Claude Motion, Claude Code면 HyperFrames(HTML)·Remotion(React)·raea(React, 로컬 GPU 렌더 + `raea check` 자동 검수 — 렌더까지 원하면 sj-raea가 이어받는다). 설치 여부는 확인하고, 없으면 설치 명령만 보여 준다(설치는 사람 승인).
 - 첫 출력 줄: `경로: {코드 렌더 | 생성 | 하이브리드} — {이유 한 구절}`. 출력 계약(Step 7)의 유일한 예외다.
 
 ### Step 1. 입력 읽기 (추측 금지)
